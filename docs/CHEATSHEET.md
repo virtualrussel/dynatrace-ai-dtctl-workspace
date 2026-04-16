@@ -66,7 +66,6 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Run a DQL query | `dtctl query 'fetch dt.davis.problems \| filter event.status == "ACTIVE"'` |
 | List workflows | `dtctl get workflows` |
 | List notebooks | `dtctl get notebooks` |
-| Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
 
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 
@@ -101,19 +100,9 @@ Ask: *"What were the error patterns during the last problem on [service]?"* — 
 
 ## Session targeting
 
-Default environment: `production-mcp` → https://guu84124.apps.dynatrace.com
+MCP server: `dynatrace-mcp` → https://YOUR_TENANT_ID.apps.dynatrace.com
 
-To switch for the session:
-
-This is a chat instruction to the AI assistant (not a terminal command).
-
-```
-# Switch to sprint for this session
-"Use the sprint-mcp server for all queries in this session"
-
-# Switch back to production for this session
-"Use the production-mcp server for all queries in this session"
-```
+Replace `YOUR_TENANT_ID` in `.vscode/mcp.json` and `.mcp.json` with your tenant ID before first use.
 
 ---
 
@@ -130,4 +119,4 @@ These work well when you're not sure which workflow to reach for:
 
 ---
 
-**Default MCP:** production-mcp | **Last Updated:** April 15, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** April 15, 2026

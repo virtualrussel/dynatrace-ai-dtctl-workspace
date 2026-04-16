@@ -4,13 +4,9 @@
 
 | | |
 |---|---|
-| **Default MCP server** | `production-mcp` → https://guu84124.apps.dynatrace.com |
-| **Fallback MCP server** | `sprint-mcp` → https://bon05374.sprint.apps.dynatracelabs.com |
+| **MCP server** | `dynatrace-mcp` → https://YOUR_TENANT_ID.apps.dynatrace.com |
 
-To target a specific environment for a session:
-```
-"Use the sprint-mcp server for all queries in this session"
-```
+Replace `YOUR_TENANT_ID` in `.vscode/mcp.json` and `.mcp.json` with your Dynatrace tenant ID before use.
 
 ## Global Rule
 

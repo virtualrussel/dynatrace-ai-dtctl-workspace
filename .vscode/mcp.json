@@ -1,6 +1,6 @@
 {
   "servers": {
-    "sprint-mcp": {
+    "dynatrace-mcp": {
       "type": "stdio",
       "command": "npx",
       "args": [
@@ -9,19 +9,7 @@
         "--stdio"
       ],
       "env": {
-        "DT_ENVIRONMENT": "https://bon05374.sprint.apps.dynatracelabs.com"
-      }
-    },
-    "production-mcp": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@dynatrace-oss/dynatrace-mcp-server@latest",
-        "--stdio"
-      ],
-      "env": {
-        "DT_ENVIRONMENT": "https://guu84124.apps.dynatrace.com"
+        "DT_ENVIRONMENT": "https://YOUR_TENANT_ID.apps.dynatrace.com"
       }
     }
   }

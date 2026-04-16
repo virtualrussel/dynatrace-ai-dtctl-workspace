@@ -65,7 +65,6 @@ For SREs, operations engineers, and on-call teams, this repository improves dail
 - `dtctl doctor` validates connectivity and auth.
 - `dtctl get notebooks` and `dtctl describe notebook "name"` verify generated artifacts.
 - `dtctl query 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'` runs direct checks.
-- `dtctl config use-context production` and `dtctl config use-context sprint` switch environments safely.
 
 ## AIOps Outcomes and ServiceNow Assist
 
@@ -86,7 +85,7 @@ A common pattern:
 1. Dynatrace detects a production problem.
 2. A ServiceNow incident is created.
 3. ServiceNow Assist (or a linked workflow) invokes this workspace's investigation path, such as `/troubleshoot-problem`.
-4. AI gathers live evidence via `production-mcp` and applies relevant skills (for example `dt-obs-problems`, `dt-obs-services`, `dt-dql-essentials`).
+4. AI gathers live evidence via `dynatrace-mcp` and applies relevant skills (for example `dt-obs-problems`, `dt-obs-services`, `dt-dql-essentials`).
 5. Findings are returned as structured context in the incident: impacted service, likely cause, timeline signals, and recommended next actions.
 6. Operators act from a pre-analyzed incident instead of starting from zero.
 

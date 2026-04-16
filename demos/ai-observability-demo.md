@@ -29,7 +29,7 @@ Open VS Code with the `dynatrace-ai-workspace` folder and confirm Copilot Chat i
 
 **Quick smoke test** — type this in Copilot Chat:
 ```
-Using the production-mcp server, list the top 5 services by request volume in the last hour
+Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour
 ```
 
 If you see a table of services with request counts — you're live. Proceed.
@@ -75,7 +75,7 @@ frontend
 When Copilot asks for context, type:
 ```
 Investigate the high P99 latency on the frontend service. 
-P99 is at 8.2 seconds against a P95 of 216ms. Use the production-mcp server.
+P99 is at 8.2 seconds against a P95 of 216ms. Use the dynatrace-mcp server.
 ```
 
 **What to point out when the result appears:**
@@ -180,7 +180,7 @@ key findings, instrumentation gaps, and recommended remediation steps.
 | `dt-obs-tracing` skill | Taught Copilot to look for trace IDs and span relationships |
 | `dt-obs-logs` skill | Taught Copilot correct log field names (`loglevel`, `content`) |
 | `dt-obs-problems` skill | Provided correct DQL for Davis Problem queries |
-| `production-mcp` server | Executed all queries against live production data |
+| `dynatrace-mcp` server | Executed all queries against live production data |
 | `dt-app-notebooks` skill | Enabled Copilot to create the investigation notebook |
 
 ---

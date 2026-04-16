@@ -49,8 +49,7 @@ This workspace solves all four problems by combining three things: domain knowle
 ┌───────────────────────────────────────────────────────────┐
 │              Dynatrace Platform                           │
 │                                                           │
-│   guu84124.apps.dynatrace.com  (production)               │
-│   bon05374.sprint.apps.dynatracelabs.com  (sprint)        │
+│   YOUR_TENANT_ID.apps.dynatrace.com                       │
 │                                                           │
 │   Grail data lakehouse — logs, spans, metrics, events     │
 │   Davis AI — problem detection, root cause analysis       │
@@ -100,17 +99,16 @@ This means all 13 skills can be installed without performance penalty — Copilo
 
 The Model Context Protocol (MCP) server is the live data bridge between Copilot and Dynatrace. When Copilot needs to answer a question about your environment, it calls the MCP server, which executes real API calls and DQL queries against your Dynatrace tenant and returns live results.
 
-Two environments are configured as named servers:
+One environment is configured as a named server:
 
 ```json
-production-mcp  →  https://guu84124.apps.dynatrace.com        (production)
-sprint-mcp  →  https://bon05374.sprint.apps.dynatracelabs.com  (sprint)
+dynatrace-mcp  →  https://YOUR_TENANT_ID.apps.dynatrace.com
 ```
 
-Authentication uses OAuth browser SSO — no API tokens or credentials are stored in the workspace. To target a specific environment in a Copilot session:
+Authentication uses OAuth browser SSO — no API tokens or credentials are stored in the workspace. To confirm which environment is active in a Copilot session:
 
 ```
-"Use the production-mcp server for all queries"
+"Confirm which MCP server you are using"
 ```
 
 ---
@@ -163,7 +161,7 @@ The `troubleshoot-problem` and `daily-standup-notebook` prompts encode operation
 Both files are automatically loaded at the start of every AI session in this workspace. They act as a standing briefing — the AI already knows the default MCP environment, the investigation rule, and the available prompts before a single word is typed.
 
 Each file contains:
-- Default and fallback MCP server
+- Default MCP server
 - Global rule: always start with problems, never broad log searches
 - Prompt directory — all 7 slash commands and when to use them
 - Note that 13 skills are installed and load automatically
@@ -192,17 +190,10 @@ dtctl get workflows                    # List all workflows
 dtctl doctor                           # Verify authentication and connectivity
 ```
 
-Two authenticated contexts are configured:
+One authenticated context is configured:
 
 ```
-production  (default)
-sprint
-```
-
-Switch between them with:
-```bash
-dtctl config use-context production
-dtctl config use-context sprint
+production
 ```
 
 ---
@@ -215,7 +206,7 @@ Here is the complete flow for a typical `/daily-standup-notebook` session:
 1. You type /daily-standup-notebook in Copilot Chat
 
 2. Copilot loads copilot-instructions.md
-   → Knows to use production-mcp by default
+   → Knows to use dynatrace-mcp by default
    → Knows the investigation rules and DQL guardrails
 
 3. Copilot loads relevant skills
@@ -224,7 +215,7 @@ Here is the complete flow for a typical `/daily-standup-notebook` session:
    → dt-app-notebooks (notebook structure)
    → dtctl            (verification commands)
 
-4. Copilot calls production-mcp
+4. Copilot calls dynatrace-mcp
    → Executes live DQL queries against production
    → Retrieves metrics, problems, and deployment data
 

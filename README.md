@@ -49,19 +49,13 @@ dynatrace-ai-workspace/
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
 | [dtctl](https://github.com/dynatrace-oss/dtctl) | Dynatrace open-source CLI for agents & humans to manage observability resources |
-| A Dynatrace environment | `https://<env>.apps.dynatrace.com` or `https://<env>.sprint.apps.dynatracelabs.com` |
+| A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
 
 ---
 
 ## Setup
-
-> **Dynatrace employees & partners:** This workspace is pre-configured for the standard
-> Dynatrace demo environment (`guu84124.apps.dynatrace.com`). No changes are
-> required to run demos against the production demo tenant. Clone the repo,
-> run `dtctl auth login --context production --environment "https://guu84124.apps.dynatrace.com"`,
-> reload VS Code, and authenticate via your Dynatrace SSO when prompted.
 
 ### Choose Your Frontend
 
@@ -71,9 +65,9 @@ This workspace works with:
 
 Select your setup path below. Both receive the same skills, prompts, and MCP server access.
 
-**GitHub Copilot Path** → Follow Steps 1–6 below. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session.
+**GitHub Copilot Path** → Follow Steps 1–5 below. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session.
 
-**Claude Code Path** → Follow Steps 1–6 below. `CLAUDE.md` is auto-loaded at the start of each Claude Code session.
+**Claude Code Path** → Follow Steps 1–5 below. `CLAUDE.md` is auto-loaded at the start of each Claude Code session.
 
 ### 1. Clone the workspace
 
@@ -84,9 +78,23 @@ cd dynatrace-ai-workspace
 
 Then open the folder in VS Code via **File → Open Folder**.
 
-### 2. Update skills to latest *(optional)*
+### 2. Set your tenant ID
 
-If this is your first setup, skip this step and continue to Step 3.
+Replace `YOUR_TENANT_ID` with your Dynatrace tenant ID in these files:
+
+Required MCP configuration files:
+- `.vscode/mcp.json`
+- `.mcp.json`
+
+Session briefing files (recommended so assistants reference the correct MCP server URL in context):
+- `.github/copilot-instructions.md`
+- `CLAUDE.md`
+
+Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
+
+### 3. Update skills to latest *(optional)*
+
+If this is your first setup, skip this step and continue to Step 4.
 
 Skills are already included in this repo — cloning gives you everything you need. Run this only when you want to pull the latest skill updates from Dynatrace:
 
@@ -97,124 +105,24 @@ npx skills add dynatrace-oss/dtctl
 
 > See [Keeping Up to Date](#keeping-up-to-date) for when to run this.
 
-### 3. Configure dtctl for the shared demo tenant
+### 4. Install and configure dtctl
 
 `dtctl` is used for terminal-level verification and resource management. It is
-required for demo workflows in this workspace.
+required for the notebook and verification workflows in this workspace.
 
 ```bash
 # macOS / Linux — direct install (no package manager required)
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
 
-# Local desktop (macOS/Windows/Linux with keyring): OAuth login
+# OAuth login — opens a browser for Dynatrace SSO login
 dtctl auth login --context production \
-  --environment "https://guu84124.apps.dynatrace.com"
-
-# GitHub Codespaces / CI: token-based auth
-dtctl config set-context production \
-  --environment "https://guu84124.apps.dynatrace.com" \
-  --token-ref production-token
-dtctl config set-credentials production-token --token <YOUR_PLATFORM_TOKEN>
+  --environment "https://YOUR_TENANT_ID.apps.dynatrace.com"
 
 # Verify
 dtctl doctor
 ```
 
-Create your platform token in Dynatrace: Identity & Access Management → Access Tokens → Generate new token → Platform token.
-
-If you are in Codespaces and see `keyring probe failed` or `dbus-launch` errors, skip OAuth and use token-based auth.
-
-### 4. Configure your sprint environment (optional)
-
-The workspace is pre-configured with two MCP servers — the shared demo tenant
-(`guu84124`) and a secondary sprint tenant (`bon05374`). The `bon05374` entry is
-specific to the original author — replace it with your own tenant ID if you want
-to connect a second environment.
-
-> If you only need the shared demo tenant (`guu84124`), skip this section entirely —
-> no additional configuration is required.
-
-Complete all four steps below to configure your own secondary tenant. Skipping
-any step will result in Copilot referencing a server that doesn't exist or
-authenticating against the wrong environment.
-
-#### Sprint Tenant Checklist
-
-**Step 4.A — Update `.vscode/mcp.json`**
-
-Replace `<your-tenant-id>` with your personal sprint tenant ID (e.g. `abc12345`):
-
-```json
-{
-  "servers": {
-    "production-mcp": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@dynatrace-oss/dynatrace-mcp-server@latest", "--stdio"],
-      "env": {
-        "DT_ENVIRONMENT": "https://guu84124.apps.dynatrace.com"
-      }
-    },
-    "sprint-mcp": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@dynatrace-oss/dynatrace-mcp-server@latest", "--stdio"],
-      "env": {
-        "DT_ENVIRONMENT": "https://<your-tenant-id>.sprint.apps.dynatracelabs.com"
-      }
-    }
-  }
-}
-```
-
-**Step 4.B — Update `.mcp.json`**
-
-`.mcp.json` is used by Copilot CLI and must stay in sync with `.vscode/mcp.json`.
-Run this command to regenerate it from your updated `.vscode/mcp.json`:
-
-```bash
-jq "{mcpServers: .servers}" .vscode/mcp.json > .mcp.json
-```
-
-Verify the output looks correct before continuing:
-
-```bash
-cat .mcp.json
-```
-
-You should see both MCP server entries with your sprint tenant ID in place.
-
-**Step 4.C — Update `.github/copilot-instructions.md` and `CLAUDE.md`**
-
-Find the Environment table in both files and update the fallback server URL to match your tenant ID:
-
-```
-| **Fallback MCP server** | `sprint-mcp` → https://<your-tenant-id>.sprint.apps.dynatracelabs.com |
-```
-
-Both `.github/copilot-instructions.md` (GitHub Copilot) and `CLAUDE.md` (Claude Code) must be updated with your tenant ID or they will reference the original author's sprint environment.
-
-**Step 4.D — Authenticate dtctl**
-
-```bash
-# Local desktop (macOS/Windows/Linux with keyring): OAuth login
-dtctl auth login --context sprint \
-  --environment "https://<your-tenant-id>.sprint.apps.dynatracelabs.com"
-
-# GitHub Codespaces / CI: token-based auth
-dtctl config set-context sprint \
-  --environment "https://<your-tenant-id>.sprint.apps.dynatracelabs.com" \
-  --token-ref sprint-token
-dtctl config set-credentials sprint-token --token <YOUR_PLATFORM_TOKEN>
-```
-
-If OAuth fails with a keyring error (for example, `dbus-launch` not found), use the token-based method above.
-
-Both contexts are now configured. Switch between them with:
-```bash
-dtctl config use-context production
-dtctl config use-context sprint
-```
+When `dtctl doctor` shows green, you are connected.
 
 ### 5. Reload VS Code
 
@@ -229,12 +137,12 @@ to VS Code. Subsequent sessions authenticate automatically.
 **GitHub Copilot users:** In Copilot Chat, type:
 
 ```
-Using the production-mcp server, list the top 5 services by request volume in the last hour
+Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour
 ```
 
-**Claude Code users:** In Claude Code, type the same query or copy it from the GitHub Copilot instruction above.
+**Claude Code users:** In Claude Code, type the same query or use `@health-check` for a guided workflow.
 
-If you see a table of services with request counts — you are live and ready to demo.
+If you see a table of services with request counts — you are live.
 
 ---
 
@@ -313,7 +221,7 @@ This workspace maintains two MCP configuration files that must be kept in sync:
 | `.vscode/mcp.json` | VS Code GitHub Copilot and Claude Code |
 | `.mcp.json` | GitHub Copilot CLI |
 
-When adding or updating MCP servers, always update both files. Regenerate `.mcp.json` from `.vscode/mcp.json` using:
+When updating your tenant ID or MCP server, always update both files. Regenerate `.mcp.json` from `.vscode/mcp.json` using:
 
 ```bash
 jq "{mcpServers: .servers}" .vscode/mcp.json > .mcp.json
@@ -329,15 +237,9 @@ jq "{mcpServers: .servers}" .vscode/mcp.json > .mcp.json
 # macOS / Linux — direct install (no package manager required)
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
 
-# Local desktop (macOS/Windows/Linux with keyring): OAuth login
+# OAuth login
 dtctl auth login --context production \
-  --environment "https://guu84124.apps.dynatrace.com"
-
-# GitHub Codespaces / CI: token-based auth
-dtctl config set-context production \
-  --environment "https://guu84124.apps.dynatrace.com" \
-  --token-ref production-token
-dtctl config set-credentials production-token --token <YOUR_PLATFORM_TOKEN>
+  --environment "https://YOUR_TENANT_ID.apps.dynatrace.com"
 
 # Verify
 dtctl doctor
@@ -346,10 +248,6 @@ dtctl doctor
 dtctl get workflows
 dtctl get notebooks
 dtctl query 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'
-
-# Switch between configured contexts
-dtctl config use-context production
-dtctl config use-context sprint
 ```
 
 ---

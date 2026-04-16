@@ -25,15 +25,17 @@ cd dynatrace-ai-workspace
 
 Then open the folder in VS Code: **File → Open Folder**.
 
-> **Want to connect a second Dynatrace environment?** The workspace comes pre-configured with the shared demo tenant (`guu84124`). If you also want to connect your own environment, update these four files replacing `bon05374` with your tenant ID, and authenticate dtctl using `--context sprint`:
-> - `.vscode/mcp.json`
-> - `.mcp.json`
-> - `.github/copilot-instructions.md`
-> - `CLAUDE.md`
->
-> See [README.md Step 4](../README.md#4-configure-your-sprint-environment-optional) for full instructions. This is optional — skip it if you only need the shared demo tenant.
+Next, replace `YOUR_TENANT_ID` with your Dynatrace tenant ID in these files:
 
-This guide is intentionally the fastest path for first-time setup; for full options (including sprint context and token-based auth), use [README.md](../README.md).
+Required MCP configuration files:
+- `.vscode/mcp.json`
+- `.mcp.json`
+
+Session briefing files (recommended so assistants reference the correct MCP server URL in context):
+- `.github/copilot-instructions.md`
+- `CLAUDE.md`
+
+Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
 ---
 
@@ -45,9 +47,9 @@ This guide is intentionally the fastest path for first-time setup; for full opti
 # Install (macOS / Linux)
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
 
-# Connect to the demo environment — opens a browser for Dynatrace SSO login
+# Connect to your environment — opens a browser for Dynatrace SSO login
 dtctl auth login --context production \
-  --environment "https://guu84124.apps.dynatrace.com"
+  --environment "https://YOUR_TENANT_ID.apps.dynatrace.com"
 
 # Verify it works
 dtctl doctor
@@ -70,7 +72,7 @@ This activates the Dynatrace live data connection. The first time you use a prom
 In GitHub Copilot Chat, type this prompt. In Claude Code, type the same prompt (or use `@health-check` for a guided workflow):
 
 ```
-Using the production-mcp server, list the top 5 services by request volume in the last hour
+Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour
 ```
 
 If you see a table of services with request counts — you are live.
@@ -98,4 +100,4 @@ If you see a table of services with request counts — you are live.
 
 ---
 
-For the full setup guide including sprint environments, token auth, and advanced configuration, see [README.md](../README.md).
+For the full setup guide and advanced configuration, see [README.md](../README.md).
