@@ -19,8 +19,8 @@ You need three things installed:
 ## Step 1 — Get the Workspace
 
 ```bash
-git clone https://github.com/virtualrussel/dynatrace-ai-workspace.git
-cd dynatrace-ai-workspace
+git clone https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace.git
+cd dynatrace-ai-dtctl-workspace
 ```
 
 Then open the folder in VS Code: **File → Open Folder**.

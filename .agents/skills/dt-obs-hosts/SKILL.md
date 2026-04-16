@@ -78,7 +78,7 @@ smartscapeNodes "HOST"
 
 **OS Types:** `LINUX`, `WINDOWS`, `AIX`, `SOLARIS`, `ZOS`
 
-→ For cloud-specific attributes, see [references/inventory-discovery.md](#cloud-specific-attributes)
+→ For cloud-specific attributes, see [references/inventory-discovery.md](references/inventory-discovery.md#cloud-specific-attributes)
 
 ### 2. Resource Utilization Monitoring
 
@@ -97,8 +97,8 @@ timeseries {
 
 **High utilization threshold:** 80% warning, 90% critical
 
-→ For detailed CPU analysis, see [references/host-metrics.md](#cpu-monitoring)  
-→ For memory breakdown, see [references/host-metrics.md](#memory-monitoring)
+→ For detailed CPU analysis, see [references/host-metrics.md](references/host-metrics.md#cpu-monitoring)  
+→ For memory breakdown, see [references/host-metrics.md](references/host-metrics.md#memory-monitoring)
 
 ### 3. Process Resource Analysis
 
@@ -115,8 +115,8 @@ timeseries {
 | limit 20
 ```
 
-→ For process I/O analysis, see [references/process-monitoring.md](#process-io)  
-→ For process network metrics, see [references/process-monitoring.md](#process-network)
+→ For process I/O analysis, see [references/process-monitoring.md](references/process-monitoring.md#process-io)  
+→ For process network metrics, see [references/process-monitoring.md](references/process-monitoring.md#process-network)
 
 ### 4. Technology Stack Inventory
 
@@ -133,7 +133,7 @@ smartscapeNodes "PROCESS"
 
 **Common Technologies:** Java, Node.js, Python, .NET, databases, web servers, messaging systems
 
-→ For version compliance checks, see [references/inventory-discovery.md](#technology-inventory)
+→ For version compliance checks, see [references/inventory-discovery.md](references/inventory-discovery.md#technology-inventory)
 
 ### 5. Service Discovery via Ports
 
@@ -151,7 +151,7 @@ smartscapeNodes "PROCESS"
 
 **Well-known ports:** 80 (HTTP), 443 (HTTPS), 22 (SSH), 3306 (MySQL), 5432 (PostgreSQL)
 
-→ For comprehensive port mapping, see [references/inventory-discovery.md](#port-discovery)
+→ For comprehensive port mapping, see [references/inventory-discovery.md](references/inventory-discovery.md#port-discovery)
 
 ### 6. Container and Kubernetes Monitoring
 
@@ -168,8 +168,8 @@ smartscapeNodes "CONTAINER"
 
 **Note:** Container image names/versions NOT available in smartscape.
 
-→ For K8s version tracking, see [references/container-monitoring.md](#kubernetes-versions)  
-→ For container lifecycle, see [references/container-monitoring.md](#container-inventory)
+→ For K8s version tracking, see [references/container-monitoring.md](references/container-monitoring.md#kubernetes-versions)  
+→ For container lifecycle, see [references/container-monitoring.md](references/container-monitoring.md#container-inventory)
 
 ### 7. Cost Attribution and Chargeback
 
@@ -188,7 +188,7 @@ smartscapeNodes "HOST"
 | sort total_cores desc
 ```
 
-→ For product-level cost tracking, see [references/inventory-discovery.md](#cost-attribution)
+→ For product-level cost tracking, see [references/inventory-discovery.md](references/inventory-discovery.md#cost-attribution)
 
 ### 8. Infrastructure Health Correlation
 
@@ -209,7 +209,7 @@ timeseries {
 
 **Health scoring:** Critical if any resource >90%, warning if >80%
 
-→ For multi-resource saturation detection, see [references/host-metrics.md](#resource-saturation)
+→ For multi-resource saturation detection, see [references/host-metrics.md](references/host-metrics.md#resource-saturation)
 
 ---
 
@@ -267,7 +267,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: {dt.smartscape.host}
 - **Custom Metadata:** `host.custom.metadata[OperatorVersion]`, `host.custom.metadata[Cluster]`
 - **Cost:** `dt.cost.costcenter`, `dt.cost.product`
 
-→ For complete tag reference, see [references/inventory-discovery.md](#tags-and-metadata)
+→ For complete tag reference, see [references/inventory-discovery.md](references/inventory-discovery.md#tags-and-metadata)
 
 ---
 
@@ -290,7 +290,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: {dt.smartscape.host}
 - `k8s.namespace.name`, `k8s.node.name`, `k8s.pod.name`
 - `k8s.workload.name`, `k8s.workload.kind`
 
-→ For multi-cloud analysis, see [references/inventory-discovery.md](#multi-cloud-hosts)
+→ For multi-cloud analysis, see [references/inventory-discovery.md](references/inventory-discovery.md#multi-cloud-hosts)
 
 ---
 

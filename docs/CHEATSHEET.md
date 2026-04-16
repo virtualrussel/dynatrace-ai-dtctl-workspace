@@ -100,7 +100,7 @@ Ask: *"What were the error patterns during the last problem on [service]?"* — 
 
 ## Session targeting
 
-MCP server: `dynatrace-mcp` → https://YOUR_TENANT_ID.apps.dynatrace.com
+MCP server: `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com`
 
 Replace `YOUR_TENANT_ID` in `.vscode/mcp.json` and `.mcp.json` with your tenant ID before first use.
 

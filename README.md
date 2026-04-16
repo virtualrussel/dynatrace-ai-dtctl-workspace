@@ -1,4 +1,4 @@
-# dynatrace-ai-workspace
+# dynatrace-ai-dtctl-workspace
 
 An AI-powered observability workspace for Dynatrace — combining GitHub Copilot or Claude AI, the Dynatrace MCP server, and the [dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) skills framework to accelerate incident triage, root cause analysis, and day-to-day observability workflows.
 
@@ -13,7 +13,7 @@ An AI-powered observability workspace for Dynatrace — combining GitHub Copilot
 Recommended reading order: [docs/ELI5.md](./docs/ELI5.md) → [docs/OVERVIEW.md](./docs/OVERVIEW.md) → [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ```
-dynatrace-ai-workspace/
+dynatrace-ai-dtctl-workspace/
 ├── README.md                     # Setup guide and quick reference
 ├── docs/
 │   ├── ELI5.md                   # Beginner-friendly 15-minute install guide
@@ -38,8 +38,6 @@ dynatrace-ai-workspace/
 ├── .mcp.json                     # MCP server configuration for Copilot CLI
 ├── .vscode/
 │   └── mcp.json                  # MCP server configuration for VS Code Copilot
-└── demos/
-    └── ai-observability-demo.md  # Demo script
 ```
 
 | Tool | Purpose |
@@ -72,8 +70,8 @@ Select your setup path below. Both receive the same skills, prompts, and MCP ser
 ### 1. Clone the workspace
 
 ```bash
-git clone https://github.com/virtualrussel/dynatrace-ai-workspace.git
-cd dynatrace-ai-workspace
+git clone https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace.git
+cd dynatrace-ai-dtctl-workspace
 ```
 
 Then open the folder in VS Code via **File → Open Folder**.

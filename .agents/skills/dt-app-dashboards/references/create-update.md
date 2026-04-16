@@ -170,8 +170,8 @@ sources, invalid fields, and poor performance.
 
 ## Dashboard Examples
 
-See [assets/ExampleDashboard.json](../assets/ExampleDashboard.json) for
-complete tile examples with different visualizations.
+See [tiles.md](./tiles.md) for complete tile examples with different
+visualizations.
 
 **How to use examples:**
 
