@@ -148,6 +148,12 @@ If you see a table of services with request counts — you are live.
 
 Skills are domain knowledge files that teach Copilot how Dynatrace works — correct DQL syntax, field names, query patterns, and investigation workflows. They load automatically when relevant.
 
+Skills follow the [Agent Skills specification](https://agentskills.io/specification) and use progressive disclosure:
+
+1. Catalog - Agents load only `name` + `description` (~100 tokens per skill) to know what's available.
+2. Instructions - When relevant, the full `SKILL.md` is loaded (<5000 tokens).
+3. Resources - Detailed reference files in `references/` are loaded on demand.
+
 | Skill | What It Covers |
 |---|---|
 | `dt-dql-essentials` | DQL syntax, common pitfalls, query patterns — **load before any DQL** |
