@@ -1,0 +1,18 @@
+{
+  "files.associations": {
+    "*.prompt.md": "markdown"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "other": "off",
+      "comments": "off",
+      "strings": "off"
+    }
+  },
+  "markdown.validate.enabled": true,
+  "search.exclude": {
+    ".agents/**": true,
+    ".claude/**": true
+  }
+}

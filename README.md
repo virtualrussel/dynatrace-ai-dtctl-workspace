@@ -15,13 +15,16 @@ Recommended reading order: [docs/ELI5.md](./docs/ELI5.md) → [docs/OVERVIEW.md]
 ```
 dynatrace-ai-dtctl-workspace/
 ├── README.md                     # Setup guide and quick reference
+├── llms.txt                      # Machine-readable workspace summary for LLMs
 ├── docs/
 │   ├── ELI5.md                   # Beginner-friendly 15-minute install guide
 │   ├── OVERVIEW.md               # Newcomer guide: purpose, value, and operating model
 │   └── CHEATSHEET.md             # Quick reference — workflows, outputs, dtctl, and key rules
 ├── ARCHITECTURE.md               # How the workspace is built and how components connect
+├── CONTRIBUTING.md               # How to update skills, prompts, and MCP config
 ├── CLAUDE.md                     # Auto-loaded session briefing for Claude Code
 ├── skills-lock.json              # Locked skill versions
+├── LICENSE
 ├── .gitignore
 ├── .github/
 │   ├── copilot-instructions.md   # Auto-loaded session briefing for GitHub Copilot
@@ -37,7 +40,9 @@ dynatrace-ai-dtctl-workspace/
 ├── .claude/skills/               # Symlinks for Claude Code compatibility
 ├── .mcp.json                     # MCP server configuration for Copilot CLI
 ├── .vscode/
-│   └── mcp.json                  # MCP server configuration for VS Code Copilot
+│   ├── mcp.json                  # MCP server configuration for VS Code Copilot
+│   ├── extensions.json           # Recommended VS Code extensions
+│   └── settings.json             # Workspace editor settings
 ```
 
 | Tool | Purpose |
@@ -46,7 +51,7 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | Dynatrace open-source CLI for agents & humans to manage observability resources |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -78,17 +83,19 @@ Then open the folder in VS Code via **File → Open Folder**.
 
 ### 2. Set your tenant ID
 
-Replace `YOUR_TENANT_ID` with your Dynatrace tenant ID in these files:
+Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
-Required MCP configuration files:
-- `.vscode/mcp.json`
-- `.mcp.json`
+**1. Edit the primary MCP configuration** — open `.vscode/mcp.json` and replace `YOUR_TENANT_ID`.
 
-Session briefing files (recommended so assistants reference the correct MCP server URL in context):
+**2. Regenerate the derived MCP configuration** — `.mcp.json` is used by Copilot CLI and other non-VS Code clients. Do not edit it directly; regenerate it from the primary config:
+
+```bash
+jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
+```
+
+**3. Update session briefing files** (recommended — so assistants reference the correct tenant URL in context):
 - `.github/copilot-instructions.md`
 - `CLAUDE.md`
-
-Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
 ### 3. Update skills to latest *(optional)*
 
@@ -105,8 +112,7 @@ npx skills add dynatrace-oss/dtctl
 
 ### 4. Install and configure dtctl
 
-`dtctl` is used for terminal-level verification and resource management. It is
-required for the notebook and verification workflows in this workspace.
+`dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows — including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
 
 ```bash
 # macOS / Linux — direct install (no package manager required)

@@ -1,4 +1,5 @@
 {
+  "_comment": "Generated from .vscode/mcp.json — do not edit directly. To regenerate: jq '{mcpServers: .servers}' .vscode/mcp.json > .mcp.json",
   "mcpServers": {
     "dynatrace-mcp": {
       "type": "stdio",

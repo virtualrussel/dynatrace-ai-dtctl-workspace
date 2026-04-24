@@ -1,0 +1,29 @@
+# Dynatrace AI Workspace (dtctl Edition)
+
+A pre-configured AI assistant workspace for Dynatrace observability workflows, compatible with both Claude Code and GitHub Copilot. Skills, prompts, MCP server connection, and the dtctl CLI are ready to use — load the workspace and start investigating without any additional setup.
+
+## Core Purpose
+
+This workspace teaches AI assistants how to work with a live Dynatrace environment. It combines domain knowledge (agent skills), reusable task templates (prompts), direct platform access via the Dynatrace MCP server, and the dtctl CLI for terminal-level operations — so an AI can answer observability questions, run DQL queries, investigate problems, and verify results end-to-end without additional configuration.
+
+## Key Components
+
+**MCP Server:**
+One Dynatrace environment is pre-wired via the `dynatrace-mcp` server. Set your tenant ID in `.vscode/mcp.json` before use; `.mcp.json` is a derived copy for non-VS Code clients.
+
+**dtctl CLI:**
+A kubectl-style CLI for Dynatrace that exposes settings, configuration, and operational tasks beyond what the MCP server covers. Used for verification steps and terminal-level queries alongside MCP-based investigations.
+
+**Agent Skills:**
+13 domain knowledge packages load automatically when relevant. They cover DQL query fundamentals, service monitoring, frontend/RUM analytics, distributed tracing, infrastructure (hosts, Kubernetes, AWS), logging, problem analysis, dashboards, notebooks, migration, and the dtctl CLI.
+
+**Prompts / Slash Commands:**
+7 task templates cover common workflows: daily standup, health check, error investigation, problem troubleshooting, incident response, performance regression, and standup with notebook creation (the last one combines MCP-based analysis, Dynatrace notebook creation, and dtctl verification in a single workflow).
+
+## Operational Rule
+
+Always start with Dynatrace problems before querying logs or metrics. The built-in prompts enforce this automatically.
+
+## Technical Details
+
+Skills follow a `dt-<domain>[-<usecase>]` naming convention with a `SKILL.md` and optional `references/` subdirectory. Load `dt-dql-essentials` before writing any DQL queries. The `dtctl` skill covers the Dynatrace CLI for settings, configuration, and operational tasks beyond what the MCP server exposes.

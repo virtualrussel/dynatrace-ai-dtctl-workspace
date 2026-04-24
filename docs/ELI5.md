@@ -25,17 +25,19 @@ cd dynatrace-ai-dtctl-workspace
 
 Then open the folder in VS Code: **File → Open Folder**.
 
-Next, replace `YOUR_TENANT_ID` with your Dynatrace tenant ID in these files:
+Next, set your Dynatrace tenant ID. Your tenant ID is the 8-character prefix of your environment URL — for example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
-Required MCP configuration files:
-- `.vscode/mcp.json`
-- `.mcp.json`
+**1.** Open `.vscode/mcp.json` and replace `YOUR_TENANT_ID`.
 
-Session briefing files (recommended so assistants reference the correct MCP server URL in context):
+**2.** Regenerate the derived config (used by Copilot CLI — do not edit it directly):
+
+```bash
+jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
+```
+
+**3.** Also replace `YOUR_TENANT_ID` in these session briefing files so your AI assistant references the correct environment:
 - `.github/copilot-instructions.md`
 - `CLAUDE.md`
-
-Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
 ---
 
