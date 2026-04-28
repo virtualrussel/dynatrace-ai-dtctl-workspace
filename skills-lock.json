@@ -64,7 +64,7 @@
     "dtctl": {
       "source": "dynatrace-oss/dtctl",
       "sourceType": "github",
-      "computedHash": "23a151ff42d26cd83bee2a2848c46ac00efd292d9943e30a313f827af6c84ed5"
+      "computedHash": "6281e23364ffcc91f5f9a57e19ce0f9b8ec28bc380ab7d4f5fffe85bdf10347a"
     }
   }
 }

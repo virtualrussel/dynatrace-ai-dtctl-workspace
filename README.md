@@ -51,8 +51,8 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources |
-| A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.26.0 or newer) |
+| A Dynatrace environment | `https://<env>.apps.dynatrace.com` or `https://<env>.sprint.apps.dynatracelabs.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
 
@@ -81,7 +81,20 @@ cd dynatrace-ai-dtctl-workspace
 
 Then open the folder in VS Code via **File → Open Folder**.
 
-### 2. Set your tenant ID
+### 2. Update skills to latest *(optional)*
+
+If this is your first setup, skip this step and continue to Step 3.
+
+Skills are already included in this repo — cloning gives you everything you need. Run this only when you want to pull the latest skill updates from Dynatrace:
+
+```bash
+npx skills add dynatrace/dynatrace-for-ai
+npx skills add dynatrace-oss/dtctl
+```
+
+> See [Keeping Up to Date](#keeping-up-to-date) for when to run this.
+
+### 3. Set your tenant ID
 
 Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
@@ -97,36 +110,33 @@ jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 - `.github/copilot-instructions.md`
 - `CLAUDE.md`
 
-### 3. Update skills to latest *(optional)*
-
-If this is your first setup, skip this step and continue to Step 4.
-
-Skills are already included in this repo — cloning gives you everything you need. Run this only when you want to pull the latest skill updates from Dynatrace:
-
-```bash
-npx skills add dynatrace/dynatrace-for-ai
-npx skills add dynatrace-oss/dtctl
-```
-
-> See [Keeping Up to Date](#keeping-up-to-date) for when to run this.
-
 ### 4. Install and configure dtctl
 
 `dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows — including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
+
+> Compatibility note: use `dtctl` v0.26.0 or newer, which is required for `dtctl-release` skill workflows.
 
 ```bash
 # macOS / Linux — direct install (no package manager required)
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
 
-# OAuth login — opens a browser for Dynatrace SSO login
+# Local desktop (macOS/Windows/Linux with keyring): OAuth login
 dtctl auth login --context production \
   --environment "https://YOUR_TENANT_ID.apps.dynatrace.com"
+
+# GitHub Codespaces / CI: token-based auth
+dtctl config set-context production \
+  --environment "https://YOUR_TENANT_ID.apps.dynatrace.com" \
+  --token-ref production-token
+dtctl config set-credentials production-token --token <YOUR_PLATFORM_TOKEN>
 
 # Verify
 dtctl doctor
 ```
 
-When `dtctl doctor` shows green, you are connected.
+When `dtctl doctor` shows green, you are connected. Create your platform token in Dynatrace: **Identity & Access Management** → **Access Tokens** → **Generate new token** → **Platform token**.
+
+If OAuth fails with a keyring error (for example, `dbus-launch` not found), use the token-based method above.
 
 ### 5. Reload VS Code
 

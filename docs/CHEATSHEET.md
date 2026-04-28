@@ -60,12 +60,15 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 `dtctl` is the CLI-side of this workspace (all dtctl examples below are terminal commands). Use it when you want to verify, query, or manage resources from the terminal rather than through chat.
 
+Compatibility: use `dtctl` v0.26.0 or newer for `dtctl-release` skill workflows.
+
 | Task | Command |
 |------|---------|
 | Verify connection | `dtctl doctor` |
 | Run a DQL query | `dtctl query 'fetch dt.davis.problems \| filter event.status == "ACTIVE"'` |
 | List workflows | `dtctl get workflows` |
 | List notebooks | `dtctl get notebooks` |
+| Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
 
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 
@@ -95,6 +98,35 @@ Workflows extract the timeframe automatically. If you're writing your own query,
 
 **Let the workflow drive DQL — don't write queries from scratch.**
 Ask: *"What were the error patterns during the last problem on [service]?"* — not *"Write a DQL query for..."*
+
+---
+
+## Session targeting
+
+Default MCP servers depend on your configuration. To switch for the session without changing configuration:
+
+This is a chat instruction to the AI assistant (not a terminal command).
+
+```
+# Switch to sprint for this session
+"Use the sprint-mcp server for all queries in this session"
+
+# Switch back to production for this session
+"Use the production-mcp server for all queries in this session"
+```
+
+---
+
+## Useful natural language prompts
+
+These work well when you're not sure which workflow to reach for:
+
+- *"Are there any active problems right now?"*
+- *"What happened to [service] in the last hour?"*
+- *"Show me the slowest endpoints for [service] since the last deployment"*
+- *"Create a notebook summarising today's incidents"*
+- *"What's the root cause of problem [ID]?"*
+- *"Compare [service] performance before and after [deploy time]"*
 
 ---
 
