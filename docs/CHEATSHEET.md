@@ -51,6 +51,7 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | AWS resources and infrastructure | `dt-obs-aws` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
+| Migrating classic entity DQL to Smartscape | `dt-migration` |
 | Terminal / CLI operations | `dtctl` |
 | Writing any DQL query | `dt-dql-essentials` (always load first) |
 
