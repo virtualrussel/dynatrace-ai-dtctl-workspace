@@ -64,7 +64,7 @@ For SREs, operations engineers, and on-call teams, this repository improves dail
 4. Terminal verification and automation with dtctl
 - `dtctl doctor` validates connectivity and auth.
 - `dtctl get notebooks` and `dtctl describe notebook "name"` verify generated artifacts.
-- `dtctl query 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'` runs direct checks.
+- `dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'` runs direct checks.
 
 ## AIOps Outcomes and ServiceNow Assist
 

@@ -51,7 +51,7 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.26.0 or newer) |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.26.2 or newer) |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -114,7 +114,7 @@ jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 
 `dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows — including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
 
-> Compatibility note: use `dtctl` v0.26.0 or newer, which is required for `dtctl-release` skill workflows.
+> Compatibility note: use `dtctl` v0.26.2 or newer, which is required for `dtctl-release` skill workflows.
 
 ```bash
 # macOS / Linux — direct install (no package manager required)
@@ -267,7 +267,8 @@ dtctl doctor
 # Example commands
 dtctl get workflows
 dtctl get notebooks
-dtctl query 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'
+dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'
+dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.problems | limit 5'
 ```
 
 ---

@@ -183,9 +183,10 @@ In this workspace, `dtctl` is used primarily for **verification** — confirming
 ```bash
 dtctl get notebooks                    # List all notebooks
 dtctl describe notebook "name"         # Inspect notebook structure
-dtctl query 'fetch dt.davis.problems   # Run DQL directly
+dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems   # Run DQL directly
   | filter event.status == "ACTIVE"
   | limit 5'
+dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.problems | limit 5'
 dtctl get workflows                    # List all workflows
 dtctl doctor                           # Verify authentication and connectivity
 ```

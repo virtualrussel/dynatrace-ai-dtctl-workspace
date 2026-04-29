@@ -61,12 +61,13 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 `dtctl` is the CLI-side of this workspace (all dtctl examples below are terminal commands). Use it when you want to verify, query, or manage resources from the terminal rather than through chat.
 
-Compatibility: use `dtctl` v0.26.0 or newer for `dtctl-release` skill workflows.
+Compatibility: use `dtctl` v0.26.2 or newer for `dtctl-release` skill workflows.
 
 | Task | Command |
 |------|---------|
 | Verify connection | `dtctl doctor` |
-| Run a DQL query | `dtctl query 'fetch dt.davis.problems \| filter event.status == "ACTIVE"'` |
+| Run a DQL query | `dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems \| filter event.status == "ACTIVE"'` |
+| Verify DQL syntax only | `dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.problems \| limit 5'` |
 | List workflows | `dtctl get workflows` |
 | List notebooks | `dtctl get notebooks` |
 | Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
@@ -152,4 +153,4 @@ These work well when you're not sure which workflow to reach for:
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** April 15, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** April 29, 2026
