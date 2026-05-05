@@ -6,13 +6,37 @@ You are setting up an AI assistant that can answer questions about your Dynatrac
 
 ## Before You Start
 
-You need three things installed:
+You need these tools installed:
 
 | What | Why | Get It |
 |---|---|---|
 | [VS Code](https://code.visualstudio.com/) | Where you will work | Download and install |
 | GitHub Copilot or Claude Code | The AI brain | Copilot: sign in at github.com/features/copilot · Claude: sign in at claude.ai/code |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server — the live data bridge between the AI and your Dynatrace environment | Download LTS version |
+| [jq](https://jqlang.org/) | Required to regenerate `.mcp.json` from `.vscode/mcp.json` | Install via package manager (brew/apt/choco) |
+
+Quick prerequisite verification:
+
+```bash
+node --version
+jq --version
+```
+
+Install required VS Code extensions:
+
+```bash
+code --install-extension github.copilot \
+  --install-extension github.copilot-chat \
+  --install-extension anthropic.claude-code
+```
+
+If `code` is not found, run **Shell Command: Install 'code' command in PATH** from the VS Code Command Palette, then retry.
+
+Verify installed extensions:
+
+```bash
+code --list-extensions | grep -E "github.copilot|github.copilot-chat|anthropic.claude-code"
+```
 
 ---
 
@@ -57,7 +81,7 @@ dtctl auth login --context production \
 dtctl doctor
 ```
 
-When `dtctl doctor` shows green, you are connected.
+When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27.0+, a user identity warning can appear and is expected.
 
 ---
 

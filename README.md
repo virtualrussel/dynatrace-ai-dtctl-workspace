@@ -51,14 +51,41 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
+| [jq](https://jqlang.org/) | Required to regenerate `.mcp.json` from `.vscode/mcp.json` |
 | [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.27.0 or newer) |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
 
+Quick prerequisite verification:
+
+```bash
+node --version
+jq --version
+dtctl version
+```
+
+If `jq` or `dtctl` is not found, install it before continuing with setup.
+
 ---
 
 ## Setup
+
+### 0. Install VS Code extensions
+
+```bash
+code --install-extension github.copilot \
+  --install-extension github.copilot-chat \
+  --install-extension anthropic.claude-code
+```
+
+If `code` is not found, run **Shell Command: Install 'code' command in PATH** from the VS Code Command Palette, then retry.
+
+Verify installed extensions:
+
+```bash
+code --list-extensions | grep -E "github.copilot|github.copilot-chat|anthropic.claude-code"
+```
 
 ### Choose Your Frontend
 
