@@ -3,6 +3,8 @@
 ## List
 ```bash
 dtctl get dashboards -o json --plain
+dtctl get dashboards --filter 'name startsWith "incident-"' -o json --plain
+dtctl get dashboards --sort "name,-modificationInfo.lastModifiedTime" -o json --plain
 ```
 
 ## Metadata Schema (from `get`)
@@ -27,6 +29,7 @@ dtctl get dashboards -o json --plain
 ```bash
 dtctl describe dashboard <id> --plain
 dtctl get dashboards -o json --plain | jq '.[] | select(.name | test("keyword"; "i")) | "\(.id) | \(.name)"'
+dtctl get dashboards --add-fields "originExtensionId,labels,shareInfo.isShared" -o json --plain
 dtctl share dashboard <id> --user <email> --access read-write --plain
 dtctl unshare dashboard <id> --all --plain
 

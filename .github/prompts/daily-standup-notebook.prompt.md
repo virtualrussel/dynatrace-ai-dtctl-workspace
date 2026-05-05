@@ -66,6 +66,6 @@ fetch dt.davis.problems, from: now()-24h
 
 ## After Creating the Notebook
 1. Confirm the notebook URL from the MCP response
-2. Run dtctl get notebooks in the terminal to verify it appears in Dynatrace
-3. Run dtctl describe notebook "[notebook name]" to confirm the structure
+2. Run dtctl get notebooks --filter 'name == "Daily Standup — JourneyService & CheckDestination — [TODAY\'S DATE]"' --sort "-modificationInfo.lastModifiedTime" in the terminal to verify it appears in Dynatrace
+3. Run dtctl describe notebook "[notebook id or exact notebook name]" to confirm the structure
 4. Share the verified URL for the team to access

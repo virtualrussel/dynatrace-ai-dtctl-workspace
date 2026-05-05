@@ -61,7 +61,7 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 `dtctl` is the CLI-side of this workspace (all dtctl examples below are terminal commands). Use it when you want to verify, query, or manage resources from the terminal rather than through chat.
 
-Compatibility: use `dtctl` v0.26.2 or newer for `dtctl-release` skill workflows.
+Compatibility: use `dtctl` v0.27.0 or newer for `dtctl-release` skill workflows.
 
 | Task | Command |
 |------|---------|
@@ -70,7 +70,13 @@ Compatibility: use `dtctl` v0.26.2 or newer for `dtctl-release` skill workflows.
 | Verify DQL syntax only | `dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.problems \| limit 5'` |
 | List workflows | `dtctl get workflows` |
 | List notebooks | `dtctl get notebooks` |
+| Filter notebook lookup precisely | `dtctl get notebooks --filter 'name == "<notebook-name>"' --sort "-modificationInfo.lastModifiedTime"` |
+| Include extra document metadata | `dtctl get documents --add-fields "originExtensionId,labels,shareInfo.isShared"` |
 | Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
+
+v0.27.0 notes:
+- `dtctl doctor` may show a user-identity warning for platform tokens while still passing overall checks.
+- Settings object operations should use `objectId` from `dtctl get settings -o json`, not legacy synthetic UID values.
 
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 

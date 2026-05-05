@@ -47,3 +47,26 @@ dtctl get workflows --context staging --plain
 | `dangerously-unrestricted` | Emergency admin |
 
 Actual permissions depend on API token scopes, not just safety level.
+
+## v0.27.0 Migration Notes
+
+### Settings objects: use objectId
+
+Legacy synthetic UID/UUID addressing for settings objects is removed. Use `objectId` from API output:
+
+```bash
+dtctl get settings -o json --plain \
+  | jq -r '.[] | select(.value.foo == "bar") | .objectId' \
+  | xargs -I{} dtctl describe setting {}
+```
+
+### Apply hooks: explicit shell for shell syntax
+
+`pre-apply` hooks are now executed directly (tokenized argv), not through implicit `sh -c`. If your hook string relies on pipes, redirection, or globbing, wrap it in an explicit shell:
+
+```yaml
+preferences:
+  hooks:
+    pre-apply: bash -c 'lint "$1" | tee /tmp/lint.log'
+    post-apply: bash /etc/dtctl/notify-on-apply.sh
+```

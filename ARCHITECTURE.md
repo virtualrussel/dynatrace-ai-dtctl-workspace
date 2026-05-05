@@ -255,7 +255,12 @@ Update `dtctl` by re-running the install script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
+
+# or via Homebrew
+brew update && brew upgrade dtctl
 ```
+
+Use `dtctl` v0.27.0 or newer for current workspace guidance and skill behavior.
 
 ---
 

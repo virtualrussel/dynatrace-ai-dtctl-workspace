@@ -51,7 +51,7 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.26.2 or newer) |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.27.0 or newer) |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -114,7 +114,7 @@ jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 
 `dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows — including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
 
-> Compatibility note: use `dtctl` v0.26.2 or newer, which is required for `dtctl-release` skill workflows.
+> Compatibility note: use `dtctl` v0.27.0 or newer, which is required for current `dtctl-release` skill workflows and behavior.
 
 ```bash
 # macOS / Linux — direct install (no package manager required)
@@ -134,7 +134,7 @@ dtctl config set-credentials production-token --token <YOUR_PLATFORM_TOKEN>
 dtctl doctor
 ```
 
-When `dtctl doctor` shows green, you are connected. Create your platform token in Dynatrace: **Identity & Access Management** → **Access Tokens** → **Generate new token** → **Platform token**.
+When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27.0+, a warning about user identity may appear and is expected. Create your platform token in Dynatrace: **Identity & Access Management** → **Access Tokens** → **Generate new token** → **Platform token**.
 
 If OAuth fails with a keyring error (for example, `dbus-launch` not found), use the token-based method above.
 
