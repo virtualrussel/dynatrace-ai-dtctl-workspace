@@ -1,8 +1,8 @@
 # dynatrace-ai-dtctl-workspace
 
-An AI-powered observability workspace for Dynatrace — combining GitHub Copilot or Claude AI, the Dynatrace MCP server, and the [dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) skills framework to accelerate incident triage, root cause analysis, and day-to-day observability workflows.
+An AI-powered observability workspace for Dynatrace that combines GitHub Copilot or Claude AI, the Dynatrace MCP server, dtctl, and the [dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) skills framework to accelerate incident triage, root cause analysis, and day-to-day observability workflows.
 
-> **What this gives you:** Ask AI natural language questions about your Dynatrace environment and get accurate, production-aware answers — powered by verified domain knowledge, live API access, and pre-built investigation workflows.
+> **What this gives you:** Ask AI natural language questions about your Dynatrace environment and get accurate, production-aware answers. Akk powered by verified domain knowledge, live API access, and pre-built investigation workflows.
 
 > **New here?** Start with [docs/ELI5.md](./docs/ELI5.md) for a quick setup, then read [docs/OVERVIEW.md](./docs/OVERVIEW.md) for the big-picture operating model.
 
@@ -52,7 +52,7 @@ dynatrace-ai-dtctl-workspace/
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
 | [jq](https://jqlang.org/) | Required to regenerate `.mcp.json` from `.vscode/mcp.json` |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | **Required.** Dynatrace open-source CLI for agents & humans to manage observability resources (use v0.27.0 or newer) |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -90,8 +90,8 @@ code --list-extensions | grep -E "github.copilot|github.copilot-chat|anthropic.c
 ### Choose Your Frontend
 
 This workspace works with:
-- **GitHub Copilot** in VS Code (requires subscription)
-- **Claude Code** via web or desktop (requires Claude Pro or Team)
+- **GitHub Copilot** in VS Code (subscription required)
+- **Claude Code** via web or desktop (Claude Pro or Team required)
 
 Select your setup path below. Both receive the same skills, prompts, and MCP server access.
 
@@ -125,23 +125,21 @@ npx skills add dynatrace-oss/dtctl
 
 Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
 
-**1. Edit the primary MCP configuration** — open `.vscode/mcp.json` and replace `YOUR_TENANT_ID`.
+**1. Edit the primary MCP configuration** by opening `.vscode/mcp.json` and replace `YOUR_TENANT_ID`.
 
-**2. Regenerate the derived MCP configuration** — `.mcp.json` is used by Copilot CLI and other non-VS Code clients. Do not edit it directly; regenerate it from the primary config:
+**2. Regenerate the derived MCP configuration**. `.mcp.json` is used by Copilot CLI and other non-VS Code clients. Do not edit it directly; regenerate it from the primary config:
 
 ```bash
 jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 ```
 
-**3. Update session briefing files** (recommended — so assistants reference the correct tenant URL in context):
+**3. Update session briefing files** (recommended so assistants reference the correct tenant URL in context):
 - `.github/copilot-instructions.md`
 - `CLAUDE.md`
 
 ### 4. Install and configure dtctl
 
-`dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows — including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
-
-> Compatibility note: use `dtctl` v0.27.0 or newer, which is required for current `dtctl-release` skill workflows and behavior.
+`dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
 
 ```bash
 # macOS / Linux — direct install (no package manager required)
@@ -170,7 +168,7 @@ If OAuth fails with a keyring error (for example, `dbus-launch` not found), use 
 Press `Cmd+Shift+P` → `Developer: Reload Window`
 
 When you first use a prompt in Copilot Chat, a browser window will open for
-Dynatrace SSO authentication. This is expected — complete the login and return
+Dynatrace SSO authentication. This is expected. Complete the login and return
 to VS Code. Subsequent sessions authenticate automatically.
 
 ### 6. Verify the connection
@@ -193,9 +191,9 @@ Skills are domain knowledge files that teach Copilot how Dynatrace works — cor
 
 Skills follow the [Agent Skills specification](https://agentskills.io/specification) and use progressive disclosure:
 
-1. Catalog - Agents load only `name` + `description` (~100 tokens per skill) to know what's available.
-2. Instructions - When relevant, the full `SKILL.md` is loaded (<5000 tokens).
-3. Resources - Detailed reference files in `references/` are loaded on demand.
+1. Catalog: Agents load only `name` + `description` (~100 tokens per skill) to know what's available.
+2. Instructions: When relevant, the full `SKILL.md` is loaded (<5000 tokens).
+3. Resources: Detailed reference files in `references/` are loaded on demand.
 
 | Skill | What It Covers |
 |---|---|
@@ -249,11 +247,11 @@ The prompts follow a structured drill-down pattern:
 
 ### Why Skills Matter
 
-Copilot without skills will guess DQL syntax — and get it wrong. For example, it might use `event.status == "OPEN"` (doesn't exist) instead of `event.status == "ACTIVE"`, or `log.level` instead of `loglevel`. The skills encode the corrections for known failure modes before Copilot writes a single query.
+Copilot without skills will guess DQL syntax and will likely get it wrong. For example, it might use `event.status == "OPEN"` (doesn't exist) instead of `event.status == "ACTIVE"`, or `log.level` instead of `loglevel`. The skills encode the corrections for known failure modes before Copilot writes a single query.
 
 ### How MCP Works
 
-The Dynatrace MCP server gives Copilot live API access to your environment. When you run `/health-check`, Copilot calls the MCP server to execute real DQL queries and return live data — not cached or synthetic results.
+The Dynatrace MCP server gives Copilot live API access to your environment. When you run `/health-check`, Copilot calls the MCP server to execute real DQL queries and return live data. Not cached or synthetic results.
 
 ### The Investigation Rule
 

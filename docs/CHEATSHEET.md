@@ -61,8 +61,6 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 `dtctl` is the CLI-side of this workspace (all dtctl examples below are terminal commands). Use it when you want to verify, query, or manage resources from the terminal rather than through chat.
 
-Compatibility: use `dtctl` v0.27.0 or newer for `dtctl-release` skill workflows.
-
 | Task | Command |
 |------|---------|
 | Verify connection | `dtctl doctor` |
@@ -98,30 +96,14 @@ These are expected behaviours, not errors:
 
 ## Key rules
 
-**Start with problems — never open-ended log searches.**
+**Start with problems. Never open-ended log searches.**
 All workflows enforce this. If you skip it, you'll hit the 500GB scan limit.
 
 **Scope everything to a problem timeframe.**
 Workflows extract the timeframe automatically. If you're writing your own query, use ±5 min around the incident window.
 
-**Let the workflow drive DQL — don't write queries from scratch.**
+**Let the workflow drive DQL. Don't write queries from scratch.**
 Ask: *"What were the error patterns during the last problem on [service]?"* — not *"Write a DQL query for..."*
-
----
-
-## Session targeting
-
-Default MCP servers depend on your configuration. To switch for the session without changing configuration:
-
-This is a chat instruction to the AI assistant (not a terminal command).
-
-```
-# Switch to sprint for this session
-"Use the sprint-mcp server for all queries in this session"
-
-# Switch back to production for this session
-"Use the production-mcp server for all queries in this session"
-```
 
 ---
 
