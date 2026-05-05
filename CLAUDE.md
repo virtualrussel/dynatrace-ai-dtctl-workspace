@@ -30,4 +30,4 @@ Type `@` to access these slash commands:
 
 ## Skills
 
-13 domain knowledge skills are installed in `.agents/skills/`. They load automatically when relevant — no manual loading required.
+Domain knowledge skills are installed in `.agents/skills/`. They load automatically when relevant — no manual loading required.
