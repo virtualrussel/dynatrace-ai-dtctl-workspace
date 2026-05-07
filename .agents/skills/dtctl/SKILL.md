@@ -1,6 +1,6 @@
 ---
 name: dtctl
-description: Investigate incidents, debug performance issues, analyze logs, and manage observability resources in Dynatrace using the dtctl CLI. Use this skill whenever the user asks about error rates, latency spikes, service health, crash-looping pods, web vitals, SLO status, open problems, root cause analysis, log patterns, trace analysis, or building dashboards — even if they don't mention Dynatrace by name. Also covers DQL queries, workflow management, notebook and dashboard creation, settings configuration, and any operations against a Dynatrace environment.
+description: Operate the `dtctl` CLI for Dynatrace resource lifecycle and CLI scripting — apply/delete/share/history/restore on workflows, dashboards, notebooks, SLOs, and other resources; execute workflows, functions, and analyzers; bulk and CI/CD-style automation. Defer to MCP-aligned skills (`dt-obs-*`, `dt-app-*`, `dt-dql-essentials`) for telemetry queries, problem and RCA reads, log and trace investigation, and dashboard/notebook content lookups. Use `dtctl` when the operation isn't exposed via MCP, when the user explicitly requests the CLI, or when scripting / automation is the goal.
 ---
 
 # Dynatrace Control with dtctl

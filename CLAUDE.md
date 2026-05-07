@@ -14,6 +14,20 @@ Replace `YOUR_TENANT_ID` in `.vscode/mcp.json` and `.mcp.json` with your Dynatra
 Broad queries without problem context hit Dynatrace's 500GB scan limit and return zero results.
 All investigation workflows enforce this automatically.
 
+## Tool Priority
+
+**Default to MCP tools and the `dt-obs-*` / `dt-app-*` / `dt-dql-essentials` skills** for telemetry reads, problem and RCA analysis, log and trace exploration, and dashboard/notebook content lookups.
+
+Use the `dtctl` skill for:
+- Resource lifecycle: `apply`, `delete`, `share`, `unshare`, `history`, `restore`
+- Workflow / function / analyzer execution (`dtctl exec`)
+- Bulk or scripted operations and CI/CD-style automation
+- Tasks not exposed via MCP, or when the user explicitly asks for the CLI
+
+When both paths can satisfy a request, prefer MCP.
+
+**Never substitute one resource type for another to fit an available tool.** If the user asks for a dashboard and only a notebook tool is available via MCP, route to `dtctl` for the dashboard. Refusal-then-route is preferred over delivering a different artifact than requested.
+
 ## Prompts
 
 Type `@` to access these slash commands:
