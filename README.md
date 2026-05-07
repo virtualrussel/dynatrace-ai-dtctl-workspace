@@ -2,7 +2,7 @@
 
 An AI-powered observability workspace for Dynatrace that combines GitHub Copilot or Claude AI, the Dynatrace MCP server, dtctl, and the [dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) skills framework to accelerate incident triage, root cause analysis, and day-to-day observability workflows.
 
-> **What this gives you:** Ask AI natural language questions about your Dynatrace environment and get accurate, production-aware answers. Akk powered by verified domain knowledge, live API access, and pre-built investigation workflows.
+> **What this gives you:** Ask AI natural language questions about your Dynatrace environment and get accurate, production-aware answers. All powered by verified domain knowledge, live API access, and pre-built investigation workflows.
 
 > **New here?** Start with [docs/ELI5.md](./docs/ELI5.md) for a quick setup, then read [docs/OVERVIEW.md](./docs/OVERVIEW.md) for the big-picture operating model.
 
@@ -259,17 +259,17 @@ The Dynatrace MCP server gives Copilot live API access to your environment. When
 
 ### MCP Configuration Files
 
-This workspace maintains two MCP configuration files that must be kept in sync:
+This workspace maintains two MCP configuration files. `.vscode/mcp.json` is the source of truth; `.mcp.json` is regenerated from it.
 
-| File | Used By |
-|---|---|
-| `.vscode/mcp.json` | VS Code GitHub Copilot and Claude Code |
-| `.mcp.json` | GitHub Copilot CLI |
+| File | Used By | Edit |
+|---|---|---|
+| `.vscode/mcp.json` | VS Code GitHub Copilot and Claude Code | Hand-edit (primary config) |
+| `.mcp.json` | GitHub Copilot CLI | Auto-generated — do not edit directly |
 
-When updating your tenant ID or MCP server, always update both files. Regenerate `.mcp.json` from `.vscode/mcp.json` using:
+After any change to `.vscode/mcp.json`, regenerate `.mcp.json`:
 
 ```bash
-jq "{mcpServers: .servers}" .vscode/mcp.json > .mcp.json
+jq '{mcpServers: .servers}' .vscode/mcp.json > .mcp.json
 ```
 
 ---

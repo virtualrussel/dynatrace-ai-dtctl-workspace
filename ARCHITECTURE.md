@@ -34,8 +34,8 @@ This workspace solves all four problems by combining three things: domain knowle
 │      │     AI Chat     │         │   Integrated Terminal    │       │
 │      │                 │         │                          │       │
 │      │  /health-check  │         │  dtctl get workflows     │       │
-│      │  /troubleshoot  │         │  dtctl query "..."       │       │
-│      │  /standup       │         │  dtctl describe notebook │       │
+│      │  ...and more    │         │  dtctl query "..."       │       │
+│      │  (see Prompts)  │         │  dtctl describe notebook │       │
 │      └────────┬────────┘         └────────────┬─────────────┘       │
 │               │                               │                     │
 │      ┌────────▼─────────┐                     │                     │
@@ -166,7 +166,7 @@ Each file contains:
 - Prompt directory with all 7 slash commands and when to use them
 - The 13 skills are installed and load automatically
 
-The two files are identical in content but kept separate because each tool requires a specific path:
+The two files are near-identical (the chat invocation syntax differs — `/` for Copilot vs `@` for Claude Code) but kept separate because each tool requires a specific path:
 - GitHub Copilot reads only `.github/copilot-instructions.md`
 - Claude Code reads only `CLAUDE.md` at the repo root
 
@@ -174,7 +174,7 @@ The two files are identical in content but kept separate because each tool requi
 
 ### 5. dtctl CLI
 **Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl)
-**Installation:** `/usr/local/bin/dtctl`
+**Installation:** see [README §4](README.md#4-install-and-configure-dtctl)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements the Copilot + MCP workflow by providing direct terminal access to Dynatrace resources. It runs DQL queries, manages workflows, verifies notebooks, and more.
 
