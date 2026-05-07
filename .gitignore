@@ -1,2 +1,21 @@
+# OS
 .DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*.tmproj
+.idea/
+.vscode/*.local.json
+
+# Logs
 *.log
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
