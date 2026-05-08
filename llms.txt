@@ -1,6 +1,6 @@
 # Dynatrace AI Workspace (dtctl Edition)
 
-A pre-configured AI assistant workspace for Dynatrace observability workflows, compatible with both Claude Code and GitHub Copilot. Skills, prompts, MCP server connection, and the dtctl CLI are ready to use — load the workspace and start investigating without any additional setup.
+A pre-configured AI assistant workspace for Dynatrace observability workflows, compatible with both Claude Code and GitHub Copilot. Skills, prompts, MCP server connection, and the dtctl CLI are included — run `bash setup.sh` once to configure your tenant URL, then start investigating.
 
 ## Core Purpose
 
@@ -9,7 +9,7 @@ This workspace teaches AI assistants how to work with a live Dynatrace environme
 ## Key Components
 
 **MCP Server:**
-One Dynatrace environment is pre-wired via the `dynatrace-mcp` server. Set your tenant ID in `.vscode/mcp.json` before use; `.mcp.json` is a derived copy for non-VS Code clients.
+One Dynatrace environment is pre-wired via the `dynatrace-mcp` server. Run `bash setup.sh` on first use to configure your tenant URL; `.mcp.json` is a derived copy for non-VS Code clients.
 
 **dtctl CLI:**
 A kubectl-style CLI for Dynatrace that exposes settings, configuration, and operational tasks beyond what the MCP server covers. Used for verification steps and terminal-level queries alongside MCP-based investigations.

@@ -23,6 +23,7 @@ dynatrace-ai-dtctl-workspace/
 ├── ARCHITECTURE.md               # How the workspace is built and how components connect
 ├── CONTRIBUTING.md               # How to update skills, prompts, and MCP config
 ├── CLAUDE.md                     # Auto-loaded session briefing for Claude Code
+├── setup.sh                      # First-time setup script
 ├── skills-lock.json              # Locked skill versions
 ├── LICENSE
 ├── .gitignore
@@ -51,7 +52,6 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [jq](https://jqlang.org/) | Required to regenerate `.mcp.json` from `.vscode/mcp.json` |
 | [dtctl](https://github.com/dynatrace-oss/dtctl) | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
@@ -61,11 +61,10 @@ Quick prerequisite verification:
 
 ```bash
 node --version
-jq --version
 dtctl version
 ```
 
-If `jq` or `dtctl` is not found, install it before continuing with setup.
+If `node` is not found or below v18, install the LTS version from [nodejs.org](https://nodejs.org/). `dtctl` can be installed via `setup.sh`.
 
 ---
 
@@ -123,28 +122,25 @@ npx skills add dynatrace-oss/dtctl
 
 ### 3. Set your tenant ID
 
-Your tenant ID is the 8-character prefix of your Dynatrace environment URL. For example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
-
-**1. Edit the primary MCP configuration** by opening `.vscode/mcp.json` and replace `YOUR_TENANT_ID`.
-
-**2. Regenerate the derived MCP configuration**. `.mcp.json` is used by Copilot CLI and other non-VS Code clients. Do not edit it directly; regenerate it from the primary config:
+Run the setup script and enter your Dynatrace environment URL when prompted:
 
 ```bash
-jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
+bash setup.sh
 ```
 
-**3. Update session briefing files** (recommended so assistants reference the correct tenant URL in context):
-- `.github/copilot-instructions.md`
-- `CLAUDE.md`
+The script accepts `*.apps.dynatrace.com` and `*.sprint.apps.dynatracelabs.com` environments. It checks prerequisites, updates all workspace files — MCP config, session briefings, and docs — in one step, and offers to install dtctl if not already present.
 
-### 4. Install and configure dtctl
+### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace. It provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows including the flagship `daily-standup-notebook` prompt. Without it, several prompts will not complete successfully.
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. `setup.sh` installs it if not already present. If you skipped that step, install manually:
 
 ```bash
-# macOS / Linux — direct install (no package manager required)
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
+```
 
+Then authenticate:
+
+```bash
 # Local desktop (macOS/Windows/Linux with keyring): OAuth login
 dtctl auth login --context production \
   --environment "https://YOUR_TENANT_ID.apps.dynatrace.com"
@@ -263,13 +259,13 @@ This workspace maintains two MCP configuration files. `.vscode/mcp.json` is the 
 
 | File | Used By | Edit |
 |---|---|---|
-| `.vscode/mcp.json` | VS Code GitHub Copilot and Claude Code | Hand-edit (primary config) |
+| `.vscode/mcp.json` | VS Code GitHub Copilot and Claude Code | Primary config — `setup.sh` sets this on first run |
 | `.mcp.json` | GitHub Copilot CLI | Auto-generated — do not edit directly |
 
-After any change to `.vscode/mcp.json`, regenerate `.mcp.json`:
+`setup.sh` handles initial configuration. For subsequent changes to `.vscode/mcp.json`, regenerate `.mcp.json` manually (requires `jq`: `brew install jq` / `apt install jq` / `choco install jq`):
 
 ```bash
-jq '{mcpServers: .servers}' .vscode/mcp.json > .mcp.json
+jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 ```
 
 ---
@@ -306,7 +302,7 @@ npx skills add dynatrace/dynatrace-for-ai
 npx skills add dynatrace-oss/dtctl
 
 # Regenerate .mcp.json after any MCP server changes
-jq "{mcpServers: .servers}" .vscode/mcp.json > .mcp.json
+jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 
 # Commit the updates
 git add .

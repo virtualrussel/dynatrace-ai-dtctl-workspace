@@ -13,13 +13,11 @@ You need these tools installed:
 | [VS Code](https://code.visualstudio.com/) | Where you will work | Download and install |
 | GitHub Copilot or Claude Code | The AI brain | Copilot: sign in at github.com/features/copilot · Claude: sign in at claude.ai/code |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server — the live data bridge between the AI and your Dynatrace environment | Download LTS version |
-| [jq](https://jqlang.org/) | Required to regenerate `.mcp.json` from `.vscode/mcp.json` | Install via package manager (brew/apt/choco) |
 
 Quick prerequisite verification:
 
 ```bash
 node --version
-jq --version
 ```
 
 Install required VS Code extensions:
@@ -49,19 +47,13 @@ cd dynatrace-ai-dtctl-workspace
 
 Then open the folder in VS Code: **File → Open Folder**.
 
-Next, set your Dynatrace tenant ID. Your tenant ID is the 8-character prefix of your environment URL — for example, if your URL is `https://abc12345.apps.dynatrace.com`, your tenant ID is `abc12345`.
-
-**1.** Open `.vscode/mcp.json` and replace `YOUR_TENANT_ID`.
-
-**2.** Regenerate the derived config (used by Copilot CLI — do not edit it directly):
+Next, run the setup script:
 
 ```bash
-jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
+bash setup.sh
 ```
 
-**3.** Also replace `YOUR_TENANT_ID` in these session briefing files so your AI assistant references the correct environment:
-- `.github/copilot-instructions.md`
-- `CLAUDE.md`
+Enter your Dynatrace environment URL when prompted (example: `abc12345.apps.dynatrace.com`). The script checks prerequisites, updates all workspace files in one step, and offers to install dtctl if not already present.
 
 ---
 

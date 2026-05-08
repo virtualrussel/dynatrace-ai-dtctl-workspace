@@ -6,7 +6,7 @@
 |---|---|
 | **MCP server** | `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
-Replace the placeholder in `.vscode/mcp.json`, then regenerate `.mcp.json`: `jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json`.
+Run `bash setup.sh` to configure this workspace on first use.
 
 ## Global Rule
 
