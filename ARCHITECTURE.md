@@ -40,7 +40,6 @@ This workspace solves all four problems by combining three things: domain knowle
 │               │                               │                     │
 │      ┌────────▼─────────┐                     │                     │
 │      │  Agent Skills    │                     │                     │
-│      │   (13 skills)    │                     │                     │
 │      │ .agents/skills/  │                     │                     │
 │      └────────┬─────────┘                     │                     │
 └───────────────┼───────────────────────────────┼─────────────────────┘
@@ -65,7 +64,7 @@ This workspace solves all four problems by combining three things: domain knowle
 **Source:** [github.com/Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) & [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl)
 **Location:** `.agents/skills/`
 
-Skills are markdown files containing domain-specific knowledge. They teach Copilot how Dynatrace works including correct DQL syntax, field names, query patterns, and investigation workflows. Copilot loads them automatically when relevant, using a three-tier progressive disclosure model:
+Skills are markdown files containing domain-specific knowledge. They teach the AI assistant how Dynatrace works including correct DQL syntax, field names, query patterns, and investigation workflows. The AI assistant loads them automatically when relevant, using a three-tier progressive disclosure model:
 
 ```
 Tier 1 — Catalog     Always loaded    ~100 tokens per skill
@@ -73,7 +72,7 @@ Tier 2 — SKILL.md    On demand        ~5,000 tokens
 Tier 3 — references/ On demand        Deep reference detail
 ```
 
-This means all 13 skills can be installed without performance penalty — Copilot only loads what it needs for each specific query.
+This means all skills can be installed without performance penalty — the AI assistant only loads what it needs for each specific query.
 
 | Skill | Domain |
 |---|---|
@@ -97,7 +96,7 @@ This means all 13 skills can be installed without performance penalty — Copilo
 **Source:** [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp)
 **Location:** `.vscode/mcp.json`
 
-The Model Context Protocol (MCP) server is the live data bridge between Copilot and Dynatrace. When Copilot needs to answer a question about your environment, it calls the MCP server, which executes real API calls and DQL queries against your Dynatrace tenant and returns live results.
+The Model Context Protocol (MCP) server is the live data bridge between the AI assistant and Dynatrace. When Copilot needs to answer a question about your environment, it calls the MCP server, which executes real API calls and DQL queries against your Dynatrace tenant and returns live results.
 
 One environment is configured as a named server:
 
@@ -174,7 +173,7 @@ The two files are near-identical (the chat invocation syntax differs — `/` for
 
 ### 5. dtctl CLI
 **Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl)
-**Installation:** see [README §4](README.md#4-install-and-configure-dtctl)
+**Installation:** see [README §4](README.md#4-authenticate-dtctl)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements the Copilot + MCP workflow by providing direct terminal access to Dynatrace resources. It runs DQL queries, manages workflows, verifies notebooks, and more.
 

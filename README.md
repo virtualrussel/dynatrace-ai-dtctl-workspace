@@ -61,30 +61,13 @@ Quick prerequisite verification:
 
 ```bash
 node --version
-dtctl version
 ```
 
-If `node` is not found or below v18, install the LTS version from [nodejs.org](https://nodejs.org/). `dtctl` can be installed via `setup.sh`.
+If `node` is not found or below v18, install the LTS version from [nodejs.org](https://nodejs.org/).
 
 ---
 
 ## Setup
-
-### 0. Install VS Code extensions
-
-```bash
-code --install-extension github.copilot \
-  --install-extension github.copilot-chat \
-  --install-extension anthropic.claude-code
-```
-
-If `code` is not found, run **Shell Command: Install 'code' command in PATH** from the VS Code Command Palette, then retry.
-
-Verify installed extensions:
-
-```bash
-code --list-extensions | grep -E "github.copilot|github.copilot-chat|anthropic.claude-code"
-```
 
 ### Choose Your Frontend
 
@@ -92,13 +75,28 @@ This workspace works with:
 - **GitHub Copilot** in VS Code (subscription required)
 - **Claude Code** via web or desktop (Claude Pro or Team required)
 
-Select your setup path below. Both receive the same skills, prompts, and MCP server access.
+Both receive the same skills, prompts, and MCP server access and follow the same setup steps. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session; `CLAUDE.md` is auto-loaded at the start of each Claude Code session.
 
-**GitHub Copilot Path** → Follow Steps 1–5 below. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session.
+### 1. Install VS Code extensions
 
-**Claude Code Path** → Follow Steps 1–5 below. `CLAUDE.md` is auto-loaded at the start of each Claude Code session.
+VS Code must be installed before running this step. Download from [code.visualstudio.com](https://code.visualstudio.com/) if not already present.
 
-### 1. Clone the workspace
+```bash
+code --install-extension github.copilot \
+  --install-extension anthropic.claude-code
+```
+
+> `github.copilot-chat` is bundled with VS Code (v0.47.0+) and does not need to be installed separately.
+
+If `code` is not found, run **Shell Command: Install 'code' command in PATH** from the VS Code Command Palette, then retry.
+
+Verify installed extensions:
+
+```bash
+code --list-extensions | grep -E "github.copilot|anthropic.claude-code"
+```
+
+### 2. Clone the workspace
 
 ```bash
 git clone https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace.git
@@ -106,19 +104,6 @@ cd dynatrace-ai-dtctl-workspace
 ```
 
 Then open the folder in VS Code via **File → Open Folder**.
-
-### 2. Update skills to latest *(optional)*
-
-If this is your first setup, skip this step and continue to Step 3.
-
-Skills are already included in this repo — cloning gives you everything you need. Run this only when you want to pull the latest skill updates from Dynatrace:
-
-```bash
-npx skills add dynatrace/dynatrace-for-ai
-npx skills add dynatrace-oss/dtctl
-```
-
-> See [Keeping Up to Date](#keeping-up-to-date) for when to run this.
 
 ### 3. Set your tenant ID
 
@@ -132,7 +117,7 @@ The script accepts `*.apps.dynatrace.com` and `*.sprint.apps.dynatracelabs.com` 
 
 ### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. `setup.sh` installs it if not already present. If you skipped that step, install manually:
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. `setup.sh` installs it if not already present. If you chose to skip dtctl installation when setup.sh prompted you, install it now manually:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
@@ -155,17 +140,17 @@ dtctl config set-credentials production-token --token <YOUR_PLATFORM_TOKEN>
 dtctl doctor
 ```
 
-When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27.0+, a warning about user identity may appear and is expected. Create your platform token in Dynatrace: **Identity & Access Management** → **Access Tokens** → **Generate new token** → **Platform token**.
+When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27.0+, a warning about user identity may appear and is expected.
+
+If using token-based auth: create your platform token in Dynatrace: **Identity & Access Management** → **Access Tokens** → **Generate new token** → **Platform token**.
 
 If OAuth fails with a keyring error (for example, `dbus-launch` not found), use the token-based method above.
 
 ### 5. Reload VS Code
 
-Press `Cmd+Shift+P` → `Developer: Reload Window`
+Press `Cmd/Ctrl+Shift+P` → `Developer: Reload Window`
 
-When you first use a prompt in Copilot Chat, a browser window will open for
-Dynatrace SSO authentication. This is expected. Complete the login and return
-to VS Code. Subsequent sessions authenticate automatically.
+When you first connect to Dynatrace, a browser window will open for SSO authentication. This is expected. Complete the login and return to VS Code. Subsequent sessions authenticate automatically.
 
 ### 6. Verify the connection
 
@@ -179,11 +164,13 @@ Using the dynatrace-mcp server, list the top 5 services by request volume in the
 
 If you see a table of services with request counts — you are live.
 
+If you get no results or an error, check that `dtctl doctor` passes and that VS Code was reloaded after setup. See [ARCHITECTURE.md](./ARCHITECTURE.md) for how the components connect.
+
 ---
 
 ## Skills
 
-Skills are domain knowledge files that teach Copilot how Dynatrace works — correct DQL syntax, field names, query patterns, and investigation workflows. They load automatically when relevant.
+Skills are domain knowledge files that teach the AI assistant how Dynatrace works — correct DQL syntax, field names, query patterns, and investigation workflows. They load automatically when relevant.
 
 Skills follow the [Agent Skills specification](https://agentskills.io/specification) and use progressive disclosure:
 
@@ -243,11 +230,11 @@ The prompts follow a structured drill-down pattern:
 
 ### Why Skills Matter
 
-Copilot without skills will guess DQL syntax and will likely get it wrong. For example, it might use `event.status == "OPEN"` (doesn't exist) instead of `event.status == "ACTIVE"`, or `log.level` instead of `loglevel`. The skills encode the corrections for known failure modes before Copilot writes a single query.
+The AI assistant without skills will guess DQL syntax and will likely get it wrong. For example, it might use `event.status == "OPEN"` (doesn't exist) instead of `event.status == "ACTIVE"`, or `log.level` instead of `loglevel`. The skills encode the corrections for known failure modes before the AI assistant writes a single query.
 
 ### How MCP Works
 
-The Dynatrace MCP server gives Copilot live API access to your environment. When you run `/health-check`, Copilot calls the MCP server to execute real DQL queries and return live data. Not cached or synthetic results.
+The Dynatrace MCP server gives the AI assistant live API access to your environment. When you run `/health-check`, it calls the MCP server to execute real DQL queries and return live data. Not cached or synthetic results.
 
 ### The Investigation Rule
 

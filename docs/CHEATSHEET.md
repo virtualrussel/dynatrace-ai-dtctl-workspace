@@ -128,17 +128,4 @@ Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit 
 
 ---
 
-## Useful natural language prompts
-
-These work well when you're not sure which workflow to reach for:
-
-- *"Are there any active problems right now?"*
-- *"What happened to [service] in the last hour?"*
-- *"Show me the slowest endpoints for [service] since the last deployment"*
-- *"Create a notebook summarising today's incidents"*
-- *"What's the root cause of problem [ID]?"*
-- *"Compare [service] performance before and after [deploy time]"*
-
----
-
 **MCP server:** dynatrace-mcp | **Last Updated:** April 29, 2026
