@@ -305,7 +305,7 @@ npx skills add dynatrace-oss/dtctl
 jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
 
 # Commit the updates
-git add .
+git add .agents/skills/ .claude/skills/ skills-lock.json
 git commit -m "Update skills to latest"
 git push
 ```
