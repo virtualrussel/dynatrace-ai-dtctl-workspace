@@ -2,20 +2,19 @@
 agent: agent
 description: Generate a daily standup report for one or more services, create an actionable Dynatrace notebook with embedded DQL queries and remediation steps, then verify it using dtctl.
 ---
-Run a daily standup report for JourneyService and CheckDestination using the dynatrace-mcp server.
+Run a daily standup report for my services using the dynatrace-mcp server.
+Infer service names from the current workspace if not provided. Ask for confirmation if unsure.
 
-Then create a Dynatrace notebook called "Daily Standup — JourneyService & CheckDestination — [TODAY'S DATE]".
+Then create a Dynatrace notebook called "Daily Standup — [SERVICE NAMES] — [TODAY'S DATE]".
 
 Structure the notebook as follows:
-1. Executive Summary — overall health status for both services
-2. JourneyService Findings — metrics comparison, incidents, action items
-3. CheckDestination Findings — metrics comparison, health confirmation
-4. Embedded DQL Queries — include live queries for:
-   - JourneyService avg and P95 response time trend (last 24h)
-   - JourneyService error rate over time
-   - Active problems related to JourneyService infrastructure
-   - CheckDestination response time and error rate
-5. Remediation Steps — specific next steps per service with priority
+1. Executive Summary — overall health status for all services
+2. Per-Service Findings — for each service: metrics comparison, incidents, action items
+3. Embedded DQL Queries — include live queries for each service:
+   - Avg and P95 response time trend (last 24h)
+   - Error rate over time
+   - Active problems related to the service
+4. Remediation Steps — specific next steps per service with priority
 
 ## DQL Query Rules
 Before generating ANY DQL query, load the dt-dql-essentials skill and refer to the timeseries command specification. All queries must follow these rules exactly:
@@ -30,8 +29,8 @@ Before generating ANY DQL query, load the dt-dql-essentials skill and refer to t
   - WRONG: timeseries avg(dt.service.request.response_time) as avg_rt
   - CORRECT: timeseries avg_rt = avg(dt.service.request.response_time)
 - NEVER use contains() in a timeseries filter — timeseries requires exact dimension matching via by: and ==
-  - WRONG: | filter dt.service.name contains "CheckDestination"
-  - CORRECT: timeseries ..., by: {dt.service.name} | filter dt.service.name == "CheckDestination"
+  - WRONG: | filter dt.service.name contains "<service-name>"
+  - CORRECT: timeseries ..., by: {dt.service.name} | filter dt.service.name == "<service-name>"
 - ALWAYS include by: {dt.service.name} when filtering timeseries by service
 - ALWAYS use array notation for computed fields on timeseries results
   - CORRECT: | fieldsAdd avg_rt_ms = avg_rt[] / 1000
@@ -66,6 +65,6 @@ fetch dt.davis.problems, from: now()-24h
 
 ## After Creating the Notebook
 1. Confirm the notebook URL from the MCP response
-2. Run dtctl get notebooks --filter 'name == "Daily Standup — JourneyService & CheckDestination — [TODAY\'S DATE]"' --sort "-modificationInfo.lastModifiedTime" in the terminal to verify it appears in Dynatrace
+2. Run dtctl get notebooks --filter 'name == "<notebook-name>"' --sort "-modificationInfo.lastModifiedTime" in the terminal to verify it appears in Dynatrace
 3. Run dtctl describe notebook "[notebook id or exact notebook name]" to confirm the structure
 4. Share the verified URL for the team to access
