@@ -38,7 +38,7 @@ Prompt files live in `.github/prompts/` and must use the `.prompt.md` extension.
 - Any DQL syntax constraints relevant to that workflow
 - A clear step-by-step investigation sequence
 
-After adding a prompt, update the prompt tables in `README.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/CHEATSHEET.md`, and `ARCHITECTURE.md`.
+After adding a prompt, update the prompt tables in `README.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/CHEATSHEET.md`, `docs/OVERVIEW.md`, `ARCHITECTURE.md`, and the task template count in `llms.txt`.
 
 ## Syncing MCP Configuration
 

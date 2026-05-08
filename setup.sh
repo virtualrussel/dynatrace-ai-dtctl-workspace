@@ -94,7 +94,8 @@ fi
 
 # --- Idempotency check -------------------------------------------------------
 
-if ! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/.vscode/mcp.json" 2>/dev/null; then
+if ! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/.vscode/mcp.json" 2>/dev/null && \
+   ! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/CLAUDE.md" 2>/dev/null; then
   echo "This workspace has already been configured."
   echo "setup.sh only works on the initial setup."
   exit 1

@@ -239,7 +239,7 @@ Skills are versioned via `skills-lock.json`. Update to the latest skills before 
 ```bash
 npx skills add dynatrace/dynatrace-for-ai
 npx skills add dynatrace-oss/dtctl
-git add .
+git add .agents/skills/ .claude/skills/ skills-lock.json
 git commit -m "Update skills to latest — $(date +%Y-%m-%d)"
 git push
 ```
