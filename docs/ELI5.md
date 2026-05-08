@@ -13,7 +13,7 @@ You need these tools installed:
 | [VS Code](https://code.visualstudio.com/) | Where you will work | Download and install |
 | GitHub Copilot or Claude Code | The AI brain | Copilot: sign in at github.com/features/copilot · Claude: sign in at claude.ai/code |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server — the live data bridge between the AI and your Dynatrace environment | Download LTS version |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | CLI for verifying and managing Dynatrace resources | Installed automatically by `setup.sh` in Step 1 |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) | CLI for verifying and managing Dynatrace resources | Offered for installation by `setup.sh` in Step 1 — or install manually |
 
 Quick prerequisite verification:
 

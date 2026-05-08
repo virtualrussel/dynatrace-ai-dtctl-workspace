@@ -128,7 +128,7 @@ done
 
 echo ""
 echo "Tenant URL: $TENANT_URL"
-read -rp "Update 8 workspace files? (y/N) " CONFIRM
+read -rp "Update ${#FILES[@]} workspace files? (y/N) " CONFIRM
 if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
   echo "Aborted."
   exit 0

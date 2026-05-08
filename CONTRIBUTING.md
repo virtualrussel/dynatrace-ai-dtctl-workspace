@@ -30,6 +30,8 @@ ln -s ../../.agents/skills/<skill-name> <skill-name>
 
 Then add the skill entry to `skills-lock.json` with its source repository and computed hash.
 
+After adding a skill, update the skill count and tables in `README.md` (directory tree comment + skills table), `ARCHITECTURE.md` (skills table + skill count in the session briefing description), `docs/CHEATSHEET.md` (skills table), `docs/OVERVIEW.md` (skills examples list), and the domain package count in `llms.txt`.
+
 ## Adding a New Prompt
 
 Prompt files live in `.github/prompts/` and must use the `.prompt.md` extension. Follow the existing prompts as a template — each should include:
