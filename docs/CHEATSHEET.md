@@ -49,6 +49,9 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Log search and pattern analysis | `dt-obs-logs` |
 | Problem RCA and impact scope | `dt-obs-problems` |
 | AWS resources and infrastructure | `dt-obs-aws` |
+| Azure resources and infrastructure | `dt-obs-azure` |
+| GCP resources and infrastructure | `dt-obs-gcp` |
+| Forecasting, capacity planning, anomaly detection | `dt-obs-predictive-analytics` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
 | Migrating classic entity DQL to Smartscape | `dt-migration` |
@@ -128,4 +131,4 @@ Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit 
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** April 29, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** May 11, 2026

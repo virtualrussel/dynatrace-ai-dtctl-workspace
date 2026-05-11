@@ -84,7 +84,10 @@ This means all skills can be installed without performance penalty — the AI as
 | `dt-obs-hosts` | Host and process metrics |
 | `dt-obs-kubernetes` | Pods, workloads, nodes, cluster health |
 | `dt-obs-aws` | EC2, RDS, Lambda, ECS/EKS, cost optimization |
+| `dt-obs-azure` | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
+| `dt-obs-gcp` | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management |
 | `dt-obs-frontends` | RUM, Web Vitals, user sessions, mobile crashes |
+| `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
 | `dt-app-dashboards` | Dashboard JSON creation and modification |
 | `dt-app-notebooks` | Notebook creation and analytics workflows |
 | `dt-migration` | Classic entity DQL → Smartscape migration |
@@ -163,7 +166,7 @@ Each file contains:
 - Default MCP server
 - Global rule: always start with problems, never broad log searches
 - Prompt directory with all 7 slash commands and when to use them
-- The 13 skills are installed and load automatically
+- The 16 skills are installed and load automatically
 
 The two files are near-identical (the chat invocation syntax differs — `/` for Copilot vs `@` for Claude Code) but kept separate because each tool requires a specific path:
 - GitHub Copilot reads only `.github/copilot-instructions.md`

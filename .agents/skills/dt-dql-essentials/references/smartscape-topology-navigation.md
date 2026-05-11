@@ -6,10 +6,10 @@ Navigate entity relationships using `traverse`, `smartscapeNodes` and `smartscap
 
 - [Method Selection](#method-selection)
 - [Node Types](#node-types)
-- [Relationship Types](#relationshipedge-types)
+- [Relationship Types](#relationship-types)
 - [Traverse Syntax](#traverse-syntax)
 - [Task: Multi-Hop Traversal](#task-multi-hop-traversal)
-- [Task: Forward Static Relationship Lookup](#task-forward-static-relationship-lookup-without-traversal)
+- [Task: Quick Relationship Lookup](#task-quick-relationship-lookup)
 - [Task: Discover Edge Types](#task-discover-edge-types)
 - [Task: Debug Empty Traversal Results](#task-debug-empty-traversal-results)
 - [Common Patterns](#common-patterns)

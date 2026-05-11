@@ -2,6 +2,7 @@
 agent: agent
 description: Troubleshoot an existing Dynatrace problem. Starts with the Root Cause Agent to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
 ---
+
 # Troubleshoot a Dynatrace Problem
 
 ## Rules
@@ -67,6 +68,7 @@ Do not hardcode DQL in this prompt. Build and validate query details using the p
 Adjust entity scope based on problem metadata (service, host, process group, etc.).
 
 If the query is too broad (including data-scan-limit warnings), stop and narrow scope using agent guardrails before retrying. If scope cannot be narrowed with available metadata, ask the user for a tighter timeframe or a specific error pattern.
+
 
 ### 5. Classify errors
 

@@ -37,7 +37,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 13 Dynatrace domain skills
+├── .agents/skills/               # 16 Dynatrace domain skills
 ├── .claude/skills/               # Symlinks for Claude Code compatibility
 ├── .mcp.json                     # MCP server configuration for Copilot CLI
 ├── .vscode/
@@ -188,7 +188,10 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-obs-hosts` | Host and process metrics, CPU, memory, disk, containers |
 | `dt-obs-kubernetes` | Pods, workloads, nodes, labels, ingress, PVCs |
 | `dt-obs-aws` | EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization |
+| `dt-obs-azure` | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
+| `dt-obs-gcp` | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management |
 | `dt-obs-frontends` | RUM, Web Vitals, user sessions, mobile crashes |
+| `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
 | `dt-app-dashboards` | Dashboard JSON creation and modification |
 | `dt-app-notebooks` | Notebook creation and analytics workflows |
 | `dt-migration` | Classic entity DQL → Smartscape migration |

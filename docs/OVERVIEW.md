@@ -105,6 +105,10 @@ Examples:
 - `dt-obs-services`: service RED metrics and interpretation
 - `dt-obs-logs`: log analysis patterns
 - `dt-obs-kubernetes`: workload and cluster troubleshooting
+- `dt-obs-aws`: AWS infrastructure (EC2, RDS, Lambda, ECS/EKS)
+- `dt-obs-azure`: Azure infrastructure (VMs, AKS, SQL, storage, serverless)
+- `dt-obs-gcp`: GCP infrastructure (Compute Engine, GKE, Cloud Run, Pub/Sub)
+- `dt-obs-predictive-analytics`: forecasting, trend detection, and capacity planning
 - `dtctl`: CLI operations and validation patterns
 
 Without skills, AI may guess wrong field names or query patterns. With skills, it applies known-safe Dynatrace conventions.

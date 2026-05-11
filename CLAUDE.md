@@ -45,3 +45,22 @@ Type `@` to access these slash commands:
 ## Skills
 
 Domain knowledge skills are installed in `.agents/skills/`. They load automatically when relevant — no manual loading required.
+
+| Skill | What It Covers |
+|---|---|
+| `dt-dql-essentials` | DQL syntax, common pitfalls, query patterns — load before any DQL |
+| `dt-obs-problems` | Davis Problems, root cause analysis, impact assessment |
+| `dt-obs-logs` | Log queries, filtering, pattern analysis, error classification |
+| `dt-obs-tracing` | Distributed traces, spans, failure detection, log correlation |
+| `dt-obs-services` | RED metrics, SLA tracking, runtime monitoring (Java, .NET, Node.js, Python, PHP, Go) |
+| `dt-obs-hosts` | Host and process metrics, CPU, memory, disk, containers |
+| `dt-obs-kubernetes` | Pods, workloads, nodes, labels, ingress, PVCs |
+| `dt-obs-aws` | EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization |
+| `dt-obs-azure` | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
+| `dt-obs-gcp` | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management |
+| `dt-obs-frontends` | RUM, Web Vitals, user sessions, mobile crashes |
+| `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
+| `dt-app-dashboards` | Dashboard JSON creation and modification |
+| `dt-app-notebooks` | Notebook creation and analytics workflows |
+| `dt-migration` | Classic entity DQL → Smartscape migration |
+| `dtctl` | CLI commands for managing Dynatrace resources from the terminal |
