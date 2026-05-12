@@ -31,15 +31,15 @@
       "sourceType": "github",
       "computedHash": "5a2a5d3f7fbb6ae876cdb02ca3f62b55c7d44f52d91d148b4d32120025909ed8"
     },
-    "dt-obs-gcp": {
-      "source": "dynatrace/dynatrace-for-ai",
-      "sourceType": "github",
-      "computedHash": "f5ff18bf10c7c75792ca2cb455dc159fe2a0245c2253c57fb4cab602dd454f9f"
-    },
     "dt-obs-frontends": {
       "source": "dynatrace/dynatrace-for-ai",
       "sourceType": "github",
       "computedHash": "948c07cb62b61c381b8c258ff705d236de1580dbe027cdfccff280a0ce4c2aa5"
+    },
+    "dt-obs-gcp": {
+      "source": "dynatrace/dynatrace-for-ai",
+      "sourceType": "github",
+      "computedHash": "f5ff18bf10c7c75792ca2cb455dc159fe2a0245c2253c57fb4cab602dd454f9f"
     },
     "dt-obs-hosts": {
       "source": "dynatrace/dynatrace-for-ai",
@@ -56,6 +56,11 @@
       "sourceType": "github",
       "computedHash": "459fcdbec37083154f2edd154bfa2fa25c0358261e1a5e16f41e95e0a5152b88"
     },
+    "dt-obs-predictive-analytics": {
+      "source": "dynatrace/dynatrace-for-ai",
+      "sourceType": "github",
+      "computedHash": "d5de9bf20285934423d312b5aa72cc6ef40b4c0a881313610437c2e591714fdf"
+    },
     "dt-obs-problems": {
       "source": "dynatrace/dynatrace-for-ai",
       "sourceType": "github",
@@ -66,11 +71,6 @@
       "sourceType": "github",
       "computedHash": "5a69ef131dbe229df31164f4f3bf6b08c4750df16460de5154c62f114074beff"
     },
-    "dt-obs-predictive-analytics": {
-      "source": "dynatrace/dynatrace-for-ai",
-      "sourceType": "github",
-      "computedHash": "d5de9bf20285934423d312b5aa72cc6ef40b4c0a881313610437c2e591714fdf"
-    },
     "dt-obs-tracing": {
       "source": "dynatrace/dynatrace-for-ai",
       "sourceType": "github",
@@ -80,7 +80,19 @@
       "source": "dynatrace-oss/dtctl",
       "sourceType": "github",
       "skillPath": "skills/dtctl/SKILL.md",
-      "computedHash": "23a151ff42d26cd83bee2a2848c46ac00efd292d9943e30a313f827af6c84ed5"
+      "computedHash": "08207683f4aaeacab727803a496530bfd0f6e8f590bf5bee71ae633251895d13"
+    },
+    "dtctl-release": {
+      "source": "dynatrace-oss/dtctl",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/dtctl-release/SKILL.md",
+      "computedHash": "f48a4a744653ea1463521604367f167a6f1880d2a7e7c4940180f617150c1045"
+    },
+    "pr-review": {
+      "source": "dynatrace-oss/dtctl",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/pr-review/SKILL.md",
+      "computedHash": "46bdda9c72a032189dc4e5459c5895610e30b6a3df6d990f2907329cb2f78ee4"
     }
   }
 }

@@ -21,6 +21,8 @@ If no sudo: place in `~/bin/` and ensure it's on PATH.
 
 ## Initial Setup
 
+Platform tokens (`dt0s16.*`) are created at **https://myaccount.dynatrace.com/platformTokens** — NOT in the tenant UI under Identity & Access Management > Access Tokens (that creates classic API tokens, `dt0c01.*`).
+
 ```bash
 # Store credentials (use --token flag directly, NOT stdin piping)
 dtctl config set-credentials "my-token" --token "$DYNATRACE_API_TOKEN"
@@ -31,7 +33,6 @@ dtctl config use-context "default"
 
 # Verify
 dtctl auth whoami --plain
-dtctl auth status --plain
 dtctl doctor
 ```
 
@@ -51,17 +52,19 @@ dtctl auth whoami --plain
 dtctl auth can-i <verb> <resource>
 ```
 
-If `dtctl doctor` shows a platform-token user identity warning in v0.27.0+, treat it as informational when the overall check passes.
+If `dtctl doctor` shows the following warning, treat it as informational when the overall check passes:
+```
+platform token: user identity unavailable via metadata API
+(token likely lacks 'app-engine:apps:run' scope; platform tokens are not JWTs, so no fallback)
+```
 
-In v0.27.0+, `dtctl config set-credentials` also clears stale OAuth cache for the same token reference, and revoked refresh-token sessions fall back to platform-token auth automatically.
+In v0.27.1+, `--mine` works correctly with platform tokens (`dt0s16.*`). Earlier versions returned: `failed to parse JWT claims: invalid character '#' looking for beginning of value`
 
 ### Wrong Tenant
 ```bash
 dtctl config get-contexts --plain
 dtctl config use-context <name>
 ```
-
-After `dtctl auth login --context <name>`, empty template contexts created by `dtctl config init` are pruned automatically in v0.27.0+.
 
 ### Safety Level Blocks
 Safety levels are client-side protections: `readonly`, `readwrite-mine`, `readwrite-all`, `dangerously-unrestricted`. API token scopes determine actual permissions.

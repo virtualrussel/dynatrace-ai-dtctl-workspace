@@ -1,6 +1,6 @@
 ---
 name: dtctl
-description: Operate the `dtctl` CLI for Dynatrace resource lifecycle and CLI scripting — apply/delete/share/history/restore on workflows, dashboards, notebooks, SLOs, and other resources; execute workflows, functions, and analyzers; bulk and CI/CD-style automation. Defer to MCP-aligned skills (`dt-obs-*`, `dt-app-*`, `dt-dql-essentials`) for telemetry queries, problem and RCA reads, log and trace investigation, and dashboard/notebook content lookups. Use `dtctl` when the operation isn't exposed via MCP, when the user explicitly requests the CLI, or when scripting / automation is the goal.
+description: Investigate incidents, debug performance issues, analyze logs, and manage observability resources in Dynatrace using the dtctl CLI. Use this skill whenever the user asks about error rates, latency spikes, service health, crash-looping pods, web vitals, SLO status, open problems, root cause analysis, log patterns, trace analysis, or building dashboards — even if they don't mention Dynatrace by name. Also covers DQL queries, workflow management, notebook and dashboard creation, settings configuration, and any operations against a Dynatrace environment.
 ---
 
 # Dynatrace Control with dtctl
@@ -30,8 +30,6 @@ This displays:
 - Safety level (readonly, readwrite-mine, readwrite-all, dangerously-unrestricted)
 - Authenticated user identity (name, email, UUID)
 
-If you authenticate with a platform token, `dtctl doctor` on v0.27.0+ may show a user-identity warning while still passing overall auth checks.
-
 ## DQL Reference Usage
 
 Before writing, modifying, or executing any DQL that fetches Dynatrace data (for example via `dtctl query`, `dtctl wait query`, or query files), you MUST consult `references/DQL-reference.md` and follow its documented syntax and templates.
@@ -51,6 +49,7 @@ dtctl uses a uniform pattern for all resource types. Discover schema from actual
 | Resource | Aliases |
 |----------|---------|
 | analyzer | analyzers |
+| anomaly-detector | anomaly-detectors |
 | app | apps |
 | bucket | bkt |
 | copilot-skill | copilot-skills |
@@ -175,6 +174,10 @@ dtctl exec function <id-or-name> --payload '{"key":"value"}' --plain
 # Analyzers
 dtctl get analyzers -o json --plain
 dtctl exec analyzer <id-or-name> --input '{"timeframe":"now-2h"}' --plain
+
+# Anomaly detectors — round-trippable between environments (v0.27.1+)
+dtctl get anomaly-detector <id> -o yaml --plain > detector.yaml
+dtctl apply -f detector.yaml --context <target-context> --plain
 ```
 
 Prefer `get ... -o json --plain` first, then `describe`/`exec` with explicit IDs.
@@ -261,37 +264,6 @@ For detailed visualizationSettings (singleValue, charts, tables, thresholds, uni
 - Use `makeTimeseries` for log/span time series; `timeseries` for metrics.
 - `version` field warning on create is benign.
 - No `id` field → creates new; with `id` field → updates existing.
-
-## v0.27.0 Operational Patterns
-
-```bash
-# Document API query controls now available on document-like resources
-dtctl get notebooks --filter 'name startsWith "incident-"' --sort "-modificationInfo.lastModifiedTime" -o json --plain
-dtctl get dashboards --sort "name,-modificationInfo.lastModifiedTime" -o json --plain
-dtctl get documents --add-fields "originExtensionId,labels,shareInfo.isShared" --admin-access -o json --plain
-```
-
-```yaml
-# .dtctl.yaml hooks (v0.27.0+)
-preferences:
-  hooks:
-    # Use an explicit shell if you need pipes/redirection.
-    pre-apply: bash -c 'lint "$1" | tee /tmp/lint.log'
-    post-apply: bash /etc/dtctl/notify-on-apply.sh
-```
-
-- `post-apply` runs after successful applies and receives the apply result envelope on stdin.
-- For batch applies, `post-apply` still runs when earlier items succeeded but a later item failed.
-- `pre-apply` is direct exec (tokenized argv), not implicit `sh -c`; shell syntax must be wrapped explicitly.
-- `dtctl enable gcp monitoring --serviceAccountId <sa>` now updates the linked connection service account before enabling monitoring.
-- `dtctl config set-credentials` invalidates stale OAuth cache entries, improving platform-token rotation behavior.
-
-```bash
-# Settings object targeting in v0.27.0+: use objectId from API output
-dtctl get settings -o json --plain \
-  | jq -r '.[] | select(.value.foo == "bar") | .objectId' \
-  | xargs -I{} dtctl describe setting {}
-```
 
 ## Common Issues
 

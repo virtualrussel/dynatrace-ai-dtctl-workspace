@@ -20,6 +20,8 @@ Can be committed to git (no secrets). Credentials stored separately in OS keyrin
 
 ## Credential Management
 
+Platform tokens (`dt0s16.*`) are created at **https://myaccount.dynatrace.com/platformTokens**. Classic API tokens (`dt0c01.*`) live under Identity & Access Management > Access Tokens in the tenant UI — that is NOT the correct location for dtctl tokens.
+
 ```bash
 # Store token (use --token flag, not stdin)
 dtctl config set-credentials "prod-token" --token "$TOKEN"
@@ -47,26 +49,3 @@ dtctl get workflows --context staging --plain
 | `dangerously-unrestricted` | Emergency admin |
 
 Actual permissions depend on API token scopes, not just safety level.
-
-## v0.27.0 Migration Notes
-
-### Settings objects: use objectId
-
-Legacy synthetic UID/UUID addressing for settings objects is removed. Use `objectId` from API output:
-
-```bash
-dtctl get settings -o json --plain \
-  | jq -r '.[] | select(.value.foo == "bar") | .objectId' \
-  | xargs -I{} dtctl describe setting {}
-```
-
-### Apply hooks: explicit shell for shell syntax
-
-`pre-apply` hooks are now executed directly (tokenized argv), not through implicit `sh -c`. If your hook string relies on pipes, redirection, or globbing, wrap it in an explicit shell:
-
-```yaml
-preferences:
-  hooks:
-    pre-apply: bash -c 'lint "$1" | tee /tmp/lint.log'
-    post-apply: bash /etc/dtctl/notify-on-apply.sh
-```
