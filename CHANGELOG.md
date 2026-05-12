@@ -1,0 +1,50 @@
+# Changelog
+
+## [1.0.0] - 2026-05-12
+
+### Initial release
+
+**Investigation workflows (7 prompts)**
+- `/health-check` — routine service health: metrics, problems, deployments, vulnerabilities
+- `/daily-standup` — morning report across services with today vs yesterday comparison
+- `/daily-standup-notebook` — standup report + Dynatrace notebook creation + dtctl verification
+- `/investigate-error` — error-focused investigation from a service name
+- `/troubleshoot-problem` — deep 7-step investigation into a specific Dynatrace problem
+- `/incident-response` — full triage of all active problems during a live incident
+- `/performance-regression` — before vs after deployment comparison with rollback/hotfix recommendation
+
+**Domain skills (16)**
+- `dt-obs-problems` — Davis problem analysis, root cause, impact assessment
+- `dt-obs-logs` — log querying, filtering, pattern analysis, error classification
+- `dt-obs-tracing` — distributed traces, spans, failure detection, log correlation
+- `dt-obs-services` — RED metrics, SLA tracking, runtime monitoring (Java, .NET, Node.js, Python, PHP, Go)
+- `dt-obs-hosts` — host and process metrics, CPU, memory, disk, containers
+- `dt-obs-kubernetes` — pods, workloads, nodes, labels, ingress, PVCs
+- `dt-obs-aws` — EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization
+- `dt-obs-azure` — Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization
+- `dt-obs-gcp` — Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management
+- `dt-obs-frontends` — RUM, Web Vitals, user sessions, mobile crashes
+- `dt-obs-predictive-analytics` — forecasting, trend detection, anomaly identification, capacity planning
+- `dt-app-dashboards` — dashboard JSON creation and modification
+- `dt-app-notebooks` — notebook creation and analytics workflows
+- `dt-dql-essentials` — DQL syntax, common pitfalls, query patterns
+- `dt-migration` — classic entity DQL → Smartscape migration
+- `dtctl` — CLI commands for managing Dynatrace resources from the terminal
+
+**Infrastructure**
+- MCP server integration (`dynatrace-mcp`) connecting to your Dynatrace tenant
+- Dual AI assistant support: Claude Code and GitHub Copilot
+- `setup.sh` single-command onboarding
+- VS Code workspace configuration with MCP and extension recommendations
+
+**Documentation**
+- `README.md` — setup and reference guide
+- `ARCHITECTURE.md` — technical overview of how components connect
+- `docs/ELI5.md` — beginner-friendly explanation
+- `docs/CHEATSHEET.md` — quick reference for skills and prompts
+- `CONTRIBUTING.md` — contribution and update workflow
+- `llms.txt` — machine-readable workspace summary
+
+**Compatibility**
+- dtctl v0.27.1
+- dynatrace-for-ai v2.0.0
