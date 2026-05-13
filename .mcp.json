@@ -1,5 +1,5 @@
 {
-  "_comment": "Generated from .vscode/mcp.json — do not edit directly. To regenerate: jq '{\"mcpServers\": .servers}' .vscode/mcp.json > .mcp.json",
+  "_comment": "Mirrors .vscode/mcp.json (Claude Code format). To sync after editing .vscode/mcp.json: jq '{\"mcpServers\": .servers}' .vscode/mcp.json > .mcp.json",
   "mcpServers": {
     "dynatrace-mcp": {
       "type": "stdio",

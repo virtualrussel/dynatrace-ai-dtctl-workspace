@@ -1,4 +1,5 @@
 {
+  "_comment": "Mirrors .mcp.json (VS Code format). After editing, sync to Claude Code: jq '{\"mcpServers\": .servers}' .vscode/mcp.json > .mcp.json",
   "servers": {
     "dynatrace-mcp": {
       "type": "stdio",
