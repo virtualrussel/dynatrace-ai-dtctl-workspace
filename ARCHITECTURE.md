@@ -6,9 +6,9 @@ This document explains what this workspace is, how it is built, and how the comp
 
 ## What This Is
 
-A pre-configured AI powered observability workspace that connects GitHub Copilot, and/or Claude Code, to Dynatrace that enables natural language investigation of production systems directly from VS Code.
+A pre-configured AI powered observability workspace that connects GitHub Copilot or Claude Code to Dynatrace, enabling natural language investigation of production systems — from VS Code or directly from the terminal via Claude Code CLI.
 
-Instead of logging into Dynatrace, navigating dashboards, and writing queries manually, you type a slash command in Copilot Chat or Claude Code and receive structured, accurate, production-aware answers in seconds.
+Instead of logging into Dynatrace, navigating dashboards, and writing queries manually, you type a slash command and receive structured, accurate, production-aware answers in seconds.
 
 ---
 
@@ -27,33 +27,39 @@ This workspace solves all four problems by combining three things: domain knowle
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    VS Code                                          │
-│                                                                     │
-│      ┌─────────────────┐         ┌──────────────────────────┐       │
-│      │     AI Chat     │         │   Integrated Terminal    │       │
-│      │                 │         │                          │       │
-│      │  /health-check  │         │  dtctl get workflows     │       │
-│      │  ...and more    │         │  dtctl query "..."       │       │
-│      │  (see Prompts)  │         │  dtctl describe notebook │       │
-│      └────────┬────────┘         └────────────┬─────────────┘       │
-│               │                               │                     │
-│      ┌────────▼─────────┐                     │                     │
-│      │  Agent Skills    │                     │                     │
-│      │ .agents/skills/  │                     │                     │
-│      └────────┬─────────┘                     │                     │
-└───────────────┼───────────────────────────────┼─────────────────────┘
-                │ MCP (stdio)                   │ HTTPS + OAuth
-                ▼                               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│              Dynatrace Platform                                     │
-│                                                                     │
-│   YOUR_TENANT_ID.apps.dynatrace.com                                 │
-│                                                                     │
-│   Grail Data Lakehouse — logs, spans, metrics, events               │
-│   Dynatrace Intelligence — problem detection, root cause analysis   │
-│   Notebooks, Dashboards, Workflows                                  │
-└─────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  Clients                                                                     │
+│                                                                              │
+│  ┌──────────────────────────────────────────────┐  ┌──────────────────────┐ │
+│  │                  VS Code                     │  │  Claude Code CLI     │ │
+│  │                                              │  │  (terminal)          │ │
+│  │  ┌────────────────┐  ┌─────────────────────┐ │  │                      │ │
+│  │  │  AI Chat       │  │  Integrated Terminal│ │  │  /health-check       │ │
+│  │  │  (Copilot or   │  │                     │ │  │  ...and more         │ │
+│  │  │  Claude Code)  │  │  dtctl get ...      │ │  │  (see Prompts)       │ │
+│  │  │                │  │  dtctl query "..."  │ │  │                      │ │
+│  │  │  /health-check │  │  dtctl describe ... │ │  └──────────┬───────────┘ │
+│  │  │  ...and more   │  └──────────┬──────────┘ │             │             │
+│  │  └───────┬────────┘             │             │        .mcp.json         │
+│  │          │                      │             │                          │
+│  │  ┌───────▼──────────┐           │             │                          │
+│  │  │  Agent Skills    │           │             │                          │
+│  │  │ .agents/skills/  │           │             │                          │
+│  │  └───────┬──────────┘           │             │                          │
+│  │    .vscode/mcp.json             │             │                          │
+│  └──────────┼──────────────────────┼─────────────┘                          │
+└─────────────┼──────────────────────┼───────────────────────────────────────┘
+              │ MCP (stdio)          │ HTTPS + OAuth
+              ▼                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              Dynatrace Platform                                             │
+│                                                                             │
+│   YOUR_TENANT_ID.apps.dynatrace.com                                         │
+│                                                                             │
+│   Grail Data Lakehouse — logs, spans, metrics, events                       │
+│   Dynatrace Intelligence — problem detection, root cause analysis           │
+│   Notebooks, Dashboards, Workflows                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -97,7 +103,7 @@ This means all skills can be installed without performance penalty — the AI as
 
 ### 2. MCP Server
 **Source:** [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp)
-**Location:** `.vscode/mcp.json`
+**Locations:** `.vscode/mcp.json` (VS Code) · `.mcp.json` (Claude Code CLI and other non-VS Code clients)
 
 The Model Context Protocol (MCP) server is the live data bridge between the AI assistant and Dynatrace. When Copilot needs to answer a question about your environment, it calls the MCP server, which executes real API calls and DQL queries against your Dynatrace tenant and returns live results.
 
@@ -117,9 +123,9 @@ Authentication uses OAuth browser SSO — no API tokens or credentials are store
 
 ### 3. Prompt Templates
 **Source:** [github.com/Dynatrace/dynatrace-for-ai/prompts](https://github.com/Dynatrace/dynatrace-for-ai/tree/main/prompts)
-**Location:** `.github/prompts/`
+**Locations:** `.github/prompts/` (GitHub Copilot) · `.claude/commands/` (Claude Code — symlinked from `.github/prompts/`)
 
-Prompts are pre-built investigation workflows saved as slash commands. They combine skills with structured instructions that tells Copilot what to do, in what order, and with what guardrails. Type `/` in Copilot Chat or `@` in Claude Code to see all available prompts.
+Prompts are pre-built investigation workflows saved as slash commands. They combine skills with structured instructions that tell the AI what to do, in what order, and with what guardrails. Type `/` in any client to see all available prompts.
 
 | Prompt | Purpose | When to Use |
 |---|---|---|
@@ -168,9 +174,9 @@ Each file contains:
 - Prompt directory with all 7 slash commands and when to use them
 - The 16 skills are installed and load automatically
 
-The two files are near-identical (the chat invocation syntax differs — `/` for Copilot vs `@` for Claude Code) but kept separate because each tool requires a specific path:
+Both files use `/command-name` for prompt invocation. They are kept separate because each tool reads from a different path:
 - GitHub Copilot reads only `.github/copilot-instructions.md`
-- Claude Code reads only `CLAUDE.md` at the repo root
+- Claude Code (VS Code plugin and CLI) reads only `CLAUDE.md` at the repo root
 
 ---
 
@@ -200,28 +206,28 @@ dtctl doctor                           # Verify authentication and connectivity
 Here is the complete flow for a typical `/daily-standup-notebook` session:
 
 ```
-1. You type /daily-standup-notebook in Copilot Chat
+1. You type /daily-standup-notebook in Copilot Chat, Claude Code, or Claude Code CLI
 
-2. Copilot loads copilot-instructions.md
+2. The AI loads its session briefing (copilot-instructions.md for Copilot; CLAUDE.md for Claude Code)
    → Knows to use dynatrace-mcp by default
    → Knows the investigation rules and DQL guardrails
 
-3. Copilot loads relevant skills
+3. The AI loads relevant skills
    → dt-obs-services  (RED metrics)
    → dt-obs-problems  (active problems)
    → dt-app-notebooks (notebook structure)
    → dtctl            (verification commands)
 
-4. Copilot calls dynatrace-mcp
+4. The AI calls dynatrace-mcp
    → Executes live DQL queries against production
    → Retrieves metrics, problems, and deployment data
 
-5. Copilot generates the standup report
+5. The AI generates the standup report
    → Today vs yesterday metric comparison
    → Active problems and incidents
    → Action items per service
 
-6. Copilot creates a Dynatrace notebook via MCP
+6. The AI creates a Dynatrace notebook via MCP
    → Executive summary
    → Per-service findings
    → Embedded live DQL queries

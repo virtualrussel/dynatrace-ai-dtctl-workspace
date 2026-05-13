@@ -1,6 +1,6 @@
 # Overview: Why This Repository Exists
 
-This guide is for people who know Dynatrace basics but are new to practical LLM, agentic AI, GitHub Copilot, Claude Code, and VS Code workflows.
+This guide is for people who know Dynatrace basics but are new to practical LLM, agentic AI, GitHub Copilot, Claude Code, and AI-assisted terminal workflows.
 
 It focuses on operating concepts and workflow behavior, not full installation steps (those are in [docs/ELI5.md](./ELI5.md) and [README.md](../README.md)).
 
@@ -115,7 +115,9 @@ Without skills, AI may guess wrong field names or query patterns. With skills, i
 
 ### Prompt templates: the workflow layer
 
-Prompt templates in `.github/prompts/` are the operating procedures.
+Prompt templates are the operating procedures. The same prompt files serve all three clients:
+- `.github/prompts/` — read by GitHub Copilot
+- `.claude/commands/` — read by Claude Code (VS Code plugin and CLI), symlinked to `.github/prompts/`
 
 Examples:
 - `/health-check`
@@ -128,9 +130,7 @@ Examples:
 
 Prompts define what to do, in what order, and with what guardrails.
 
-In practice, you type these prompt names directly in chat (for example, `/health-check`) to trigger the corresponding workflow.
-
-In GitHub Copilot, use `/prompt-name`; in Claude Code, use `@prompt-name`.
+In all three clients, type `/prompt-name` directly in chat (for example, `/health-check`) to trigger the corresponding workflow.
 
 ### How they work together
 
@@ -162,7 +162,7 @@ In practice, dtctl turns AI guidance into auditable operational execution.
 
 ## Recommended First Path for New Users
 
-1. Complete setup in [README.md](../README.md).
+1. Complete setup in [README.md](../README.md). VS Code and Claude Code CLI are both supported — follow the path that matches your preferred interface.
 2. Start with `/health-check` for one service.
 3. Run `/daily-standup` for a team-level view.
 4. Use `/troubleshoot-problem` when a concrete issue is identified.

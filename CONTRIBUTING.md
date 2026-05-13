@@ -40,7 +40,16 @@ Prompt files live in `.github/prompts/` and must use the `.prompt.md` extension.
 - Any DQL syntax constraints relevant to that workflow
 - A clear step-by-step investigation sequence
 
-After adding a prompt, update the prompt tables in `README.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/CHEATSHEET.md`, `docs/OVERVIEW.md`, `ARCHITECTURE.md`, and the task template count in `llms.txt`.
+After adding the prompt file, add a matching symlink in `.claude/commands/` for Claude Code compatibility:
+
+```bash
+cd .claude/commands
+ln -s ../../.github/prompts/<name>.prompt.md <name>.md
+```
+
+The symlink name (without `.md`) becomes the slash command name in Claude Code CLI and the Claude Code VS Code plugin.
+
+Then update the prompt tables in `README.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/CHEATSHEET.md`, `docs/OVERVIEW.md`, `ARCHITECTURE.md`, and the task template count in `llms.txt`.
 
 ## Syncing MCP Configuration
 
@@ -56,8 +65,9 @@ Never edit `.mcp.json` directly.
 
 ```
 .agents/skills/     # Skill source files (edit here)
-.claude/skills/     # Symlinks to .agents/skills/ for Claude Code
-.github/prompts/    # Investigation workflow templates
+.claude/commands/   # Slash command symlinks for Claude Code (CLI and plugin)
+.claude/skills/     # Skill symlinks for Claude Code (CLI and plugin)
+.github/prompts/    # Investigation workflow templates (Copilot source of truth)
 .github/            # copilot-instructions.md (Copilot session briefing)
 .vscode/            # mcp.json (primary), extensions.json, settings.json
 docs/               # ELI5.md, OVERVIEW.md, CHEATSHEET.md

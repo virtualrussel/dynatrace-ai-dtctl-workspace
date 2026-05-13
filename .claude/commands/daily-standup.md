@@ -1,0 +1,1 @@
+../../.github/prompts/daily-standup.prompt.md

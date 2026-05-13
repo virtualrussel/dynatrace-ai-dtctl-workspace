@@ -1,0 +1,1 @@
+../../.github/prompts/health-check.prompt.md

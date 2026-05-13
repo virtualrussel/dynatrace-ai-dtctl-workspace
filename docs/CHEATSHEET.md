@@ -129,6 +129,8 @@ MCP server: `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com`
 
 Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit `.vscode/mcp.json` and regenerate: `jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json`.
 
+**Claude Code CLI:** run `claude` from the workspace directory — MCP config is in `.mcp.json` and the server starts automatically.
+
 ---
 
 **MCP server:** dynatrace-mcp | **Last Updated:** May 11, 2026

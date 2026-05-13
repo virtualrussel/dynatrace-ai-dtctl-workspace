@@ -6,7 +6,7 @@
 |---|---|
 | **MCP server** | `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
-Run `bash setup.sh` to configure this workspace on first use.
+Run `bash setup.sh` to configure this workspace on first use. To start a Claude Code CLI session, run `claude` from this directory — `CLAUDE.md`, all skills, and the MCP server load automatically.
 
 ## Global Rule
 
@@ -30,7 +30,7 @@ When both paths can satisfy a request, prefer MCP.
 
 ## Prompts
 
-Type `@` to access these slash commands:
+Type `/` to run these slash commands:
 
 | Prompt | When to use |
 |---|---|

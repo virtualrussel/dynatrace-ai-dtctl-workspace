@@ -1,6 +1,6 @@
 # Dynatrace AI Workspace (dtctl Edition)
 
-A pre-configured AI assistant workspace for Dynatrace observability workflows, compatible with both Claude Code and GitHub Copilot. Skills, prompts, MCP server connection, and the dtctl CLI are included — run `bash setup.sh` once to configure your tenant URL, then start investigating.
+A pre-configured AI assistant workspace for Dynatrace observability workflows, compatible with GitHub Copilot, Claude Code (VS Code plugin), and Claude Code CLI. Skills, prompts, MCP server connection, and the dtctl CLI are included — run `bash setup.sh` once to configure your tenant URL, then start investigating.
 
 ## Core Purpose
 

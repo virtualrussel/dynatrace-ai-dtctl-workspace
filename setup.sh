@@ -53,6 +53,17 @@ else
   echo "         Install: brew install jq  /  apt install jq  /  choco install jq"
 fi
 
+# Claude Code CLI
+CLAUDE_CLI_STATUS="unavailable"
+if command -v claude &>/dev/null; then
+  CLAUDE_VERSION=$(claude --version 2>/dev/null | head -1 || echo "installed")
+  echo "  [ok]   claude ${CLAUDE_VERSION}"
+  CLAUDE_CLI_STATUS="ok"
+else
+  echo "  [info] claude CLI not found — optional for terminal-only workflows"
+  echo "         Install: npm install -g @anthropic-ai/claude-code"
+fi
+
 # dtctl
 if command -v dtctl &>/dev/null; then
   DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 || echo "installed")
@@ -176,6 +187,17 @@ echo "   Then verify: dtctl doctor"
 echo ""
 STEP=$((STEP + 1))
 
-echo "${STEP}. Reload VS Code:"
-echo "   Cmd+Shift+P → Developer: Reload Window"
-echo ""
+if command -v code &>/dev/null; then
+  echo "${STEP}. Reload VS Code:"
+  echo "   Cmd+Shift+P → Developer: Reload Window"
+  echo ""
+  STEP=$((STEP + 1))
+fi
+
+if [[ "$CLAUDE_CLI_STATUS" == "ok" ]]; then
+  echo "${STEP}. Start Claude Code CLI:"
+  echo "   claude"
+  echo "   Then type /health-check to verify the connection."
+  echo ""
+  STEP=$((STEP + 1))
+fi

@@ -10,7 +10,7 @@ You need these tools installed:
 
 | What | Why | Get It |
 |---|---|---|
-| [VS Code](https://code.visualstudio.com/) | Where you will work | Download and install |
+| [VS Code](https://code.visualstudio.com/) | Editor with Copilot/Claude Chat — **skip if using Claude Code CLI** | Download and install |
 | GitHub Copilot or Claude Code | The AI brain | Copilot: sign in at github.com/features/copilot · Claude: sign in at claude.ai/code |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server — the live data bridge between the AI and your Dynatrace environment | Download LTS version |
 | [dtctl](https://github.com/dynatrace-oss/dtctl) | CLI for verifying and managing Dynatrace resources | Offered for installation by `setup.sh` in Step 1 — or install manually |
@@ -21,7 +21,13 @@ Quick prerequisite verification:
 node --version
 ```
 
-Install required VS Code extensions:
+> **Prefer the terminal over VS Code?** Install Claude Code CLI instead of the VS Code extensions:
+> ```bash
+> npm install -g @anthropic-ai/claude-code
+> ```
+> Then skip to Step 1 (clone) → Step 2 (dtctl) → run `claude` from the workspace directory.
+
+Install required VS Code extensions (VS Code users only):
 
 ```bash
 code --install-extension github.copilot \
@@ -79,17 +85,17 @@ When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27
 
 ---
 
-## Step 3 — Reload VS Code
+## Step 3 — Activate the MCP Connection
 
-Press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter.
+**VS Code users:** Press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter. This activates the Dynatrace live data connection. The first time you use a prompt, a browser window will open for Dynatrace login — complete it and come back.
 
-This activates the Dynatrace live data connection. The first time you use a prompt, a browser window will open for Dynatrace login — complete it and come back.
+**Claude Code CLI users:** No reload needed. Run `claude` from the workspace directory — the MCP server starts automatically. A browser window will open for Dynatrace login on first use.
 
 ---
 
 ## Step 4 — Try It
 
-In GitHub Copilot Chat, type this prompt. In Claude Code, type the same prompt (or use `@health-check` for a guided workflow):
+In GitHub Copilot Chat, Claude Code, or Claude Code CLI, type this prompt (or use `/health-check` for a guided workflow):
 
 ```
 Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour

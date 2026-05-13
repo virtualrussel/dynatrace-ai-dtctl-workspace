@@ -38,8 +38,10 @@ dynatrace-ai-dtctl-workspace/
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
 ├── .agents/skills/               # 16 Dynatrace domain skills
-├── .claude/skills/               # Symlinks for Claude Code compatibility
-├── .mcp.json                     # MCP server configuration for Copilot CLI
+├── .claude/
+│   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
+│   └── skills/                   # Skill symlinks for Claude Code compatibility
+├── .mcp.json                     # MCP server configuration for Claude Code CLI and other non-VS Code clients
 ├── .vscode/
 │   ├── mcp.json                  # MCP server configuration for VS Code Copilot
 │   ├── extensions.json           # Recommended VS Code extensions
@@ -73,11 +75,14 @@ If `node` is not found or below v18, install the LTS version from [nodejs.org](h
 
 This workspace works with:
 - **GitHub Copilot** in VS Code (subscription required)
-- **Claude Code** via web or desktop (Claude Pro or Team required)
+- **Claude Code** via VS Code plugin or web/desktop (Claude Pro or Team required)
+- **Claude Code CLI** via the `claude` terminal command — no VS Code required
 
-Both receive the same skills, prompts, and MCP server access and follow the same setup steps. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session; `CLAUDE.md` is auto-loaded at the start of each Claude Code session.
+All three receive the same skills, prompts, and MCP server access. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session; `CLAUDE.md` is auto-loaded at the start of each Claude Code session (CLI or plugin).
 
-### 1. Install VS Code extensions
+**Claude Code CLI users:** skip step 1 (VS Code extensions are not needed) and step 5 (no reload required). After cloning and running `setup.sh`, run `claude` from the workspace directory to start.
+
+### 1. Install VS Code extensions (VS Code users only)
 
 VS Code must be installed before running this step. Download from [code.visualstudio.com](https://code.visualstudio.com/) if not already present.
 
@@ -146,7 +151,7 @@ If using token-based auth: create your platform token in Dynatrace: **Identity &
 
 If OAuth fails with a keyring error (for example, `dbus-launch` not found), use the token-based method above.
 
-### 5. Reload VS Code
+### 5. Reload VS Code (VS Code users only)
 
 Press `Cmd/Ctrl+Shift+P` → `Developer: Reload Window`
 
@@ -160,7 +165,7 @@ When you first connect to Dynatrace, a browser window will open for SSO authenti
 Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour
 ```
 
-**Claude Code users:** In Claude Code, type the same query or use `@health-check` for a guided workflow.
+**Claude Code users:** In Claude Code (VS Code plugin or CLI), type the same query or use `/health-check` for a guided workflow.
 
 If you see a table of services with request counts — you are live.
 
@@ -203,8 +208,9 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 
 Prompts are pre-built investigation workflows available as slash commands.
 
-- **GitHub Copilot:** Type `/` in Copilot Chat (see `.github/prompts/`)
-- **Claude Code:** Type `@` followed by the prompt name (e.g. `@health-check`)
+All three clients use `/command-name`. The prompt files are sourced from:
+- `.github/prompts/` — used by GitHub Copilot
+- `.claude/commands/` — used by Claude Code (CLI and VS Code plugin), symlinked to `.github/prompts/`
 
 | Prompt | When to Use |
 |---|---|
@@ -249,8 +255,8 @@ This workspace maintains two MCP configuration files. `.vscode/mcp.json` is the 
 
 | File | Used By | Edit |
 |---|---|---|
-| `.vscode/mcp.json` | VS Code GitHub Copilot and Claude Code | Primary config — `setup.sh` sets this on first run |
-| `.mcp.json` | GitHub Copilot CLI | Auto-generated — do not edit directly |
+| `.vscode/mcp.json` | VS Code (GitHub Copilot and Claude Code plugin) | Primary config — `setup.sh` sets this on first run |
+| `.mcp.json` | Claude Code CLI and other non-VS Code clients | Auto-generated — do not edit directly |
 
 `setup.sh` handles initial configuration. For subsequent changes to `.vscode/mcp.json`, regenerate `.mcp.json` manually (requires `jq`: `brew install jq` / `apt install jq` / `choco install jq`):
 
