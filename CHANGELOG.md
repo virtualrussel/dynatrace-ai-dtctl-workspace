@@ -6,8 +6,6 @@
 - Claude Code CLI as a first-class supported client — run `claude` from the workspace directory to start a session with all skills and MCP server active
 - `.claude/commands/` directory with slash command symlinks for Claude Code (CLI and VS Code plugin), mirroring `.github/prompts/`
 - Claude Code CLI detection and conditional next-step guidance in `setup.sh`
-- `dtctl-release` and `pr-review` skills (contributor/developer tooling)
-
 ### Fixed
 - Corrected prompt invocation syntax across all documentation — Claude Code uses `/command-name`, not `@command-name`
 - MCP server now enabled by default in `.claude/settings.local.json` (previously disabled)
