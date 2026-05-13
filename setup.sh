@@ -7,7 +7,6 @@ FILES=(
   "$SCRIPT_DIR/.vscode/mcp.json"
   "$SCRIPT_DIR/.mcp.json"
   "$SCRIPT_DIR/CLAUDE.md"
-  "$SCRIPT_DIR/.github/copilot-instructions.md"
   "$SCRIPT_DIR/ARCHITECTURE.md"
   "$SCRIPT_DIR/README.md"
   "$SCRIPT_DIR/docs/ELI5.md"

@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **MCP server** | `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com` |
+| **MCP server** | `dynatrace-mcp` |
 
-Run `bash setup.sh` to configure this workspace on first use.
+Run `bash setup.sh` to configure your Dynatrace environment on first use.
 
 ## Global Rule
 
