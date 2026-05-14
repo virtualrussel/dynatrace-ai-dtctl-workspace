@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1] - 2026-05-13
+
+### Fixed
+- Removed invalid `_comment` field from `.vscode/mcp.json` that caused MCP config parse errors
+- Cleaned up `.github/copilot-instructions.md` to remove stale references
+
+### Changed
+- Removed `dtctl-release` and `pr-review` developer-only skills and their dangling symlinks — these were internal tools never intended for the user-facing workspace
+- Clarified MCP config documentation: `.mcp.json` serves Claude Code CLI and non-VS Code clients; `.vscode/mcp.json` serves VS Code
+
+---
+
 ## [1.1.0] - 2026-05-13
 
 ### Added
