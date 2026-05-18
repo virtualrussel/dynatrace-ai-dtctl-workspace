@@ -27,39 +27,39 @@ This workspace solves all four problems by combining three things: domain knowle
 ## Architecture
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│  Clients                                                                      │
-│                                                                               │
-│  ┌───────────────────────────────────────────────┐  ┌──────────────────────┐  │
-│  │                  VS Code                      │  │  Claude Code CLI     │  │
-│  │                                               │  │  (terminal)          │  │
-│  │  ┌────────────────┐  ┌─────────────────────┐  │  │                      │  │
-│  │  │  AI Chat       │  │  Integrated Terminal│  │  │  /health-check       │  │
-│  │  │  (Copilot or   │  │                     │  │  │  ...and more         │  │
-│  │  │  Claude Code)  │  │  dtctl get ...      │  │  │  (see Prompts)       │  │
-│  │  │                │  │  dtctl query "..."  │  │  │                      │  │
-│  │  │  /health-check │  │  dtctl describe ... │  │  └──────────┬───────────┘  │
-│  │  │  ...and more   │  └──────────┬──────────┘  │             │              │
-│  │  └───────┬────────┘             │             │        .mcp.json           │
-│  │          │                      │             │                            │
-│  │  ┌───────▼──────────┐           │             │                            │
-│  │  │  Agent Skills    │           │             │                            │
-│  │  │ .agents/skills/  │           │             │                            │
-│  │  └───────┬──────────┘           │             │                            │
-│  │    .vscode/mcp.json             │             │                            │
-│  └──────────┼──────────────────────┼─────────────┘                            │
-└─────────────┼──────────────────────┼──────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Clients                                                                    │
+│                                                                             │
+│  ┌────────────────────────────────────────────────┐  ┌───────────────────┐  │
+│  │                  VS Code                       │  │  Claude Code CLI  │  │
+│  │                                                │  │  (terminal)       │  │
+│  │  ┌────────────────┐  ┌──────────────────────┐  │  │                   │  │
+│  │  │  AI Chat       │  │  Integrated Terminal │  │  │  /health-check    │  │
+│  │  │  (Copilot or   │  │                      │  │  │  ...and more      │  │
+│  │  │  Claude Code)  │  │  dtctl get ...       │  │  │  (see Prompts)    │  │
+│  │  │                │  │  dtctl query "..."   │  │  │                   │  │
+│  │  │  /health-check │  │  dtctl describe ...  │  │  └──────────┬────────┘  │
+│  │  │  ...and more   │  └──────────┬───────────┘  │             │           │
+│  │  └───────┬────────┘             │              │        .mcp.json        │
+│  │          │                      │              │                         │
+│  │  ┌───────▼──────────┐           │              │                         │
+│  │  │  Agent Skills    │           │              │                         │
+│  │  │ .agents/skills/  │           │              │                         │
+│  │  └───────┬──────────┘           │              │                         │
+│  │    .vscode/mcp.json             │              │                         │
+│  └──────────┼──────────────────────┼──────────────┘                         │
+└─────────────┼──────────────────────┼────────────────────────────────────────┘
               │ MCP (stdio)          │ HTTPS + OAuth
               ▼                      ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│              Dynatrace Platform                                               │
-│                                                                               │
-│   YOUR_TENANT_ID.apps.dynatrace.com                                           │
-│                                                                               │
-│   Grail Data Lakehouse — logs, spans, metrics, events                         │
-│   Dynatrace Intelligence — problem detection, root cause analysis             │
-│   Notebooks, Dashboards, Workflows                                            │
-└───────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              Dynatrace Platform                                             │
+│                                                                             │
+│   YOUR_TENANT_ID.apps.dynatrace.com                                         │
+│                                                                             │
+│   Grail Data Lakehouse — logs, spans, metrics, events                       │
+│   Dynatrace Intelligence — problem detection, root cause analysis           │
+│   Notebooks, Dashboards, Workflows                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
