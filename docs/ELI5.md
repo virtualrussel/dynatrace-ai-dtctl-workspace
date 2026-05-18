@@ -53,7 +53,7 @@ git clone https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace.git
 cd dynatrace-ai-dtctl-workspace
 ```
 
-Then open the folder in VS Code: **File → Open Folder**.
+Continue in the cloned directory for setup.
 
 Next, run the setup script:
 
@@ -87,7 +87,7 @@ When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27
 
 ## Step 3 — Activate the MCP Connection
 
-**VS Code users:** Press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter. This activates the Dynatrace live data connection. The first time you use a prompt, a browser window will open for Dynatrace login — complete it and come back.
+**VS Code users:** If this is your first time opening the workspace in VS Code, use **File → Open Folder** and select this repository directory. If the workspace is already open in VS Code, press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter. This activates the Dynatrace live data connection. The first time you use a prompt, a browser window will open for Dynatrace login — complete it and come back.
 
 **Claude Code CLI users:** No reload needed. Run `claude` from the workspace directory — the MCP server starts automatically. A browser window will open for Dynatrace login on first use.
 

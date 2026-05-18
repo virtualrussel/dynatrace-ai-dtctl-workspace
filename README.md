@@ -15,7 +15,6 @@ Recommended reading order: [docs/ELI5.md](./docs/ELI5.md) → [docs/OVERVIEW.md]
 ```
 dynatrace-ai-dtctl-workspace/
 ├── README.md                     # Setup guide and quick reference
-├── llms.txt                      # Machine-readable workspace summary for LLMs
 ├── docs/
 │   ├── ELI5.md                   # Beginner-friendly 15-minute install guide
 │   ├── OVERVIEW.md               # Newcomer guide: purpose, value, and operating model
@@ -23,6 +22,7 @@ dynatrace-ai-dtctl-workspace/
 ├── ARCHITECTURE.md               # How the workspace is built and how components connect
 ├── CONTRIBUTING.md               # How to update skills, prompts, and MCP config
 ├── CLAUDE.md                     # Auto-loaded session briefing for Claude Code
+├── llms.txt                      # Machine-readable workspace summary for LLMs
 ├── setup.sh                      # First-time setup script
 ├── skills-lock.json              # Locked skill versions
 ├── LICENSE
@@ -74,7 +74,7 @@ If `node` is not found or below v18, install the LTS version from [nodejs.org](h
 ### Choose Your Frontend
 
 This workspace works with:
-- **GitHub Copilot** in VS Code (subscription required)
+- **GitHub Copilot** via VS Code plugin (subscription required)
 - **Claude Code** via VS Code plugin or web/desktop (Claude Pro or Team required)
 - **Claude Code CLI** via the `claude` terminal command — no VS Code required
 
@@ -108,7 +108,7 @@ git clone https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace.git
 cd dynatrace-ai-dtctl-workspace
 ```
 
-Then open the folder in VS Code via **File → Open Folder**.
+Continue in the cloned directory for setup.
 
 ### 3. Set your tenant ID
 
@@ -151,9 +151,11 @@ If using token-based auth: create your platform token in Dynatrace: **Identity &
 
 If OAuth fails with a keyring error (for example, `dbus-launch` not found), use the token-based method above.
 
-### 5. Reload VS Code (VS Code users only)
+### 5. Open or refresh VS Code (VS Code users only)
 
-Press `Cmd/Ctrl+Shift+P` → `Developer: Reload Window`
+If this is your first time opening the workspace in VS Code, use **File → Open Folder** and select this repository directory.
+
+If the workspace is already open in VS Code, press `Cmd/Ctrl+Shift+P` → `Developer: Reload Window`.
 
 When you first connect to Dynatrace, a browser window will open for SSO authentication. This is expected. Complete the login and return to VS Code. Subsequent sessions authenticate automatically.
 
@@ -169,7 +171,7 @@ Using the dynatrace-mcp server, list the top 5 services by request volume in the
 
 If you see a table of services with request counts — you are live.
 
-If you get no results or an error, check that `dtctl doctor` passes and that VS Code was reloaded after setup. See [ARCHITECTURE.md](./ARCHITECTURE.md) for how the components connect.
+If you get no results or an error, check that `dtctl doctor` passes and that the workspace was opened or refreshed in VS Code after setup. See [ARCHITECTURE.md](./ARCHITECTURE.md) for how the components connect.
 
 ---
 
