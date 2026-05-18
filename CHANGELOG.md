@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2] - 2026-05-18
+
+### Changed
+- Updated setup guidance in `README.md` and `docs/ELI5.md` to avoid requiring an unnecessary reload when VS Code is being opened for the first time.
+- Clarified the VS Code step to support both paths: open the workspace if not yet open, or use `Developer: Reload Window` if already open.
+- Aligned troubleshooting wording so verification now refers to the workspace being opened or refreshed after setup.
+
 ## [1.1.1] - 2026-05-13
 
 ### Fixed
