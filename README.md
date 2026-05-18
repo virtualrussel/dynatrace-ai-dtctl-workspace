@@ -1,7 +1,7 @@
 # dynatrace-ai-dtctl-workspace
 
-[![Dynatrace](https://img.shields.io/badge/Dynatrace-Intelligence-1496ff?logo=dynatrace&logoColor=white)](https://www.dynatrace.com)
-[![GitHub release](https://img.shields.io/github/v/release/virtualrussel/dynatrace-ai-dtctl-workspace)](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/releases/latest)
+[![Dynatrace](https://img.shields.io/badge/Dynatrace-Intelligence-plogo=dynatrace&logoColor=white)](https://www.dynatrace.com)
+[![GitHub release](https://img.shields.io/github/v/release/virtualrussel/dynatrace-ai-dtctl-workspace?color=blueviolet)](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/releases/latest)
 [![Commits since release](https://img.shields.io/github/commits-since/virtualrussel/dynatrace-ai-dtctl-workspace/latest)](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/commits/main)
 
 An AI-powered observability workspace for Dynatrace that combines GitHub Copilot or Claude AI, the Dynatrace MCP server, dtctl, and the [dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) skills framework to accelerate incident triage, root cause analysis, and day-to-day observability workflows.
