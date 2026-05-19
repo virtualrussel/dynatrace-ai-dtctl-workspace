@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.3] - 2026-05-19
+
+### Fixed
+- Removed trailing comma after the `dtctl` entry in `skills-lock.json` (line 84) that made the file invalid JSON, causing parse failures in `jq` and any automation that reads skill metadata
+
 ## [1.1.2] - 2026-05-18
 
 ### Changed
