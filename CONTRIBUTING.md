@@ -1,76 +1,191 @@
-# Contributing
+# Contributing to the Dynatrace AI Workspace
+
+This document explains how to update skills, prompts, and MCP configuration in this workspace.
+
+---
 
 ## Updating Skills
 
-Skills are sourced from upstream GitHub repositories and version-locked in `skills-lock.json`. To pull the latest versions:
+Skills are domain knowledge files sourced from [Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) and [dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl).
+
+To update all skills to the latest version:
 
 ```bash
-# Update all skills from dynatrace/dynatrace-for-ai
 npx skills add dynatrace/dynatrace-for-ai
-
-# Update the dtctl skill
 npx skills add dynatrace-oss/dtctl
+git add .agents/skills/ .claude/skills/ skills-lock.json
+git commit -m "Update skills to latest"
+git push
 ```
 
-After updating, commit the changes to `.agents/skills/`, `.claude/skills/`, and the updated hashes in `skills-lock.json` together.
+Skills are versioned via hash in `skills-lock.json`. The update command automatically regenerates these hashes.
 
-## Adding a New Skill
+---
 
-Skills must follow the `dt-<domain>[-<usecase>]` naming convention and live in `.agents/skills/<skill-name>/`. Each skill requires:
+## Syncing dtctl after Upgrades
 
-- `SKILL.md` — the instruction file loaded by the AI assistant
-- `references/` — optional subdirectory for detailed reference material
+**Important:** When you upgrade dtctl, the dtctl skill must be updated to match.
 
-After adding a skill directory, add a symlink in `.claude/skills/` for Claude Code compatibility:
+### Why This Matters
+
+dtctl v0.28.0 adds new features and syntax that older skills don't document. If your dtctl binary is v0.28.0+ but the skill is from an older version, examples will reference flags and features that don't exist yet, and vice versa.
+
+### When to Sync
+
+After upgrading dtctl:
 
 ```bash
-cd .claude/skills
-ln -s ../../.agents/skills/<skill-name> <skill-name>
+dtctl version
 ```
 
-Then add the skill entry to `skills-lock.json` with its source repository and computed hash.
-
-After adding a skill, update the skill count and tables in `README.md` (directory tree comment + skills table), `ARCHITECTURE.md` (skills table + skill count in the session briefing description), `CLAUDE.md` (skills table), `.github/copilot-instructions.md` (skills table), `docs/CHEATSHEET.md` (skills table), `docs/OVERVIEW.md` (skills examples list), and the domain package count in `llms.txt`.
-
-## Adding a New Prompt
-
-Prompt files live in `.github/prompts/` and must use the `.prompt.md` extension. Follow the existing prompts as a template — each should include:
-
-- A brief description of the workflow
-- Any DQL syntax constraints relevant to that workflow
-- A clear step-by-step investigation sequence
-
-After adding the prompt file, add a matching symlink in `.claude/commands/` for Claude Code compatibility:
+If the version is different from what you last synced, run:
 
 ```bash
-cd .claude/commands
-ln -s ../../.github/prompts/<name>.prompt.md <name>.md
+npx skills add dynatrace-oss/dtctl
+git add .agents/skills/ .claude/skills/ skills-lock.json
+git commit -m "Sync dtctl skill after dtctl upgrade to v$(dtctl version | head -1)"
+git push
 ```
 
-The symlink name (without `.md`) becomes the slash command name in Claude Code CLI and the Claude Code VS Code plugin.
+### What Changed in dtctl v0.28.0+
 
-Then update the prompt tables in `README.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/CHEATSHEET.md`, `docs/OVERVIEW.md`, `ARCHITECTURE.md`, and the task template count in `llms.txt`.
+The skill documents these new capabilities:
 
-## Syncing MCP Configuration
+- **Structured workflow input:** `--input` flag with JSON payloads (preferred over `--params`)
+- **AWS provider support:** Feature parity with Azure/GCP for cloud integrations
+- **Typed SDK module:** Extensibility for sibling Go tools (reference only, not CLI-relevant)
 
-`.vscode/mcp.json` is the source of truth. After any changes to it, regenerate `.mcp.json`:
+Make sure examples in the skill match these features.
 
-```bash
-jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
-```
+---
 
-Never edit `.mcp.json` directly.
+## Updating MCP Configuration
 
-## Workspace Structure
+MCP configuration is dual-file: `.vscode/mcp.json` (source) and `.mcp.json` (generated).
 
-```
-.agents/skills/     # Skill source files (edit here)
-.claude/commands/   # Slash command symlinks for Claude Code (CLI and plugin)
-.claude/skills/     # Skill symlinks for Claude Code (CLI and plugin)
-.github/prompts/    # Investigation workflow templates (Copilot source of truth)
-.github/            # copilot-instructions.md (Copilot session briefing)
-.vscode/            # mcp.json (primary), extensions.json, settings.json
-docs/               # ELI5.md, OVERVIEW.md, CHEATSHEET.md
-CLAUDE.md           # Claude Code session briefing
-skills-lock.json    # Locked skill versions with hashes
-```
+When updating MCP server configuration:
+
+1. Edit `.vscode/mcp.json`
+2. Regenerate `.mcp.json`:
+   ```bash
+   jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
+   ```
+3. Commit both:
+   ```bash
+   git add .vscode/mcp.json .mcp.json
+   git commit -m "Update MCP configuration"
+   ```
+
+The `setup.sh` script handles initial configuration. Manual regeneration is only needed after hand-editing `.vscode/mcp.json`.
+
+---
+
+## Updating Prompts
+
+Prompts are located in `.github/prompts/` (source) and symlinked in `.claude/commands/` for Claude Code CLI compatibility.
+
+When adding or modifying a prompt:
+
+1. Edit the markdown file in `.github/prompts/`
+2. Test locally:
+   - In VS Code with GitHub Copilot: `/your-command`
+   - In Claude Code CLI: `claude` then `/your-command`
+3. Verify it loads and executes correctly
+4. Commit:
+   ```bash
+   git add .github/prompts/ .claude/commands/
+   git commit -m "Add or update prompt: your-command"
+   ```
+
+### Prompt Best Practices
+
+- **Always start with problems.** Never encourage broad log searches without problem context.
+- **Document version requirements.** If a prompt uses dtctl features from v0.28.0+, add a note at the top.
+- **Test with real data.** Run the prompt against your test environment before committing.
+
+---
+
+## Updating Documentation
+
+Session briefing files are auto-loaded by the AI assistants and should be kept synchronized.
+
+### Files to Update Together
+
+When making changes that affect multiple docs:
+
+| File | Loaded By | When to Update |
+| --- | --- | --- |
+| `ARCHITECTURE.md` | Developers, contributors | Architecture changes, new components |
+| `CLAUDE.md` | Claude Code (CLI and VS Code plugin) | Session defaults, tool priority, new prompts |
+| `.github/copilot-instructions.md` | GitHub Copilot | Session defaults, tool priority, new prompts |
+| `README.md` | Setup flow, new users | Prerequisites, installation, quick start |
+| `docs/ELI5.md` | Newcomers | High-level "explain like I'm 5" intro |
+| `docs/CHEATSHEET.md` | Active users | Workflow reference, command quick lookup |
+
+Example: If you add a new prompt, update:
+1. The prompt file in `.github/prompts/`
+2. Symlink it in `.claude/commands/`
+3. Add to the "Prompts" table in both `CLAUDE.md` and `.github/copilot-instructions.md`
+4. Add to `docs/CHEATSHEET.md` under the appropriate workflow section
+
+---
+
+## Testing Changes Before Commit
+
+1. **Skills:** Run a health-check prompt to verify skills load
+   ```bash
+   claude
+   /health-check
+   ```
+
+2. **Prompts:** Test in both Claude Code and GitHub Copilot (if available)
+   ```bash
+   claude
+   /your-new-command
+   ```
+
+3. **dtctl:** After upgrading, verify version and re-sync skill
+   ```bash
+   dtctl version
+   npx skills add dynatrace-oss/dtctl
+   dtctl get workflows  # Verify CLI works
+   ```
+
+4. **Documentation:** Open `ARCHITECTURE.md`, `CLAUDE.md`, and `README.md` in your editor and verify all links work and content is accurate
+
+---
+
+## Git Workflow
+
+1. Create a branch:
+   ```bash
+   git checkout -b feat/description-of-change
+   ```
+
+2. Make changes in `.agents/skills/`, `.github/prompts/`, docs, etc.
+
+3. Test locally (see "Testing Changes Before Commit" above)
+
+4. Commit with clear messages:
+   ```bash
+   git add .agents/skills/ .claude/skills/ skills-lock.json
+   git commit -m "Update skills to v$(date +%Y-%m-%d)"
+   
+   git add CLAUDE.md .github/copilot-instructions.md
+   git commit -m "Add /new-prompt to session briefings"
+   ```
+
+5. Push and create a pull request:
+   ```bash
+   git push -u origin feat/description-of-change
+   ```
+
+---
+
+## Questions?
+
+For issues with skills, prompts, or MCP setup:
+
+- **dtctl or MCP:** See [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) or [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp)
+- **Skills source:** See [github.com/Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai)
+- **This workspace:** Open an issue in [github.com/virtualrussel/dynatrace-ai-dtctl-workspace](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace)

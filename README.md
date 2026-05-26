@@ -58,7 +58,7 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | Dynatrace open-source CLI for agents & humans to manage observability resources |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.28.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.

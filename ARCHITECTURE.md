@@ -15,12 +15,49 @@ Instead of logging into Dynatrace, navigating dashboards, and writing queries ma
 ## The Problem It Solves
 
 GitHub Copilot is a general-purpose AI assistant. Without domain-specific knowledge it will:
+
 - Guess DQL syntax and likely get it wrong
 - Use field names that don't exist (`log.level` instead of `loglevel`)
 - Write queries that hit scan limits and return zero results
 - Have no access to your live Dynatrace data
 
 This workspace solves all four problems by combining three things: domain knowledge, live data access, and pre-built workflows.
+
+---
+
+## Version Requirements
+
+This workspace requires specific minimum versions of core components. Older versions have silent failure modes or data correctness issues.
+
+| Component | Minimum Version | Why |
+| --- | --- | --- |
+| **Node.js** | 18.0.0 | Required for MCP server and skill framework |
+| **dtctl** | 0.28.0 | OAuth refresh token race condition fix; cloud connection pagination; structured workflow input |
+| **jq** | any | Optional; needed only for manual MCP config updates |
+
+### dtctl v0.28.0 Breaking Changes
+
+The minimum dtctl version requirement enforces three critical fixes:
+
+**OAuth Refresh Token Race Condition.** When two or more dtctl invocations share a credential (common in CI pipelines with parallel jobs), both attempt to refresh an expiring token simultaneously. Only the first refresh succeeds; the others receive `invalid_grant` errors. v0.28.0 adds cross-process locking (via `flock` on Unix, keyed mutex on Windows) to prevent the race. If you run parallel dtctl commands in CI, you must upgrade.
+
+**Cloud Connection Pagination.** `dtctl get {aws,azure,gcp} connections` and `dtctl get {aws,azure,gcp} monitoring` previously fetched only the first page of results, silently truncating output in tenants with many cloud configs. v0.28.0 iterates all pages. If you use AWS, Azure, or GCP integrations and have more than ~25 connections or monitoring configs, older versions lose data.
+
+**Structured Workflow Input.** The modern Dynatrace Workflows API accepts JSON object payloads rather than string-keyed parameter maps. v0.28.0 adds `dtctl exec workflow --input '{"key":"value"}'` as the preferred form. The legacy `--params key=value` still works but is documented as deprecated. Prompts in this workspace will use `--input` by default.
+
+Check your installed version:
+
+```bash
+dtctl version
+```
+
+If you see v0.27.1 or earlier, upgrade immediately:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
+# or via Homebrew
+brew update && brew upgrade dtctl
+```
 
 ---
 
@@ -60,6 +97,7 @@ This workspace solves all four problems by combining three things: domain knowle
 │   Dynatrace Intelligence — problem detection, root cause analysis           │
 │   Notebooks, Dashboards, Workflows                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
+
 ```
 
 ---
@@ -67,8 +105,8 @@ This workspace solves all four problems by combining three things: domain knowle
 ## The Five Components
 
 ### 1. Agent Skills
-**Source:** [github.com/Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) & [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl)
-**Location:** `.agents/skills/`
+
+**Source:** [github.com/Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) & [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Location:** `.agents/skills/`
 
 Skills are markdown files containing domain-specific knowledge. They teach the AI assistant how Dynatrace works including correct DQL syntax, field names, query patterns, and investigation workflows. The AI assistant loads them automatically when relevant, using a three-tier progressive disclosure model:
 
@@ -76,40 +114,39 @@ Skills are markdown files containing domain-specific knowledge. They teach the A
 Tier 1 — Catalog     Always loaded    ~100 tokens per skill
 Tier 2 — SKILL.md    On demand        ~5,000 tokens
 Tier 3 — references/ On demand        Deep reference detail
+
 ```
 
 This means all skills can be installed without performance penalty — the AI assistant only loads what it needs for each specific query.
 
-| Skill | Domain |
-|---|---|
-| `dt-dql-essentials` | DQL syntax, pitfalls, query patterns — required before any DQL |
-| `dt-obs-problems` | Davis Problems, root cause analysis, impact assessment |
-| `dt-obs-logs` | Log queries, filtering, error classification |
-| `dt-obs-tracing` | Distributed traces, spans, failure detection |
-| `dt-obs-services` | RED metrics, SLA tracking, runtime monitoring |
-| `dt-obs-hosts` | Host and process metrics |
-| `dt-obs-kubernetes` | Pods, workloads, nodes, cluster health |
-| `dt-obs-aws` | EC2, RDS, Lambda, ECS/EKS, cost optimization |
-| `dt-obs-azure` | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
-| `dt-obs-gcp` | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management |
-| `dt-obs-frontends` | RUM, Web Vitals, user sessions, mobile crashes |
+| Skill                         | Domain                                                                  |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| `dt-dql-essentials`           | DQL syntax, pitfalls, query patterns — required before any DQL          |
+| `dt-obs-problems`             | Davis Problems, root cause analysis, impact assessment                  |
+| `dt-obs-logs`                 | Log queries, filtering, error classification                            |
+| `dt-obs-tracing`              | Distributed traces, spans, failure detection                            |
+| `dt-obs-services`             | RED metrics, SLA tracking, runtime monitoring                           |
+| `dt-obs-hosts`                | Host and process metrics                                                |
+| `dt-obs-kubernetes`           | Pods, workloads, nodes, cluster health                                  |
+| `dt-obs-aws`                  | EC2, RDS, Lambda, ECS/EKS, cost optimization                            |
+| `dt-obs-azure`                | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
+| `dt-obs-gcp`                  | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management  |
+| `dt-obs-frontends`            | RUM, Web Vitals, user sessions, mobile crashes                          |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
-| `dt-app-dashboards` | Dashboard JSON creation and modification |
-| `dt-app-notebooks` | Notebook creation and analytics workflows |
-| `dt-migration` | Classic entity DQL → Smartscape migration |
-| `dtctl` | CLI commands for managing Dynatrace resources |
-
----
+| `dt-app-dashboards`           | Dashboard JSON creation and modification                                |
+| `dt-app-notebooks`            | Notebook creation and analytics workflows                               |
+| `dt-migration`                | Classic entity DQL → Smartscape migration                               |
+| `dtctl`                       | CLI commands for managing Dynatrace resources                           |
 
 ### 2. MCP Server
-**Source:** [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp)
-**Locations:** `.vscode/mcp.json` (VS Code) · `.mcp.json` (Claude Code CLI and other non-VS Code clients)
+
+**Source:** [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp) **Locations:** `.vscode/mcp.json` (VS Code) · `.mcp.json` (Claude Code CLI and other non-VS Code clients)
 
 The Model Context Protocol (MCP) server is the live data bridge between the AI assistant and Dynatrace. When Copilot needs to answer a question about your environment, it calls the MCP server, which executes real API calls and DQL queries against your Dynatrace tenant and returns live results.
 
 One environment is configured as a named server:
 
-```json
+```
 dynatrace-mcp  →  https://YOUR_TENANT_ID.apps.dynatrace.com
 ```
 
@@ -117,25 +154,24 @@ Authentication uses OAuth browser SSO — no API tokens or credentials are store
 
 ```
 "Confirm which MCP server you are using"
+
 ```
 
----
-
 ### 3. Prompt Templates
-**Source:** [github.com/Dynatrace/dynatrace-for-ai/prompts](https://github.com/Dynatrace/dynatrace-for-ai/tree/main/prompts)
-**Locations:** `.github/prompts/` (GitHub Copilot) · `.claude/commands/` (Claude Code — symlinked from `.github/prompts/`)
+
+**Source:** [github.com/Dynatrace/dynatrace-for-ai/prompts](https://github.com/Dynatrace/dynatrace-for-ai/tree/main/prompts) **Locations:** `.github/prompts/` (GitHub Copilot) · `.claude/commands/` (Claude Code — symlinked from `.github/prompts/`)
 
 Prompts are pre-built investigation workflows saved as slash commands. They combine skills with structured instructions that tell the AI what to do, in what order, and with what guardrails. Type `/` in any client to see all available prompts.
 
-| Prompt | Purpose | When to Use |
-|---|---|---|
-| `/health-check` | Service health snapshot | Routine morning check or before a deployment |
-| `/daily-standup` | Multi-service report with today vs yesterday comparison | Team standup preparation |
-| `/daily-standup-notebook` | Standup report + Dynatrace notebook + dtctl verification | Full documented standup workflow |
-| `/investigate-error` | Error-focused investigation from a service name | "Something is wrong with this service" |
-| `/troubleshoot-problem` | Structured 7-step deep dive into a specific problem | Known problem needing root cause |
-| `/incident-response` | Full triage of all active problems by business impact | Active production incident |
-| `/performance-regression` | Before vs after deployment comparison | Post-deployment validation |
+| Prompt                    | Purpose                                                  | When to Use                                  |
+| ------------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| `/health-check`           | Service health snapshot                                  | Routine morning check or before a deployment |
+| `/daily-standup`          | Multi-service report with today vs yesterday comparison  | Team standup preparation                     |
+| `/daily-standup-notebook` | Standup report + Dynatrace notebook + dtctl verification | Full documented standup workflow             |
+| `/investigate-error`      | Error-focused investigation from a service name          | "Something is wrong with this service"       |
+| `/troubleshoot-problem`   | Structured 7-step deep dive into a specific problem      | Known problem needing root cause             |
+| `/incident-response`      | Full triage of all active problems by business impact    | Active production incident                   |
+| `/performance-regression` | Before vs after deployment comparison                    | Post-deployment validation                   |
 
 #### The Investigation Workflow
 
@@ -149,6 +185,7 @@ Prompts are designed to chain together as an investigation deepens:
 /investigate-error         Find the root cause
        ↓
 /troubleshoot-problem      Deep-dive a specific problem
+
 ```
 
 #### Key Guardrails Built Into Prompts
@@ -161,34 +198,33 @@ The `troubleshoot-problem` and `daily-standup-notebook` prompts encode operation
 - **`timeseries` filters use `==` with `by:` dimension** — not `contains()`
 - **Array notation required** for computed fields after `timeseries`
 
----
-
 ### 4. Session Briefing Files
+
 **Locations:** `.github/copilot-instructions.md` (GitHub Copilot) · `CLAUDE.md` (Claude Code)
 
 Both files are automatically loaded at the start of every AI session in this workspace. They act as a standing briefing so the AI already knows the default MCP environment, the investigation rule, and the available prompts before a single word is typed.
 
 Each file contains:
+
 - Default MCP server
 - Global rule: always start with problems, never broad log searches
 - Prompt directory with all 7 slash commands and when to use them
 - The 16 skills are installed and load automatically
 
 Both files use `/command-name` for prompt invocation. They are kept separate because each tool reads from a different path:
+
 - GitHub Copilot reads only `.github/copilot-instructions.md`
 - Claude Code (VS Code plugin and CLI) reads only `CLAUDE.md` at the repo root
 
----
-
 ### 5. dtctl CLI
-**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl)
-**Installation:** see [README §4](README.md#4-authenticate-dtctl)
+
+**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.28.0 (see [Version Requirements](#version-requirements) above)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements the Copilot + MCP workflow by providing direct terminal access to Dynatrace resources. It runs DQL queries, manages workflows, verifies notebooks, and more.
 
 In this workspace, `dtctl` is used primarily for **verification** by confirming that notebooks and other artifacts created by Copilot via MCP actually exist and are correctly structured in Dynatrace.
 
-```bash
+```
 dtctl get notebooks                    # List all notebooks
 dtctl describe notebook "name"         # Inspect notebook structure
 dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems   # Run DQL directly
@@ -197,6 +233,16 @@ dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems   
 dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.problems | limit 5'
 dtctl get workflows                    # List all workflows
 dtctl doctor                           # Verify authentication and connectivity
+```
+
+dtctl v0.28.0 adds support for structured workflow input via the `--input` flag. This is the preferred form when executing workflows via dtctl in prompts or CI:
+
+```bash
+# Modern (v0.28.0+) — structured JSON input
+dtctl exec workflow my-workflow --input '{"severity":"high","ttl":3,"tags":["prod"]}'
+
+# Legacy (still supported) — string-keyed parameters
+dtctl exec workflow my-workflow --params severity=high ttl=3
 ```
 
 ---
@@ -237,6 +283,7 @@ Here is the complete flow for a typical `/daily-standup-notebook` session:
    → dtctl get notebooks confirms it exists
    → dtctl describe notebook confirms structure
    → Shareable URL returned
+
 ```
 
 ---
@@ -253,22 +300,37 @@ git commit -m "Update skills to latest — $(date +%Y-%m-%d)"
 git push
 ```
 
+**Important:** After upgrading dtctl, re-run the skill update to get examples that match your new dtctl version. See [Syncing dtctl after upgrades](CONTRIBUTING.md#syncing-dtctl-after-upgrades) in CONTRIBUTING.md for details.
+
 Update `dtctl` by re-running the install script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
-
 # or via Homebrew
 brew update && brew upgrade dtctl
+```
+
+Check the version after upgrading:
+
+```bash
+dtctl version
+```
+
+Then sync the dtctl skill:
+
+```bash
+npx skills add dynatrace-oss/dtctl
+git add .agents/skills/ skills-lock.json
+git commit -m "Sync dtctl skill after dtctl upgrade"
 ```
 
 ---
 
 ## Source References
 
-| Component | Source |
-|---|---|
-| Dynatrace skills | [github.com/Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) |
+| Component             | Source                                                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Dynatrace skills      | [github.com/Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai)                           |
 | Investigation prompts | [github.com/Dynatrace/dynatrace-for-ai/prompts](https://github.com/Dynatrace/dynatrace-for-ai/tree/main/prompts) |
-| MCP server package | [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp) |
-| dtctl CLI + skill | [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) |
+| MCP server package    | [github.com/dynatrace-oss/dynatrace-mcp](https://github.com/dynatrace-oss/dynatrace-mcp)                         |
+| dtctl CLI + skill     | [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl)                                         |
