@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.0.0] - 2026-05-26
+
+### Breaking
+- Raised the minimum required `dtctl` version to v0.28.0.
+- `setup.sh` now fails fast when `dtctl` is v0.27.1 or earlier.
+- Workspace guidance now assumes v0.28.0+ workflow execution patterns.
+
+### Changed
+- Added and expanded version requirement documentation for the dtctl minimum version and its rationale.
+- Documented dtctl v0.28.0 behavior updates, including structured workflow input via `--input`.
+- Updated setup and contributor guidance to align skill and CLI version expectations.
+- Aligned session briefing and setup docs to the new dtctl baseline.
+
+### Migration Notes
+- Upgrade dtctl before running setup:
+	`curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash`
+- Verify the installed version:
+	`dtctl version`
+- If you maintain local skills, re-sync the dtctl skill after upgrade.
+
 ## [1.1.3] - 2026-05-19
 
 ### Fixed
