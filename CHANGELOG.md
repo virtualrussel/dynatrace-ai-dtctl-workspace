@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1] - 2026-05-29
+
+### Changed
+- Aligned `.github/copilot-instructions.md` with `CLAUDE.md` for dtctl v0.28.0+ guidance, including workflow execution notes and version requirements.
+- Preserved Copilot-specific setup wording: "Run `bash setup.sh` to configure your Dynatrace environment on first use."
+
 ## [2.0.0] - 2026-05-26
 
 ### Breaking
