@@ -32,7 +32,7 @@ This workspace requires specific minimum versions of core components. Older vers
 | Component | Minimum Version | Why |
 | --- | --- | --- |
 | **Node.js** | 18.0.0 | Required for MCP server and skill framework |
-| **dtctl** | 0.28.0 | OAuth refresh token race condition fix; cloud connection pagination; structured workflow input |
+| **dtctl** | 0.28.1 | OAuth refresh token race condition fix; cloud connection pagination; structured workflow input |
 | **jq** | any | Optional; needed only for manual MCP config updates |
 
 ### dtctl v0.28.0 Breaking Changes
@@ -51,7 +51,7 @@ Check your installed version:
 dtctl version
 ```
 
-If you see v0.27.1 or earlier, upgrade immediately:
+If you see v0.28.0 or earlier, upgrade immediately:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
