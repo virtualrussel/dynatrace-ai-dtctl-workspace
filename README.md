@@ -28,7 +28,6 @@ dynatrace-ai-dtctl-workspace/
 ├── CLAUDE.md                     # Auto-loaded session briefing for Claude Code
 ├── llms.txt                      # Machine-readable workspace summary for LLMs
 ├── setup.sh                      # First-time setup script
-├── skills-lock.json              # Locked skill versions
 ├── LICENSE
 ├── .gitignore
 ├── .github/
@@ -299,16 +298,15 @@ dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.prob
 ## Keeping Up to Date
 
 ```bash
-# Update all skills to latest
-npx skills add dynatrace/dynatrace-for-ai
-npx skills add dynatrace-oss/dtctl
+# Update skills — copy latest files from upstream into .agents/skills/, then commit
+git add .agents/skills/
+git commit -m "Update skills to latest"
+git push
 
 # Regenerate .mcp.json after any MCP server changes
 jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
-
-# Commit the updates
-git add .agents/skills/ .claude/skills/ skills-lock.json
-git commit -m "Update skills to latest"
+git add .vscode/mcp.json .mcp.json
+git commit -m "Update MCP configuration"
 git push
 ```
 

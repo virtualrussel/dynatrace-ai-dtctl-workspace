@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.0] - 2026-06-01
+
+### Added
+- `dt-app-dashboards` skill now includes `assets/visualization-settings.reference.jsonc` — per-visualization settings reference covering all chart types (line, area, bar, categorical, pie, donut, single value, meter, gauge, table, histogram, honeycomb, maps, heatmap, scatterplot). This file was referenced in `references/tiles.md` but missing, causing the agent to fall back to general knowledge when constructing visualization settings.
+- `dt-app-dashboards` skill now includes `assets/ExampleDashboard.json` — a working example dashboard demonstrating line chart with thresholds, donut chart, and single value tile.
+
+### Changed
+- Removed `skills-lock.json` — skill versioning is handled by git; the lock file was redundant and went stale on any manual skill edit.
+- Removed all guidance to run `npx skills add` from `README.md`, `ARCHITECTURE.md`, and `CONTRIBUTING.md`. Skill updates are now documented as a git workflow (copy upstream files, commit, push).
+- Cleared default `allow` permissions from `.claude/settings.json` — end users configure their own permissions after cloning.
+
 ## [2.0.2] - 2026-06-01
 
 ### Changed

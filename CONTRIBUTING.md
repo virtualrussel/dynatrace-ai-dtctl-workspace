@@ -8,17 +8,15 @@ This document explains how to update skills, prompts, and MCP configuration in t
 
 Skills are domain knowledge files sourced from [Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) and [dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl).
 
-To update all skills to the latest version:
+To update skills, copy the latest files from the upstream repos into `.agents/skills/` and commit:
 
 ```bash
-npx skills add dynatrace/dynatrace-for-ai
-npx skills add dynatrace-oss/dtctl
-git add .agents/skills/ .claude/skills/ skills-lock.json
+git add .agents/skills/
 git commit -m "Update skills to latest"
 git push
 ```
 
-Skills are versioned via hash in `skills-lock.json`. The update command automatically regenerates these hashes.
+Skills are managed via git — the committed files are the authoritative version.
 
 ---
 
@@ -41,8 +39,7 @@ dtctl version
 If the version is different from what you last synced, run:
 
 ```bash
-npx skills add dynatrace-oss/dtctl
-git add .agents/skills/ .claude/skills/ skills-lock.json
+git add .agents/skills/dtctl/
 git commit -m "Sync dtctl skill after dtctl upgrade to v$(dtctl version | head -1)"
 git push
 ```
@@ -147,7 +144,6 @@ Example: If you add a new prompt, update:
 3. **dtctl:** After upgrading, verify version and re-sync skill
    ```bash
    dtctl version
-   npx skills add dynatrace-oss/dtctl
    dtctl get workflows  # Verify CLI works
    ```
 
@@ -168,7 +164,7 @@ Example: If you add a new prompt, update:
 
 4. Commit with clear messages:
    ```bash
-   git add .agents/skills/ .claude/skills/ skills-lock.json
+   git add .agents/skills/
    git commit -m "Update skills to v$(date +%Y-%m-%d)"
    
    git add CLAUDE.md .github/copilot-instructions.md

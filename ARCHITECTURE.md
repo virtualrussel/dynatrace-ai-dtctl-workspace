@@ -266,17 +266,15 @@ Here is the complete flow for a typical `/daily-standup-notebook` session:
 
 ## Keeping the Workspace Up to Date
 
-Skills are versioned via `skills-lock.json`. Update to the latest skills before important demos or after Dynatrace releases new features:
+Skills are managed via git — the committed files under `.agents/skills/` are the authoritative version. Update to the latest skills before important demos or after Dynatrace releases new features by copying upstream files in and committing:
 
 ```bash
-npx skills add dynatrace/dynatrace-for-ai
-npx skills add dynatrace-oss/dtctl
-git add .agents/skills/ .claude/skills/ skills-lock.json
+git add .agents/skills/
 git commit -m "Update skills to latest — $(date +%Y-%m-%d)"
 git push
 ```
 
-**Important:** After upgrading dtctl, re-run the skill update to get examples that match your new dtctl version. See [Syncing dtctl after upgrades](CONTRIBUTING.md#syncing-dtctl-after-upgrades) in CONTRIBUTING.md for details.
+**Important:** After upgrading dtctl, update the dtctl skill files to match the new version. See [Syncing dtctl after upgrades](CONTRIBUTING.md#syncing-dtctl-after-upgrades) in CONTRIBUTING.md for details.
 
 Update `dtctl` by re-running the install script:
 
@@ -295,8 +293,7 @@ dtctl version
 Then sync the dtctl skill:
 
 ```bash
-npx skills add dynatrace-oss/dtctl
-git add .agents/skills/ skills-lock.json
+git add .agents/skills/dtctl/
 git commit -m "Sync dtctl skill after dtctl upgrade"
 ```
 
