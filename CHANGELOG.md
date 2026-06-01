@@ -5,6 +5,8 @@
 ### Changed
 - Updated `setup.sh` Step 2 messaging to be generic about launching VS Code and opening the chat window (supports both Claude Code and GitHub Copilot)
 - Clarified Step 3 as optional and better documented the Claude Code CLI workflow with automatic MCP server and skill loading
+- Removed unnecessary dtctl version-requirement verbiage from session briefings and simplified version requirement wording in `ARCHITECTURE.md`
+- Updated `docs/CHEATSHEET.md` to remove outdated dtctl v0.27 notes and added an explicit CHEATSHEET-first instruction in both `CLAUDE.md` and `.github/copilot-instructions.md`
 
 ## [2.0.1] - 2026-05-29
 

@@ -75,10 +75,6 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Include extra document metadata | `dtctl get documents --add-fields "originExtensionId,labels,shareInfo.isShared"` |
 | Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
 
-v0.27.0 notes:
-- `dtctl doctor` may show a user-identity warning for platform tokens while still passing overall checks.
-- Settings object operations should use `objectId` from `dtctl get settings -o json`, not legacy synthetic UID values.
-
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 
 ---

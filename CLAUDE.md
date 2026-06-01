@@ -6,26 +6,12 @@
 | -------------- | --------------- |
 | **MCP server** | `dynatrace-mcp` |
 
-Run `bash setup.sh` to configure this workspace on first use. To start a Claude Code CLI session, run `claude` from this directory — `CLAUDE.md`, all skills, and the MCP server load automatically.
-
-## Version Requirements
-
-This workspace requires **dtctl v0.28.1 or higher**. See [ARCHITECTURE.md § Version Requirements](ARCHITECTURE.md#version-requirements) for what changed and why.
-
-```bash
-dtctl version
-```
-
-If you see v0.28.0 or earlier, upgrade:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
-```
-
 ## Global Rule
 
 **Always start with problems — never run broad log searches.** Broad queries without problem context hit Dynatrace's 500GB scan limit and return zero results.
 All investigation workflows enforce this automatically.
+
+Consult [docs/CHEATSHEET.md](./docs/CHEATSHEET.md) first for workflow selection and operational guardrails before choosing a prompt, skill, or writing any DQL.
 
 ## Tool Priority
 

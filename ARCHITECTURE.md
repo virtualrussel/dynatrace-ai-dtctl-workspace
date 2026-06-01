@@ -32,32 +32,8 @@ This workspace requires specific minimum versions of core components. Older vers
 | Component | Minimum Version | Why |
 | --- | --- | --- |
 | **Node.js** | 18.0.0 | Required for MCP server and skill framework |
-| **dtctl** | 0.28.1 | OAuth refresh token race condition fix; cloud connection pagination; structured workflow input |
-| **jq** | any | Optional; needed only for manual MCP config updates |
-
-### dtctl v0.28.0 Breaking Changes
-
-The minimum dtctl version requirement enforces three critical fixes:
-
-**OAuth Refresh Token Race Condition.** When two or more dtctl invocations share a credential (common in CI pipelines with parallel jobs), both attempt to refresh an expiring token simultaneously. Only the first refresh succeeds; the others receive `invalid_grant` errors. v0.28.0 adds cross-process locking (via `flock` on Unix, keyed mutex on Windows) to prevent the race. If you run parallel dtctl commands in CI, you must upgrade.
-
-**Cloud Connection Pagination.** `dtctl get {aws,azure,gcp} connections` and `dtctl get {aws,azure,gcp} monitoring` previously fetched only the first page of results, silently truncating output in tenants with many cloud configs. v0.28.0 iterates all pages. If you use AWS, Azure, or GCP integrations and have more than ~25 connections or monitoring configs, older versions lose data.
-
-**Structured Workflow Input.** The modern Dynatrace Workflows API accepts JSON object payloads rather than string-keyed parameter maps. v0.28.0 adds `dtctl exec workflow --input '{"key":"value"}'` as the preferred form. The legacy `--params key=value` still works but is documented as deprecated. Prompts in this workspace will use `--input` by default.
-
-Check your installed version:
-
-```bash
-dtctl version
-```
-
-If you see v0.28.0 or earlier, upgrade immediately:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
-# or via Homebrew
-brew update && brew upgrade dtctl
-```
+| **dtctl** | 0.28.1 | CLI for managing Dynatrace platform resources |
+| **jq** | any | Needed for MCP config updates |
 
 ---
 
