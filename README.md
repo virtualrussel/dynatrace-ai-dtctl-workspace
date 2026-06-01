@@ -1,6 +1,6 @@
 # dynatrace-ai-dtctl-workspace
 
-[![Dynatrace](https://img.shields.io/badge/Dynatrace-Intelligence-plogo=dynatrace&logoColor=white)](https://www.dynatrace.com)
+[![Dynatrace](https://img.shields.io/badge/Dynatrace-Intelligence-1284C5?logo=dynatrace&logoColor=white)](https://www.dynatrace.com)
 [![GitHub release](https://img.shields.io/github/v/release/virtualrussel/dynatrace-ai-dtctl-workspace?color=blueviolet)](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/releases/latest)
 [![Commits since release](https://img.shields.io/github/commits-since/virtualrussel/dynatrace-ai-dtctl-workspace/latest)](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/commits/main)
 
