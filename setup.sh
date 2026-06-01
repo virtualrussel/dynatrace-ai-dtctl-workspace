@@ -192,16 +192,16 @@ echo " dtctl auth login --context production --environment \"https://${TENANT_UR
 echo " Then verify: dtctl doctor"
 echo ""
 STEP=$((STEP + 1))
-if command -v code &>/dev/null; then
-echo "${STEP}. Reload VS Code:"
-echo " Cmd+Shift+P → Developer: Reload Window"
+echo "${STEP}. Launch VS Code and verify the connection:"
+echo " code"
+echo " Then open the chat window (Claude Code or GitHub Copilot) and enter:"
+echo " /health-check"
 echo ""
 STEP=$((STEP + 1))
-fi
 if [[ "$CLAUDE_CLI_STATUS" == "ok" ]]; then
-echo "${STEP}. Start Claude Code CLI:"
+echo "${STEP}. (Optional) Start Claude Code CLI for terminal-based sessions:"
 echo " claude"
-echo " Then type /health-check to verify the connection."
+echo " The MCP server and all skills will load automatically."
 echo ""
 STEP=$((STEP + 1))
 fi
