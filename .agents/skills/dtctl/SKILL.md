@@ -123,6 +123,16 @@ Use IDs whenever possible instead of names to avoid ambiguity.
 --plain          # Strips colors and prompts, best for parsing
 ```
 
+Output filtering (v0.30.0+)
+
+A global `--jq` flag applies a jq expression to structured command output using an embedded gojq engine, so you can extract or reshape JSON/YAML/toon without piping to an external `jq` binary. Example:
+
+```bash
+dtctl query 'fetch logs | sort timestamp desc | limit 100' -o yaml --jq '.records[].timestamp'
+```
+
+dtctl will auto-promote table/csv output to JSON before applying `--jq`. Recommend dtctl >= v0.30.0 for this feature.
+
 **For AI agents, prefer:** `dtctl <command> --agent` (auto-detected) or `dtctl <command> -o json --plain`
 
 The `--agent` envelope provides structured metadata alongside results:

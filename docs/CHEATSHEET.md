@@ -75,6 +75,9 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Include extra document metadata | `dtctl get documents --add-fields "originExtensionId,labels,shareInfo.isShared"` |
 | Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
 
+- Filter/reshape command output in-place: `dtctl query ... -o json --jq '<jq expr>'` (v0.30.0+) — no external jq required; table/csv output is auto-promoted to JSON.
+
+
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 
 ---
