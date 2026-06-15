@@ -77,6 +77,10 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 - Filter/reshape command output in-place: `dtctl query ... -o json --jq '<jq expr>'` (v0.30.0+) — no external jq required; table/csv output is auto-promoted to JSON.
 
+- Workflow listing: use `--filter`, `--started-since`/`--started-until`, and `--limit` (v0.29.0+) so agents request scoped lists and avoid large payloads.
+
+- Config trust: per-project `.dtctl.yaml` is treated as untrusted by default; aliases and pre/post-apply hooks are ignored unless using global config or `--config` (v0.29.0+). Agents should rely on explicit contexts or flags.
+
 
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 

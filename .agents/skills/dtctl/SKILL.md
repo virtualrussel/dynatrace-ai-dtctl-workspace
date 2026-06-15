@@ -133,6 +133,10 @@ dtctl query 'fetch logs | sort timestamp desc | limit 100' -o yaml --jq '.record
 
 dtctl will auto-promote table/csv output to JSON before applying `--jq`. Recommend dtctl >= v0.30.0 for this feature.
 
+Workflows listing (v0.29.0+): agents should use `--filter`, `--started-since` / `--started-until`, and `--limit` when listing workflows or executions to scope results and avoid large payloads.
+
+Config trust (v0.29.0+): auto-discovered per-project `.dtctl.yaml` is treated as untrusted; aliases and pre-/post-apply hooks are ignored unless using the global config or an explicit `--config`. Agents should rely on explicit contexts or flags.
+
 **For AI agents, prefer:** `dtctl <command> --agent` (auto-detected) or `dtctl <command> -o json --plain`
 
 The `--agent` envelope provides structured metadata alongside results:
