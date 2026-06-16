@@ -31,9 +31,8 @@ dtctl config set-context "default" \
   --token-ref "my-token"
 dtctl config use-context "default"
 
-# Verify
-dtctl auth whoami --plain
-dtctl doctor
+# Verify the context loaded (local; works with any token type)
+dtctl auth status --plain
 ```
 
 **Note:** Always use `--token "$TOKEN"` directly. Stdin piping does not work reliably and stores corrupted values in the keychain.
@@ -45,20 +44,17 @@ dtctl doctor
 # Re-store credentials
 dtctl config set-credentials "my-token" --token "$TOKEN"
 
-# Verify identity
-dtctl auth whoami --plain
+# Check auth context (token type, not identity)
+dtctl auth status --plain
 
 # Check permissions
 dtctl auth can-i <verb> <resource>
 ```
 
-If `dtctl doctor` shows the following warning, treat it as informational when the overall check passes:
-```
-platform token: user identity unavailable via metadata API
-(token likely lacks 'app-engine:apps:run' scope; platform tokens are not JWTs, so no fallback)
-```
-
-In v0.27.1+, `--mine` works correctly with platform tokens (`dt0s16.*`). Earlier versions returned: `failed to parse JWT claims: invalid character '#' looking for beginning of value`
+> **Note:** `dtctl auth whoami` is not a connectivity check. It hits the platform
+> metadata API and needs an OAuth/JWT token with `app-engine:apps:run`; a plain API
+> token or read-scoped platform token returns a spurious 403 here even though read
+> access works. Confirm connectivity with a real `dtctl get`/`dtctl query`.
 
 ### Wrong Tenant
 ```bash
