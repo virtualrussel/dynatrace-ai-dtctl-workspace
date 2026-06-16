@@ -1,5 +1,44 @@
 # Changelog
 
+## [3.0.0] - 2026-06-16
+
+### Breaking
+- Raised the minimum required `dtctl` version to **v0.30.0**. `setup.sh` now fails fast on older versions.
+- `deploy_notebook.sh` and `notebook-validator.js` removed from `dt-app-notebooks` skill. Notebook deployment now uses `dtctl apply` directly — validation runs automatically before every deploy.
+
+### Added
+- **`dt-alerting` skill** — full coverage of Dynatrace alerting lifecycle: anomaly detector configuration, Davis alert event history, problem denoising patterns, and workflow notification setup. Includes three reference files (`anomaly-detectors.md`, `davis-events.md`, `workflow-notifications.md`).
+- **`dt-js-runtime` skill** — Dynatrace server-side JavaScript runtime: function contract, SDK catalog, fetch behavior, and platform limits. Includes the full `@dynatrace-sdk/*` package reference tree (119 files across 25 SDK packages).
+- `dtctl` skill: `dtctl auth status` documented as the universal connection check replacing `auth whoami` (which returns 403 with non-OAuth tokens).
+- `dtctl` skill: `--jq` flag for inline output reshaping — filters and transforms query results without an external `jq` binary; table/csv output is auto-promoted to JSON (v0.30.0+).
+- `dtctl` skill: workflow listing now documents `--filter`, `--started-since`/`--started-until`, and `--limit` flags for scoped agent queries (v0.29.0+).
+- `dtctl` skill: per-project `.dtctl.yaml` trust model documented — aliases and hooks are ignored unless using global config or `--config` (v0.29.0+).
+- `dt-obs-problems` skill: "Absolute Timeframes Require Double Quotes" gotcha section — prevents a common DQL syntax error when using ISO 8601 timestamps.
+- `dt-app-dashboards` skill: "Deploy with `dtctl apply`" step added to the create/update workflow.
+- `dt-app-notebooks` skill: `assets/ExampleNotebook.json` and `assets/visualization-settings.reference.jsonc` added from upstream.
+- `.claude/skills/dt-alerting` and `.claude/skills/dt-js-runtime` symlinks added for Claude Code compatibility.
+- Both new skills added to all skill tables: `CLAUDE.md`, `.github/copilot-instructions.md`, `README.md`, `ARCHITECTURE.md`, `docs/CHEATSHEET.md`.
+
+### Changed
+- **`dt-obs-frontends` skill refactored** — replaced 21-file CamelCase monolith with 10 upstream kebab-case reference files: `web-performance-analysis.md`, `user-sessions.md`, `error-tracking.md`, `mobile-monitoring.md`, `web-vitals.md`, `slow-page-load-playbook.md`, `csp-violations.md`, `visibility-changes.md`, `troubleshooting.md`, `user-actions.md`.
+- **`dt-app-notebooks` skill refactored** — replaced with upstream 7-step mandatory `dtctl apply` workflow. References split into `create-update.md`, `sections.md`, and `analyzing.md`. Stale `deploy_notebook.sh` workflow removed.
+- `dt-dql-essentials` skill: error rate formula corrected — `errors[] * 100.0 / total[]` (array indexing required for `makeTimeseries` results).
+- `dtctl` skill: DQL reference updated with `smartscapeNodes` migration patterns replacing legacy `dt.entity.*` fetch queries.
+- `dtctl` skill: troubleshooting guide auth section overhauled — `auth status` replaces `auth whoami`; token type guidance clarified.
+- Skill count updated from 16 to 18 across all documentation files.
+- `dtctl` minimum version updated from v0.28.0 to v0.30.0 in `setup.sh`, `README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`, `CLAUDE.md`, and `.github/copilot-instructions.md`.
+- `CONTRIBUTING.md` dtctl sync guidance generalized — removed v0.28.0 milestone framing; now covers current capabilities including `auth status`, `--jq`, and DQL Smartscape.
+- `ARCHITECTURE.md` dtctl section updated — structured workflow input framing no longer pinned to a specific version.
+- `docs/CHEATSHEET.md` last updated date refreshed to June 16, 2026.
+
+### Migration Notes
+- Upgrade dtctl before using this workspace version:
+  `curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash`
+- If you maintained a local `deploy_notebook.sh` workflow, switch to `dtctl apply -f notebook.json -o yaml`. Validation and local file cleanup are handled automatically.
+- Re-sync the `dtctl` skill after upgrading: the skill now documents `auth status`, `--jq`, and Smartscape DQL patterns not present in older versions.
+
+
+
 ## [2.1.0] - 2026-06-01
 
 ### Added

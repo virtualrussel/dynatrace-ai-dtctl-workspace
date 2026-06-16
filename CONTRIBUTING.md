@@ -26,7 +26,7 @@ Skills are managed via git — the committed files are the authoritative version
 
 ### Why This Matters
 
-dtctl v0.28.0 adds new features and syntax that older skills don't document. If your dtctl binary is v0.28.0+ but the skill is from an older version, examples will reference flags and features that don't exist yet, and vice versa.
+The dtctl skill is versioned alongside the dtctl binary. If your binary is newer than the skill, the skill may reference flags or resource types that don't exist yet, and vice versa. Always sync after upgrading.
 
 ### When to Sync
 
@@ -44,15 +44,16 @@ git commit -m "Sync dtctl skill after dtctl upgrade to v$(dtctl version | head -
 git push
 ```
 
-### What Changed in dtctl v0.28.0+
+### What the Skill Documents
 
-The skill documents these new capabilities:
+The skill covers all current dtctl capabilities including:
 
 - **Structured workflow input:** `--input` flag with JSON payloads (preferred over `--params`)
 - **AWS provider support:** Feature parity with Azure/GCP for cloud integrations
-- **Typed SDK module:** Extensibility for sibling Go tools (reference only, not CLI-relevant)
+- **Auth status check:** `dtctl auth status` works for all token types (replaces `auth whoami` which fails with non-OAuth tokens)
+- **DQL Smartscape:** `smartscapeNodes` patterns for entity queries
 
-Make sure examples in the skill match these features.
+Make sure examples in the skill match the installed version.
 
 ---
 
@@ -97,7 +98,7 @@ When adding or modifying a prompt:
 ### Prompt Best Practices
 
 - **Always start with problems.** Never encourage broad log searches without problem context.
-- **Document version requirements.** If a prompt uses dtctl features from v0.28.0+, add a note at the top.
+- **Document version requirements.** If a prompt uses dtctl features from v0.30.0+, add a note at the top.
 - **Test with real data.** Run the prompt against your test environment before committing.
 
 ---

@@ -32,7 +32,7 @@ This workspace requires specific minimum versions of core components. Older vers
 | Component | Minimum Version | Why |
 | --- | --- | --- |
 | **Node.js** | 18.0.0 | Required for MCP server and skill framework |
-| **dtctl** | 0.28.1 | CLI for managing Dynatrace platform resources |
+| **dtctl** | 0.30.0 | CLI for managing Dynatrace platform resources |
 | **jq** | any | Needed for MCP config updates |
 
 ---
@@ -112,6 +112,8 @@ This means all skills can be installed without performance penalty — the AI as
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                               |
 | `dt-migration`                | Classic entity DQL → Smartscape migration                               |
+| `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, notifications |
+| `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits |
 | `dtctl`                       | CLI commands for managing Dynatrace resources                           |
 
 ### 2. MCP Server
@@ -185,7 +187,7 @@ Each file contains:
 - Default MCP server
 - Global rule: always start with problems, never broad log searches
 - Prompt directory with all 7 slash commands and when to use them
-- The 16 skills are installed and load automatically
+- The 18 skills are installed and load automatically
 
 Both files use `/command-name` for prompt invocation. They are kept separate because each tool reads from a different path:
 
@@ -194,7 +196,7 @@ Both files use `/command-name` for prompt invocation. They are kept separate bec
 
 ### 5. dtctl CLI
 
-**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.28.0 (see [Version Requirements](#version-requirements) above)
+**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.30.0 (see [Version Requirements](#version-requirements) above)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements the Copilot + MCP workflow by providing direct terminal access to Dynatrace resources. It runs DQL queries, manages workflows, verifies notebooks, and more.
 
@@ -211,10 +213,10 @@ dtctl get workflows                    # List all workflows
 dtctl doctor                           # Verify authentication and connectivity
 ```
 
-dtctl v0.28.0 adds support for structured workflow input via the `--input` flag. This is the preferred form when executing workflows via dtctl in prompts or CI:
+Structured workflow input via the `--input` flag is the preferred form when executing workflows via dtctl in prompts or CI:
 
 ```bash
-# Modern (v0.28.0+) — structured JSON input
+# Structured JSON input (preferred, v0.30.0+)
 dtctl exec workflow my-workflow --input '{"severity":"high","ttl":3,"tags":["prod"]}'
 
 # Legacy (still supported) — string-keyed parameters

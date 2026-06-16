@@ -21,7 +21,7 @@ Use the `dtctl` skill for:
 
 - Resource lifecycle: `apply`, `delete`, `share`, `unshare`, `history`, `restore`
 - Workflow execution (`dtctl exec workflow`)
-  - Prefer structured input with `--input '{"key":"value"}'` (v0.28.0+)
+  - Prefer structured input with `--input '{"key":"value"}'` (v0.30.0+)
   - Legacy `--params key=value` still supported but deprecated
 - Bulk or scripted operations and CI/CD-style automation
 - Tasks not exposed via MCP, or when the user explicitly asks for the CLI
@@ -65,4 +65,6 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                             |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                                            |
 | `dt-migration`                | Classic entity DQL → Smartscape migration                                            |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.28.0+ supports structured input)   |
+| `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
+| `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.30.0+ required)                   |

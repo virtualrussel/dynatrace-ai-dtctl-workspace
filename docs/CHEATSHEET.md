@@ -55,6 +55,8 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
 | Migrating classic entity DQL to Smartscape | `dt-migration` |
+| Alerting, anomaly detectors, problem notifications | `dt-alerting` |
+| Dynatrace JS runtime functions and SDKs | `dt-js-runtime` |
 | Terminal / CLI operations | `dtctl` |
 | Writing any DQL query | `dt-dql-essentials` (always load first) |
 
@@ -136,4 +138,4 @@ Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit 
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** May 11, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** June 16, 2026

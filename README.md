@@ -40,7 +40,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 16 Dynatrace domain skills
+├── .agents/skills/               # 18 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -57,7 +57,7 @@ dynatrace-ai-dtctl-workspace/
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
 | [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.28.1+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.30.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -205,6 +205,8 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-app-dashboards` | Dashboard JSON creation and modification |
 | `dt-app-notebooks` | Notebook creation and analytics workflows |
 | `dt-migration` | Classic entity DQL → Smartscape migration |
+| `dt-alerting` | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
+| `dt-js-runtime` | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits |
 | `dtctl` | CLI commands for managing Dynatrace resources from the terminal |
 
 ---

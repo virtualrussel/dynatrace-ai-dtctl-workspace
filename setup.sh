@@ -61,19 +61,19 @@ echo " [info] claude CLI not found — optional for terminal-only workflows"
 echo " Install: npm install -g @anthropic-ai/claude-code"
 fi
 
-# dtctl — REQUIRED with minimum version v0.28.0
+# dtctl — REQUIRED with minimum version v0.30.0
 if command -v dtctl &>/dev/null; then
 DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 || echo "unknown")
-if [[ "$DTCTL_VERSION" == "0.28.0" ]] || [[ "$DTCTL_VERSION" > "0.28.0" ]]; then
-echo " [ok] dtctl v${DTCTL_VERSION} (requires >= v0.28.0)"
+if [[ "$DTCTL_VERSION" == "0.30.0" ]] || [[ "$DTCTL_VERSION" > "0.30.0" ]]; then
+echo " [ok] dtctl v${DTCTL_VERSION} (requires >= v0.30.0)"
 DTCTL_STATUS="ok"
 else
-echo " [fail] dtctl v${DTCTL_VERSION} — v0.28.0 or higher required"
+echo " [fail] dtctl v${DTCTL_VERSION} — v0.30.0 or higher required"
 echo ""
-echo " v0.28.0 includes critical fixes:"
-echo "  • OAuth refresh token race condition (breaks CI with parallel jobs)"
-echo "  • Cloud connection pagination fix (silent data loss on older versions)"
-echo "  • Structured workflow input (--input flag)"
+echo " v0.30.0 is required for this workspace:"
+echo "  • dtctl auth status — works for all token types (API and OAuth)"
+echo "  • --jq flag for inline query output reshaping"
+echo "  • Workflow listing with --filter and time-range scoping"
 echo ""
 echo " Upgrade dtctl:"
 echo "  curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash"
@@ -82,7 +82,7 @@ PREREQ_FAILED=true
 fi
 else
 echo " [fail] dtctl not found — REQUIRED for workspace workflows"
-echo " Must be v0.28.0 or higher"
+echo " Must be v0.30.0 or higher"
 echo ""
 read -rp "Install dtctl now? (y/N) " INSTALL_DTCTL
 if [[ "$INSTALL_DTCTL" =~ ^[Yy]$ ]]; then
@@ -92,14 +92,14 @@ if curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 if command -v dtctl &>/dev/null; then
 DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 || echo "unknown")
-if [[ "$DTCTL_VERSION" == "0.28.0" ]] || [[ "$DTCTL_VERSION" > "0.28.0" ]]; then
+if [[ "$DTCTL_VERSION" == "0.30.0" ]] || [[ "$DTCTL_VERSION" > "0.30.0" ]]; then
 echo " [ok] dtctl v${DTCTL_VERSION} installed"
 DTCTL_STATUS="just_installed"
 else
-echo " [fail] Installed dtctl v${DTCTL_VERSION}, but v0.28.0+ required"
+echo " [fail] Installed dtctl v${DTCTL_VERSION}, but v0.30.0+ required"
 echo " Latest installer may not have reached your region yet."
 echo " Wait 10 minutes and retry, or install manually:"
-echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.28.0"
+echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
 PREREQ_FAILED=true
 fi
 else
@@ -108,12 +108,12 @@ DTCTL_STATUS="path_issue"
 fi
 else
 echo " [warn] dtctl installation failed"
-echo " Install manually: https://github.com/dynatrace-oss/dtctl/releases/tag/v0.28.0"
+echo " Install manually: https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
 PREREQ_FAILED=true
 fi
 else
-echo " [fail] dtctl v0.28.0+ is REQUIRED — cannot continue without it"
-echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.28.0"
+echo " [fail] dtctl v0.30.0+ is REQUIRED — cannot continue without it"
+echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
 fi
 fi
 echo ""
@@ -173,8 +173,8 @@ echo ""
 STEP=1
 case "$DTCTL_STATUS" in
 unavailable)
-echo "${STEP}. Install dtctl v0.28.0+:"
-echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.28.0"
+echo "${STEP}. Install dtctl v0.30.0+:"
+echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
 echo ""
 STEP=$((STEP + 1))
 ;;
