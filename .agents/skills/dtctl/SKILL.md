@@ -124,6 +124,8 @@ Use IDs whenever possible instead of names to avoid ambiguity.
 -o json          # JSON output
 -o yaml          # YAML output
 -o csv           # CSV output
+-o jsonl         # Newline-delimited JSON — streamed, for large exports (v0.31.0+)
+-o parquet       # Columnar Parquet (DuckDB/pandas/pyarrow-ready) (v0.31.0+)
 -o chart         # ASCII chart (for time series)
 -o sparkline     # ASCII sparkline (for time series)
 -o barchart      # ASCII bar chart (for time series)
@@ -145,6 +147,18 @@ dtctl query 'fetch logs | sort timestamp desc | limit 100' -o yaml --jq '.record
 ```
 
 dtctl will auto-promote table/csv output to JSON before applying `--jq`. Recommend dtctl >= v0.30.0 for this feature.
+
+Large results (v0.32.0+): when a `dtctl query` result is large, dtctl spills the full result to a local file and returns a compact summary envelope instead (per-column stats, sample rows, file path) — this avoids blowing out agent context on wide/large result sets. Use `dtctl inspect <spill-file>` to interrogate that file locally without re-running the query (no repeat Grail scan):
+
+```bash
+dtctl inspect result.spill --schema           # column names/types
+dtctl inspect result.spill --stats            # per-column stats
+dtctl inspect result.spill --sample 20         # sample rows
+dtctl inspect result.spill --page 2 --head 50  # paginate
+dtctl inspect result.spill --jq '.[] | select(.status=="ERROR")'  # streaming filter (v0.32.0+)
+```
+
+`--jq` on `inspect` runs as a full-file streaming filter, so it can pull matching rows out of a large spilled file without a second billed scan. Prefer `inspect` over re-running `dtctl query` any time you need a different slice of a result you already fetched.
 
 Workflows listing (v0.29.0+): agents should use `--filter`, `--started-since` / `--started-until`, and `--limit` when listing workflows or executions to scope results and avoid large payloads.
 
@@ -200,6 +214,8 @@ dtctl exec function <id-or-name> --payload '{"key":"value"}' --plain
 
 # Analyzers
 dtctl get analyzers -o json --plain
+dtctl describe analyzer <name> --plain   # resolve input/result JSON Schema before calling exec (v0.32.0+)
+dtctl verify analyzer <name> --input '{"timeframe":"now-2h"}' --plain  # validate input against schema first (v0.32.0+)
 dtctl exec analyzer <id-or-name> --input '{"timeframe":"now-2h"}' --plain
 
 # Anomaly detectors — round-trippable between environments (v0.27.1+)
@@ -219,6 +235,15 @@ dtctl auth can-i delete dashboards
 ```
 
 Use `can-i` to verify permissions before attempting operations.
+
+**Scope preflight (v0.31.0+):** before running a mutating command, check whether the active token has the scopes it needs instead of discovering a gap via a mid-task 403:
+
+```bash
+dtctl commands "get workflow" --required-scopes   # least-privilege scope union for a command
+dtctl get workflows --check-scopes                 # preflight the active token, don't execute
+```
+
+In agent mode, mutating commands auto-preflight and return a structured `insufficient_scope` envelope instead of a raw 403.
 
 ## Quick Reference: DQL Queries
 
@@ -291,6 +316,17 @@ For detailed visualizationSettings (singleValue, charts, tables, thresholds, uni
 - Use `makeTimeseries` for log/span time series; `timeseries` for metrics.
 - `version` field warning on create is benign.
 - No `id` field → creates new; with `id` field → updates existing.
+
+## Classic Pipeline → OpenPipeline Migration
+
+`dtctl get classic-pipelines-translation <scope>` (v0.31.0+) calls the OpenPipeline translation endpoint and prints a ready-to-review translated config for a Classic pipeline scope (`logs`, `bizevents`, etc.) — a starting point for migration, not an apply-in-place operation:
+
+```bash
+dtctl get classic-pipelines-translation logs --plain
+dtctl get classic-pipelines-translation bizevents --include-sample-data --plain
+```
+
+If a scope has no Classic pipeline configured, dtctl reports that on stderr (and emits `null` in structured output) rather than erroring.
 
 ## Common Issues
 

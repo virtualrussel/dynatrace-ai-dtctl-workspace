@@ -79,6 +79,10 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 - Filter/reshape command output in-place: `dtctl query ... -o json --jq '<jq expr>'` (v0.30.0+) — no external jq required; table/csv output is auto-promoted to JSON.
 
+- Large query results (v0.32.0+): dtctl spills big results to a local file and returns a summary instead of the full payload. Use `dtctl inspect <file> --schema|--stats|--sample|--page|--jq` to dig into that same result — this is a *local* operation, it does not re-scan Grail. If you need a different slice of data already fetched, reach for `inspect`, not another query.
+
+- Large exports (v0.31.0+): `dtctl query ... -o jsonl` or `-o parquet` for results headed to external analytics tooling (DuckDB/pandas), not for agent consumption.
+
 - Workflow listing: use `--filter`, `--started-since`/`--started-until`, and `--limit` (v0.29.0+) so agents request scoped lists and avoid large payloads.
 
 - Config trust: per-project `.dtctl.yaml` is treated as untrusted by default; aliases and pre/post-apply hooks are ignored unless using global config or `--config` (v0.29.0+). Agents should rely on explicit contexts or flags.
@@ -138,4 +142,4 @@ Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit 
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** June 16, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** July 2, 2026

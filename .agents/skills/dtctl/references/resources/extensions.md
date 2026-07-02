@@ -16,7 +16,10 @@ dtctl get extensions com.dynatrace.extension.host-monitoring # Get all versions 
 dtctl describe extension com.dynatrace.extension.host-monitoring         # Show detailed info (active version by default)
 dtctl describe extension com.dynatrace.extension.host-monitoring 1.2.3   # Show details for a specific version
 dtctl describe extension com.dynatrace.extension.host-monitoring -o json # Output as JSON
+dtctl describe extension com.dynatrace.extension.host-monitoring --feature-set-metrics -o json  # Include each feature set's metrics (name, display name, unit) (v0.32.0+)
 ```
+
+> **Breaking change (v0.32.0):** the default JSON/YAML shape of `featureSets` on `describe extension` changed from a map (`{"name": []}`) to a plain array (`["name"]`) — regardless of whether `--feature-set-metrics` is passed. dtctl is pre-1.0, so this shipped without a compatibility shim. If anything parses `describe extension` output for `featureSets`, check which shape it expects before/after upgrading.
 
 ## Get Monitoring Configurations
 ```bash

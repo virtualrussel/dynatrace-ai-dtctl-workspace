@@ -73,6 +73,11 @@ filter in(loglevel, array("ERROR", "WARN", "SEVERE"))
 timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}, from:now()-6h, interval:5m
 ```
 
+Add `--metadata=metrics` to `dtctl query` (v0.32.0+) to surface the DQL API's `metadata.metrics` array alongside the result — key, DQL field alias, aggregation, display name, and unit for each returned metric. Useful when the query is built dynamically and the field-to-metric mapping isn't already known:
+```bash
+dtctl query 'timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}' --metadata=metrics -o json --plain
+```
+
 ### Log time-series (makeTimeseries, NOT summarize)
 ```dql
 fetch logs, from:now()-4h

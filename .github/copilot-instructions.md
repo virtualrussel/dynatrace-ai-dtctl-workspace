@@ -67,4 +67,4 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-migration`                | Classic entity DQL → Smartscape migration                                            |
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.30.0+ required)                   |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.32.0+ required)                   |

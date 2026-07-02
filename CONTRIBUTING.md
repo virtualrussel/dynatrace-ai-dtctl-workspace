@@ -40,7 +40,7 @@ If the version is different from what you last synced, run:
 
 ```bash
 git add .agents/skills/dtctl/
-git commit -m "Sync dtctl skill after dtctl upgrade to v$(dtctl version | head -1)"
+git commit -m "Sync dtctl skill after dtctl upgrade to v$(dtctl version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
 git push
 ```
 

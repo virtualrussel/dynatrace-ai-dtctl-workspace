@@ -49,7 +49,19 @@ dtctl auth status --plain
 
 # Check permissions
 dtctl auth can-i <verb> <resource>
+
+# Preflight required scopes before running the command (v0.31.0+)
+dtctl <verb> <resource> --check-scopes
+dtctl commands "<verb> <resource>" --required-scopes
 ```
+
+### Error Messages Now Include Details (v0.31.0+)
+When the API rejects a request with 400, dtctl now appends `error.details` (field paths and constraint violations) instead of only the generic top-level message:
+```
+Before:  API error (400): Invalid request.
+After:   API error (400): Invalid request. - {"tasks":["noop -> position -> y: Input should be greater than or equal to 1"]}
+```
+If anything in this workspace regex-parses dtctl error text, expect a trailing JSON blob after the message on 400s.
 
 > **Note:** `dtctl auth whoami` is not a connectivity check. It hits the platform
 > metadata API and needs an OAuth/JWT token with `app-engine:apps:run`; a plain API

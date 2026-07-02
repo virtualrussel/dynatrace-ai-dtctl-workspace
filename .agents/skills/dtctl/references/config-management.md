@@ -39,6 +39,26 @@ dtctl config use-context "prod"
 dtctl get workflows --context staging --plain
 ```
 
+## Azure Cloud Connections (v0.31.0+)
+
+`dtctl create azure connection` and `dtctl update azure connection` accept credential flags directly, so a `clientSecret`-type connection can be set up in one command — no YAML round-trip required:
+
+```bash
+dtctl create azure connection my-conn \
+  --type clientSecret \
+  --directoryId   "$AZURE_TENANT_ID" \
+  --applicationId "$AZURE_APP_ID" \
+  --clientSecret  "$AZURE_CLIENT_SECRET"
+```
+
+`--clientSecret` on `update` also enables zero-downtime secret rotation — pair it with `az ad app credential reset --append` so the old secret keeps working until the new one is confirmed live:
+
+```bash
+dtctl update azure connection my-conn --clientSecret "$NEW_AZURE_CLIENT_SECRET"
+```
+
+For federated-identity connections whose token issuer can't be inferred from the hostname, set `--issuer` explicitly (or a top-level `issuer:` field in the connection YAML); dtctl falls back to host-based detection when omitted.
+
 ## Safety Levels
 
 | Level | Use Case |

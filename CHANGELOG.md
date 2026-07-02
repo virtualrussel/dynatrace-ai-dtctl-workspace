@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.0.0] - 2026-07-02
+
+### Breaking
+- Raised the minimum required `dtctl` version from v0.30.0 to **v0.32.0** in `setup.sh`, `README.md`, `ARCHITECTURE.md`, `CLAUDE.md`, and `.github/copilot-instructions.md`.
+
+### Fixed
+- `setup.sh`: the dtctl version gate was silently a no-op — `dtctl version | head -1` captured the full banner line (`"dtctl version X.Y.Z"`), and comparing that string with `>` against `"0.30.0"` was always true (any string starting with a letter sorts after one starting with a digit), so it passed even for `"unknown"` when dtctl wasn't found. Replaced with `grep -oE` version extraction and a `version_ge()` helper using `sort -V`, which also fixes incorrect ordering on multi-digit segments (e.g. `0.30.10` vs `0.30.9`) and fails closed on unparseable input instead of failing open.
+- `CONTRIBUTING.md`: the dtctl sync commit-message example had the same raw-banner-line bug (`v$(dtctl version | head -1)` would have produced `"vdtctl version 0.32.0"`); now extracts just the version number.
+
+### Added
+- `dtctl` skill: documented v0.31.0–v0.32.0 dtctl capabilities —
+  - `-o jsonl` / `-o parquet` export formats for `dtctl query`
+  - Result-spill for large query results + `dtctl inspect` (`--head`, `--tail`, `--page`, `--schema`, `--stats`, `--sample`, streaming `--jq`) for analyzing spilled results locally without re-scanning Grail
+  - `dtctl describe analyzer` / `dtctl verify analyzer`
+  - `--check-scopes` and `dtctl commands --required-scopes` for token-scope preflighting
+  - `dtctl get classic-pipelines-translation` for Classic → OpenPipeline migration
+  - Azure `clientSecret` connection setup and rotation, plus `--issuer` override
+  - `--metadata=metrics` for timeseries queries
+  - `--feature-set-metrics` on `describe extension`, with its breaking `featureSets` map→array output-shape change flagged
+  - `error.details` now included in dtctl's 400 error messages
+- `docs/CHEATSHEET.md`: guidance to prefer `dtctl inspect` over re-querying for large results, and `-o jsonl`/`-o parquet` for external-analytics exports.
+
 ## [3.0.0] - 2026-06-16
 
 ### Breaking

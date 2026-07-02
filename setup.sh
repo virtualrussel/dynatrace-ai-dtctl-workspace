@@ -3,6 +3,17 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MIN_DTCTL_VERSION="0.32.0"
+
+# Returns 0 if $1 >= $2 for dotted numeric versions (e.g. 0.30.10 vs 0.30.9).
+# Anything that isn't a strict X.Y.Z version (including "unknown" or empty)
+# fails closed rather than silently passing.
+version_ge() {
+  [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || return 1
+  [[ "$1" == "$2" ]] && return 0
+  [[ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" == "$1" ]]
+}
+
 FILES=(
 "$SCRIPT_DIR/.vscode/mcp.json"
 "$SCRIPT_DIR/.mcp.json"
@@ -61,19 +72,19 @@ echo " [info] claude CLI not found — optional for terminal-only workflows"
 echo " Install: npm install -g @anthropic-ai/claude-code"
 fi
 
-# dtctl — REQUIRED with minimum version v0.30.0
+# dtctl — REQUIRED with minimum version v${MIN_DTCTL_VERSION}
 if command -v dtctl &>/dev/null; then
-DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 || echo "unknown")
-if [[ "$DTCTL_VERSION" == "0.30.0" ]] || [[ "$DTCTL_VERSION" > "0.30.0" ]]; then
-echo " [ok] dtctl v${DTCTL_VERSION} (requires >= v0.30.0)"
+DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+if version_ge "$DTCTL_VERSION" "$MIN_DTCTL_VERSION"; then
+echo " [ok] dtctl v${DTCTL_VERSION} (requires >= v${MIN_DTCTL_VERSION})"
 DTCTL_STATUS="ok"
 else
-echo " [fail] dtctl v${DTCTL_VERSION} — v0.30.0 or higher required"
+echo " [fail] dtctl v${DTCTL_VERSION:-unknown} — v${MIN_DTCTL_VERSION} or higher required"
 echo ""
-echo " v0.30.0 is required for this workspace:"
-echo "  • dtctl auth status — works for all token types (API and OAuth)"
-echo "  • --jq flag for inline query output reshaping"
-echo "  • Workflow listing with --filter and time-range scoping"
+echo " v${MIN_DTCTL_VERSION} is required for this workspace:"
+echo "  • dtctl inspect — analyze large query results locally without re-scanning Grail"
+echo "  • --check-scopes — preflight token scopes before running a command"
+echo "  • -o jsonl / -o parquet — export-friendly query output formats"
 echo ""
 echo " Upgrade dtctl:"
 echo "  curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash"
@@ -82,7 +93,7 @@ PREREQ_FAILED=true
 fi
 else
 echo " [fail] dtctl not found — REQUIRED for workspace workflows"
-echo " Must be v0.30.0 or higher"
+echo " Must be v${MIN_DTCTL_VERSION} or higher"
 echo ""
 read -rp "Install dtctl now? (y/N) " INSTALL_DTCTL
 if [[ "$INSTALL_DTCTL" =~ ^[Yy]$ ]]; then
@@ -91,15 +102,15 @@ echo "Installing dtctl..."
 if curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash; then
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 if command -v dtctl &>/dev/null; then
-DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 || echo "unknown")
-if [[ "$DTCTL_VERSION" == "0.30.0" ]] || [[ "$DTCTL_VERSION" > "0.30.0" ]]; then
+DTCTL_VERSION=$(dtctl version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+if version_ge "$DTCTL_VERSION" "$MIN_DTCTL_VERSION"; then
 echo " [ok] dtctl v${DTCTL_VERSION} installed"
 DTCTL_STATUS="just_installed"
 else
-echo " [fail] Installed dtctl v${DTCTL_VERSION}, but v0.30.0+ required"
+echo " [fail] Installed dtctl v${DTCTL_VERSION:-unknown}, but v${MIN_DTCTL_VERSION}+ required"
 echo " Latest installer may not have reached your region yet."
 echo " Wait 10 minutes and retry, or install manually:"
-echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
+echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v${MIN_DTCTL_VERSION}"
 PREREQ_FAILED=true
 fi
 else
@@ -108,12 +119,12 @@ DTCTL_STATUS="path_issue"
 fi
 else
 echo " [warn] dtctl installation failed"
-echo " Install manually: https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
+echo " Install manually: https://github.com/dynatrace-oss/dtctl/releases/tag/v${MIN_DTCTL_VERSION}"
 PREREQ_FAILED=true
 fi
 else
-echo " [fail] dtctl v0.30.0+ is REQUIRED — cannot continue without it"
-echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
+echo " [fail] dtctl v${MIN_DTCTL_VERSION}+ is REQUIRED — cannot continue without it"
+echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v${MIN_DTCTL_VERSION}"
 fi
 fi
 echo ""
@@ -173,8 +184,8 @@ echo ""
 STEP=1
 case "$DTCTL_STATUS" in
 unavailable)
-echo "${STEP}. Install dtctl v0.30.0+:"
-echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v0.30.0"
+echo "${STEP}. Install dtctl v${MIN_DTCTL_VERSION}+:"
+echo " https://github.com/dynatrace-oss/dtctl/releases/tag/v${MIN_DTCTL_VERSION}"
 echo ""
 STEP=$((STEP + 1))
 ;;
