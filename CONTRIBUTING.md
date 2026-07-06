@@ -18,6 +18,14 @@ git push
 
 Skills are managed via git — the committed files are the authoritative version.
 
+### Skill Content Is Upstream-Owned
+
+Files under `.agents/skills/` (excluding `dtctl/`, sourced separately — see below) are maintained upstream in `dynatrace-for-ai` and are expected to be **overwritten wholesale** on every sync, matching that repo's own read-only policy for its `skills/` directory. Do not hand-edit these files expecting the change to survive — the next sync will silently discard it, exactly as happened historically with several files (`dt-obs-aws`, `dt-obs-hosts`, `dt-app-dashboards`, `dt-migration`, `dt-obs-problems`) that fell multiple releases behind because partial syncs missed them.
+
+**Known local override:** `dt-obs-aws/SKILL.md` contains a paragraph under "Check health alerts when:" that uses `dtctl` to query the `builtin:health-experience.cloud-alert` settings schema. This content does not exist upstream — it's a deliberate addition tying the AWS skill to dtctl. **Every sync of `dt-obs-aws/SKILL.md` must manually re-apply this paragraph** after copying the upstream file; check `git diff` against the previous version before committing to confirm it's still present.
+
+If you introduce a new local override to an otherwise upstream-owned skill file, list it here so the next sync doesn't lose it.
+
 ---
 
 ## Syncing dtctl after Upgrades

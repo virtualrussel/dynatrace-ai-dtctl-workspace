@@ -109,11 +109,17 @@ This means all skills can be installed without performance penalty — the AI as
 | `dt-obs-gcp`                  | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management  |
 | `dt-obs-frontends`            | RUM, Web Vitals, user sessions, mobile crashes                          |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
+| `dt-sec-insights`             | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture (KSPM/CSPM/VSPM) |
+| `dt-obs-android`              | Instrument Android projects with the Dynatrace Mobile Agent            |
+| `dt-obs-flutter`              | Integrate the Dynatrace Flutter Plugin                                  |
+| `dt-obs-ios-sdk`              | Set up the Dynatrace iOS SDK via Swift Package Manager                 |
+| `dt-obs-react-native`         | Integrate the Dynatrace React Native Plugin (bare RN and Expo)         |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                               |
 | `dt-migration`                | Classic entity DQL → Smartscape migration                               |
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits |
+| `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback  |
 | `dtctl`                       | CLI commands for managing Dynatrace resources                           |
 
 ### 2. MCP Server
@@ -187,7 +193,7 @@ Each file contains:
 - Default MCP server
 - Global rule: always start with problems, never broad log searches
 - Prompt directory with all 7 slash commands and when to use them
-- The 18 skills are installed and load automatically
+- The 24 skills are installed and load automatically
 
 Both files use `/command-name` for prompt invocation. They are kept separate because each tool reads from a different path:
 

@@ -52,11 +52,14 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Azure resources and infrastructure | `dt-obs-azure` |
 | GCP resources and infrastructure | `dt-obs-gcp` |
 | Forecasting, capacity planning, anomaly detection | `dt-obs-predictive-analytics` |
+| Vulnerabilities, MITRE ATT&CK detections, compliance posture | `dt-sec-insights` |
+| Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-obs-android` / `dt-obs-ios-sdk` / `dt-obs-flutter` / `dt-obs-react-native` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
 | Migrating classic entity DQL to Smartscape | `dt-migration` |
 | Alerting, anomaly detectors, problem notifications | `dt-alerting` |
 | Dynatrace JS runtime functions and SDKs | `dt-js-runtime` |
+| DPS billing, cost breakdown, chargeback | `dt-platform-costs` |
 | Terminal / CLI operations | `dtctl` |
 | Writing any DQL query | `dt-dql-essentials` (always load first) |
 
@@ -142,4 +145,4 @@ Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit 
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** July 2, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** July 6, 2026

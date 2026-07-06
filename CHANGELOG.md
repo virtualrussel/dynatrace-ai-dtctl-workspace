@@ -1,5 +1,31 @@
 # Changelog
 
+## [5.0.0] - 2026-07-06
+
+### Added
+- **`dt-sec-insights` skill** — Security Insights: vulnerabilities (RVA/RAP), MITRE ATT&CK detections, and security posture (KSPM/CSPM/VSPM) via `security.events`.
+- **`dt-platform-costs` skill** — DPS billing/usage analysis: cost breakdown, spend ranking, chargeback/showback, and entity-level cost drill-down via `dt.system.events`.
+- **Mobile instrumentation skills** — `dt-obs-android`, `dt-obs-flutter`, `dt-obs-ios-sdk`, `dt-obs-react-native`: project-level SDK setup for Android, Flutter, iOS (Swift Package Manager), and React Native/Expo.
+- `.claude/skills/` symlinks added for all 6 new skills.
+- All 6 new skills added to the skill tables in `README.md`, `ARCHITECTURE.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `llms.txt`, `docs/CHEATSHEET.md`.
+- `CONTRIBUTING.md`: "Skill Content Is Upstream-Owned" section documenting that `.agents/skills/` (excluding `dtctl/`) is overwritten wholesale on sync, and flagging the `dt-obs-aws/SKILL.md` dtctl paragraph as a local override that must survive every future sync.
+
+### Fixed
+- `dt-obs-kubernetes/references/pod-debugging.md`: DQL reserved-keyword collision — the `init` field alias collided with a DQL keyword; renamed per upstream's fix.
+- `dt-obs-hosts/references/host-metrics.md` and `process-monitoring.md`: replaced deprecated `arrayAvg`/`arrayMax`/`arrayMin`/`arrayFirst`/`arrayLast`/`arrayPercentile` + `union:true` DQL patterns with current `summarize`-based syntax.
+- `dt-obs-frontends`: full resync — `SKILL.md` and all references were multiple releases behind upstream (missing mobile/sensitive-field documentation, DQL reference links, key-metrics sections); added the missing `references/characteristics.md`.
+- `dt-app-dashboards/references/analyzing.md` and `create-update.md`, `dt-migration/references/examples.md` and `mass-data-filtering-strategy.md`, `dt-obs-aws/references/database-monitoring.md`, `load-balancing-api.md`, and `vpc-networking-security.md`, `dt-obs-problems/references/problem-correlation.md` — resynced from upstream; these had silently fallen behind since the v3.0.0-era sync despite that release's commit message claiming they were current.
+- `CLAUDE.md` / `.github/copilot-instructions.md`: the "Tool Priority" rule referenced only `dt-obs-*`/`dt-app-*`/`dt-dql-essentials` skills, leaving `dt-sec-insights`, `dt-platform-costs`, `dt-alerting`, and `dt-js-runtime` undocumented as MCP-first telemetry skills. Replaced the enumerated glob with a principle-based statement so it doesn't go stale as new skill categories are added.
+
+### Changed
+- Skill count updated from 18 to 24 across all documentation files.
+- `README.md` skill table restructured into upstream's categorized layout (DQL & Query Language, Observability, Security, Mobile Instrumentation, Platform, Migration, CLI).
+- `dt-obs-aws/SKILL.md` resynced from upstream; the local-only "Check health alerts when:" dtctl paragraph was preserved (re-applied after sync — it does not exist upstream).
+- `docs/CHEATSHEET.md`: added quick-reference rows for security/vulnerability questions, mobile instrumentation, and cost analysis; "Last Updated" refreshed to July 6, 2026.
+
+### Compatibility
+- dynatrace-for-ai v4.0.0
+
 ## [4.0.0] - 2026-07-02
 
 ### Breaking

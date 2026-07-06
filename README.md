@@ -40,7 +40,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 18 Dynatrace domain skills
+├── .agents/skills/               # 24 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -188,25 +188,63 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 2. Instructions: When relevant, the full `SKILL.md` is loaded (<5000 tokens).
 3. Resources: Detailed reference files in `references/` are loaded on demand.
 
+### DQL & Query Language
+
 | Skill | What It Covers |
 |---|---|
 | `dt-dql-essentials` | DQL syntax, common pitfalls, query patterns — **load before any DQL** |
-| `dt-obs-problems` | Davis Problems, root cause analysis, impact assessment |
-| `dt-obs-logs` | Log queries, filtering, pattern analysis, error classification |
-| `dt-obs-tracing` | Distributed traces, spans, failure detection, log correlation |
+
+### Observability
+
+| Skill | What It Covers |
+|---|---|
 | `dt-obs-services` | RED metrics, SLA tracking, runtime-specific monitoring (Java, .NET, Node.js, Python, PHP, Go) |
+| `dt-obs-frontends` | RUM, Web Vitals, user sessions, mobile crashes |
+| `dt-obs-tracing` | Distributed traces, spans, failure detection, log correlation |
 | `dt-obs-hosts` | Host and process metrics, CPU, memory, disk, containers |
 | `dt-obs-kubernetes` | Pods, workloads, nodes, labels, ingress, PVCs |
 | `dt-obs-aws` | EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization |
 | `dt-obs-azure` | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
 | `dt-obs-gcp` | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management |
-| `dt-obs-frontends` | RUM, Web Vitals, user sessions, mobile crashes |
+| `dt-obs-logs` | Log queries, filtering, pattern analysis, error classification |
+| `dt-obs-problems` | Davis Problems, root cause analysis, impact assessment |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
+| `dt-alerting` | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
+
+### Security
+
+| Skill | What It Covers |
+|---|---|
+| `dt-sec-insights` | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture findings (KSPM/CSPM/VSPM) |
+
+### Mobile Instrumentation
+
+| Skill | What It Covers |
+|---|---|
+| `dt-obs-android` | Instrument Android projects with the Dynatrace Mobile Agent |
+| `dt-obs-flutter` | Integrate the Dynatrace Flutter Plugin |
+| `dt-obs-ios-sdk` | Set up the Dynatrace iOS SDK via Swift Package Manager |
+| `dt-obs-react-native` | Integrate the Dynatrace React Native Plugin (bare RN and Expo) |
+
+### Platform
+
+| Skill | What It Covers |
+|---|---|
 | `dt-app-dashboards` | Dashboard JSON creation and modification |
 | `dt-app-notebooks` | Notebook creation and analytics workflows |
-| `dt-migration` | Classic entity DQL → Smartscape migration |
-| `dt-alerting` | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime` | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits |
+| `dt-platform-costs` | DPS billing and usage analysis — cost breakdown, spend ranking, chargeback, entity drill-down |
+
+### Migration
+
+| Skill | What It Covers |
+|---|---|
+| `dt-migration` | Classic entity DQL → Smartscape migration |
+
+### CLI
+
+| Skill | What It Covers |
+|---|---|
 | `dtctl` | CLI commands for managing Dynatrace resources from the terminal |
 
 ---

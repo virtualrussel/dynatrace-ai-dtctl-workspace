@@ -15,7 +15,7 @@ Consult [docs/CHEATSHEET.md](../docs/CHEATSHEET.md) first for workflow selection
 
 ## Tool Priority
 
-**Default to MCP tools and the `dt-obs-*` / `dt-app-*` / `dt-dql-essentials` skills** for telemetry reads, problem and RCA analysis, log and trace exploration, and dashboard/notebook content lookups.
+**Default to MCP tools and the relevant `dt-*` domain skill** for telemetry reads, problem and RCA analysis, log and trace exploration, dashboard/notebook content lookups, security findings, and cost analysis. Skills load automatically based on relevance — no manual selection needed.
 
 Use the `dtctl` skill for:
 
@@ -24,6 +24,7 @@ Use the `dtctl` skill for:
   - Prefer structured input with `--input '{"key":"value"}'` (v0.30.0+)
   - Legacy `--params key=value` still supported but deprecated
 - Bulk or scripted operations and CI/CD-style automation
+- Validating DQL syntax before execution (`dtctl verify query`)
 - Tasks not exposed via MCP, or when the user explicitly asks for the CLI
 
 When both paths can satisfy a request, prefer MCP.
@@ -62,9 +63,15 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-obs-gcp`                  | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management               |
 | `dt-obs-frontends`            | RUM, Web Vitals, user sessions, mobile crashes                                       |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning              |
+| `dt-sec-insights`             | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture (KSPM/CSPM/VSPM) |
+| `dt-obs-android`              | Instrument Android projects with the Dynatrace Mobile Agent                          |
+| `dt-obs-flutter`              | Integrate the Dynatrace Flutter Plugin                                               |
+| `dt-obs-ios-sdk`              | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
+| `dt-obs-react-native`         | Integrate the Dynatrace React Native Plugin (bare RN and Expo)                       |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                             |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                                            |
 | `dt-migration`                | Classic entity DQL → Smartscape migration                                            |
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
+| `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
 | `dtctl`                       | CLI commands for managing Dynatrace resources (v0.32.0+ required)                   |
