@@ -15,7 +15,7 @@ One Dynatrace environment is pre-wired via the `dynatrace-mcp` server. Run `bash
 A kubectl-style CLI for Dynatrace that exposes settings, configuration, and operational tasks beyond what the MCP server covers. Used for verification steps and terminal-level queries alongside MCP-based investigations.
 
 **Agent Skills:**
-24 domain knowledge packages load automatically when relevant. They cover DQL query fundamentals, service monitoring, frontend/RUM analytics, distributed tracing, infrastructure (hosts, Kubernetes, AWS, Azure, GCP), logging, problem analysis, dashboards, notebooks, migration, predictive analytics, alerting lifecycle, JavaScript runtime, security insights (vulnerabilities, detections, posture), platform cost analysis, mobile instrumentation (Android, Flutter, iOS, React Native), and the dtctl CLI.
+27 domain knowledge packages load automatically when relevant. They cover DQL query fundamentals, service monitoring, frontend/RUM analytics, distributed tracing, infrastructure (hosts, Kubernetes, AWS, Azure, GCP), logging, problem analysis, dashboards, notebooks, migration, predictive analytics, alerting lifecycle, JavaScript runtime, security insights (vulnerabilities, detections, posture), platform cost analysis, mobile instrumentation (Android, Flutter, iOS, React Native), LLM/GenAI observability, semantic dictionary mapping for audit logs and security integrations, and the dtctl CLI.
 
 **Prompts / Slash Commands:**
 7 task templates cover common workflows: daily standup, health check, error investigation, problem troubleshooting, incident response, performance regression, and standup with notebook creation (the last one combines MCP-based analysis, Dynatrace notebook creation, and dtctl verification in a single workflow).

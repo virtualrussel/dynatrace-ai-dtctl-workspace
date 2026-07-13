@@ -40,7 +40,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 24 Dynatrace domain skills
+├── .agents/skills/               # 27 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -210,12 +210,15 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-obs-problems` | Davis Problems, root cause analysis, impact assessment |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
 | `dt-alerting` | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
+| `dt-obs-genai` | LLM/GenAI observability — golden signals, token/cost analytics, agent signals, conversation analytics, guardrails, evaluations |
+| `dt-obs-log-semantic-mapping` | Suggest and validate semantic dictionary mappings for audit log integrations |
 
 ### Security
 
 | Skill | What It Covers |
 |---|---|
 | `dt-sec-insights` | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture findings (KSPM/CSPM/VSPM) |
+| `dt-sec-semantic-mapping` | Suggest and validate semantic dictionary mappings for new security integrations |
 
 ### Mobile Instrumentation
 

@@ -53,6 +53,9 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | GCP resources and infrastructure | `dt-obs-gcp` |
 | Forecasting, capacity planning, anomaly detection | `dt-obs-predictive-analytics` |
 | Vulnerabilities, MITRE ATT&CK detections, compliance posture | `dt-sec-insights` |
+| LLM/GenAI cost, latency, tokens, agent or conversation analytics | `dt-obs-genai` |
+| Mapping vendor audit logs to the Dynatrace semantic dictionary | `dt-obs-log-semantic-mapping` |
+| Mapping new security vendor data to the Dynatrace semantic dictionary | `dt-sec-semantic-mapping` |
 | Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-obs-android` / `dt-obs-ios-sdk` / `dt-obs-flutter` / `dt-obs-react-native` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
@@ -145,4 +148,4 @@ Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit 
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** July 6, 2026
+**MCP server:** dynatrace-mcp | **Last Updated:** July 13, 2026

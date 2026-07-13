@@ -63,7 +63,10 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-obs-gcp`                  | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management               |
 | `dt-obs-frontends`            | RUM, Web Vitals, user sessions, mobile crashes                                       |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning              |
+| `dt-obs-genai`                | LLM/GenAI observability — golden signals, token/cost analytics, agent signals, conversation analytics, guardrails, evaluations |
+| `dt-obs-log-semantic-mapping` | Suggest and validate semantic dictionary mappings for audit log integrations         |
 | `dt-sec-insights`             | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture (KSPM/CSPM/VSPM) |
+| `dt-sec-semantic-mapping`     | Suggest and validate semantic dictionary mappings for new security integrations      |
 | `dt-obs-android`              | Instrument Android projects with the Dynatrace Mobile Agent                          |
 | `dt-obs-flutter`              | Integrate the Dynatrace Flutter Plugin                                               |
 | `dt-obs-ios-sdk`              | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
