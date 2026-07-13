@@ -32,7 +32,7 @@ This workspace requires specific minimum versions of core components. Older vers
 | Component | Minimum Version | Why |
 | --- | --- | --- |
 | **Node.js** | 18.0.0 | Required for MCP server and skill framework |
-| **dtctl** | 0.32.0 | CLI for managing Dynatrace platform resources |
+| **dtctl** | 0.34.0 | CLI for managing Dynatrace platform resources |
 | **jq** | any | Needed for MCP config updates |
 
 ---
@@ -205,7 +205,7 @@ Both files use `/command-name` for prompt invocation. They are kept separate bec
 
 ### 5. dtctl CLI
 
-**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.32.0 (see [Version Requirements](#version-requirements) above)
+**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.34.0 (see [Version Requirements](#version-requirements) above)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements the Copilot + MCP workflow by providing direct terminal access to Dynatrace resources. It runs DQL queries, manages workflows, verifies notebooks, and more.
 

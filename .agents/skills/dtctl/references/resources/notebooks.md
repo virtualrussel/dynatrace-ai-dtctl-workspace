@@ -3,9 +3,6 @@
 ## List
 ```bash
 dtctl get notebooks -o json --plain
-dtctl get notebooks --filter 'name startsWith "incident-"' -o json --plain
-dtctl get notebooks --sort "-modificationInfo.lastModifiedTime" -o json --plain
-dtctl get notebooks --add-fields "labels,shareInfo.isShared" -o json --plain
 ```
 
 ## Metadata Schema (from `get`)

@@ -91,8 +91,13 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 - Workflow listing: use `--filter`, `--started-since`/`--started-until`, and `--limit` (v0.29.0+) so agents request scoped lists and avoid large payloads.
 
-- Config trust: per-project `.dtctl.yaml` is treated as untrusted by default; aliases and pre/post-apply hooks are ignored unless using global config or `--config` (v0.29.0+). Agents should rely on explicit contexts or flags.
+- Config trust: per-project `.dtctl.yaml` is treated as untrusted by default; aliases and pre/post-apply hooks are ignored unless using global config, `--config`, or the `DTCTL_CONFIG` (v0.34.0+) environment variable. Agents should rely on explicit contexts or flags unless `DTCTL_CONFIG` points at a workspace you control.
 
+- Command catalog: `dtctl commands` defaults to a compact TOON overview (v0.34.0+, previously JSON) — cheaper on agent context. Use `--brief` for scopes/flag types or `--full` for the exhaustive catalog.
+
+- Restricting the exposed surface: a command profile (`--profile query|investigate` on a context, or `DTCTL_PROFILE=...`, v0.34.0+) trims which commands `dtctl commands`/`--help` advertise and hard-blocks the rest — useful for a narrowly-scoped agent, but client-side only (not a security boundary).
+
+- Scan-limit feedback: agent mode now flags DQL scan-limit truncation explicitly with data-reduction advice (v0.33.0+) instead of returning a silent partial/empty result — treat it as "narrow the query," not "no data."
 
 The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
 

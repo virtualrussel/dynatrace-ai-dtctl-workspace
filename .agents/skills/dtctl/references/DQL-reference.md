@@ -73,10 +73,7 @@ filter in(loglevel, array("ERROR", "WARN", "SEVERE"))
 timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}, from:now()-6h, interval:5m
 ```
 
-Add `--metadata=metrics` to `dtctl query` (v0.32.0+) to surface the DQL API's `metadata.metrics` array alongside the result — key, DQL field alias, aggregation, display name, and unit for each returned metric. Useful when the query is built dynamically and the field-to-metric mapping isn't already known:
-```bash
-dtctl query 'timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}' --metadata=metrics -o json --plain
-```
+In agent mode, `dtctl query` results for `timeseries` metrics automatically carry each metric's display name, description, and unit alongside the values — no extra flag needed to see what a returned field actually measures.
 
 ### Log time-series (makeTimeseries, NOT summarize)
 ```dql
@@ -171,6 +168,10 @@ fetch logs
 | fields content, dt.smartscape.host
 | limit 100
 ```
+
+## Scan Limit Truncation
+
+If a query hits Dynatrace's scan limit, agent mode flags the truncation explicitly instead of silently returning a partial or empty result, and includes data-reduction advice (narrower timeframe, tighter filter, added entity scope) in `context`. Treat a truncation flag as a signal to scope the query down — narrower timeframe, an entity or problem filter — not as "no data found".
 
 ## Key Functions
 

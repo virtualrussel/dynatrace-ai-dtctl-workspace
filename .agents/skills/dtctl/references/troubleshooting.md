@@ -21,8 +21,6 @@ If no sudo: place in `~/bin/` and ensure it's on PATH.
 
 ## Initial Setup
 
-Platform tokens (`dt0s16.*`) are created at **https://myaccount.dynatrace.com/platformTokens** — NOT in the tenant UI under Identity & Access Management > Access Tokens (that creates classic API tokens, `dt0c01.*`).
-
 ```bash
 # Store credentials (use --token flag directly, NOT stdin piping)
 dtctl config set-credentials "my-token" --token "$DYNATRACE_API_TOKEN"
@@ -50,23 +48,24 @@ dtctl auth status --plain
 # Check permissions
 dtctl auth can-i <verb> <resource>
 
-# Preflight required scopes before running the command (v0.31.0+)
+# Preflight required scopes before running the command — catches a scope gap
+# before a mid-task 403, rather than after
 dtctl <verb> <resource> --check-scopes
 dtctl commands "<verb> <resource>" --required-scopes
 ```
-
-### Error Messages Now Include Details (v0.31.0+)
-When the API rejects a request with 400, dtctl now appends `error.details` (field paths and constraint violations) instead of only the generic top-level message:
-```
-Before:  API error (400): Invalid request.
-After:   API error (400): Invalid request. - {"tasks":["noop -> position -> y: Input should be greater than or equal to 1"]}
-```
-If anything in this workspace regex-parses dtctl error text, expect a trailing JSON blob after the message on 400s.
 
 > **Note:** `dtctl auth whoami` is not a connectivity check. It hits the platform
 > metadata API and needs an OAuth/JWT token with `app-engine:apps:run`; a plain API
 > token or read-scoped platform token returns a spurious 403 here even though read
 > access works. Confirm connectivity with a real `dtctl get`/`dtctl query`.
+
+### 400 Errors Include Details
+When the API rejects a request with 400, dtctl appends `error.details` (field paths and constraint violations) after the generic top-level message:
+```
+Before:  API error (400): Invalid request.
+After:   API error (400): Invalid request. - {"tasks":["noop -> position -> y: Input should be greater than or equal to 1"]}
+```
+If anything parses dtctl error text with a regex, expect a trailing JSON blob after the message on 400s.
 
 ### Wrong Tenant
 ```bash

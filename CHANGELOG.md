@@ -1,5 +1,29 @@
 # Changelog
 
+## [6.0.0] - 2026-07-13
+
+### Breaking
+- Raised the minimum required `dtctl` version from v0.32.0 to **v0.34.0** in `setup.sh`, `README.md`, `ARCHITECTURE.md`, `CLAUDE.md`, and `.github/copilot-instructions.md`.
+
+### Added
+- `dtctl` skill: documented v0.33.0–v0.34.0 dtctl capabilities —
+  - `dtctl commands` now defaults to a compact TOON overview instead of ~52 KB JSON; `--brief`/`--full` retained for more detail
+  - Query result agent-mode `result.kind` branching (`records` / `result-file` / `summary-only`) and `--spill=auto|never`, `--spill-to`, `--spill-threshold` flags
+  - Live progress bar on long-running queries (stderr), with `--no-progress` to suppress it
+  - Scan-limit truncation is now flagged explicitly in agent mode with data-reduction advice, instead of a silent partial/empty result
+  - Timeseries metric metadata (display name, description, unit) is now included automatically in agent mode — no longer requires the explicit `--metadata=metrics` flag
+  - `describe extension --assets=<types>` (+ `--full` for complete asset content) and `dtctl download extension <name> --version <v>` for extension package/asset inspection without a manual download
+  - `DTCTL_CONFIG` environment variable — names an explicit, trusted config file so a prepared workspace's aliases/hooks are honored without touching invocations
+  - Command profiles (`--profile query|investigate` on a context, or `DTCTL_PROFILE=...`) — restrict which commands `dtctl commands`/`--help` expose, useful for narrowly-scoped agent embeddings
+  - `--validate-only` on `create settings` / `edit settings` / `delete settings` — dry-run against the Settings API
+  - Cloud monitoring config `disable`/`enable`/`edit` for AWS/Azure/GCP monitoring configs (in addition to `create`/`update`/`delete`)
+- `dtctl` skill: re-applied local-only content that upstream's own token-efficiency rewrite dropped but which is still valid against the current CLI — scope preflighting (`--check-scopes`/`--required-scopes`), `classic-pipelines-translation`, the anomaly-detector round-trip recipe, the `error.details` 400-response note, `--feature-set-metrics` on `describe extension`, and the config-trust model (untrusted local `.dtctl.yaml`). These must be re-applied on every future upstream sync until upstream restores them.
+
+### Changed
+- `dtctl` skill fully resynced from upstream `dynatrace-oss/dtctl` (main branch, v0.34.0 release commit) — adopts upstream's leaner, more token-efficient `SKILL.md` structure.
+- `docs/CHEATSHEET.md`: dtctl section updated with the TOON-default command catalog, command profiles, `DTCTL_CONFIG`, and scan-limit truncation behavior.
+- `setup.sh`: updated the dtctl-required-features callout shown on a failed version gate to reflect v0.34.0 capabilities.
+
 ## [5.1.0] - 2026-07-13
 
 ### Added

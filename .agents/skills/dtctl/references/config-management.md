@@ -20,8 +20,6 @@ Can be committed to git (no secrets). Credentials stored separately in OS keyrin
 
 ## Credential Management
 
-Platform tokens (`dt0s16.*`) are created at **https://myaccount.dynatrace.com/platformTokens**. Classic API tokens (`dt0c01.*`) live under Identity & Access Management > Access Tokens in the tenant UI — that is NOT the correct location for dtctl tokens.
-
 ```bash
 # Store token (use --token flag, not stdin)
 dtctl config set-credentials "prod-token" --token "$TOKEN"
@@ -39,26 +37,6 @@ dtctl config use-context "prod"
 dtctl get workflows --context staging --plain
 ```
 
-## Azure Cloud Connections (v0.31.0+)
-
-`dtctl create azure connection` and `dtctl update azure connection` accept credential flags directly, so a `clientSecret`-type connection can be set up in one command — no YAML round-trip required:
-
-```bash
-dtctl create azure connection my-conn \
-  --type clientSecret \
-  --directoryId   "$AZURE_TENANT_ID" \
-  --applicationId "$AZURE_APP_ID" \
-  --clientSecret  "$AZURE_CLIENT_SECRET"
-```
-
-`--clientSecret` on `update` also enables zero-downtime secret rotation — pair it with `az ad app credential reset --append` so the old secret keeps working until the new one is confirmed live:
-
-```bash
-dtctl update azure connection my-conn --clientSecret "$NEW_AZURE_CLIENT_SECRET"
-```
-
-For federated-identity connections whose token issuer can't be inferred from the hostname, set `--issuer` explicitly (or a top-level `issuer:` field in the connection YAML); dtctl falls back to host-based detection when omitted.
-
 ## Safety Levels
 
 | Level | Use Case |
@@ -69,3 +47,39 @@ For federated-identity connections whose token issuer can't be inferred from the
 | `dangerously-unrestricted` | Emergency admin |
 
 Actual permissions depend on API token scopes, not just safety level.
+
+## Config Trust Model
+
+An auto-discovered local `.dtctl.yaml` (found by walking up from the current directory) is treated as **untrusted** — the same threat model as a checked-out repo or an unpacked tarball. dtctl therefore ignores **command aliases** and **pre-/post-apply hooks** defined in it, printing a warning to stderr when it does. Contexts, tokens, and other preferences in a local config still work normally. Aliases and hooks are honored only from:
+
+- The global config (`$XDG_CONFIG_HOME/dtctl/config`), or
+- A config named explicitly with `--config <path>` or the `DTCTL_CONFIG` environment variable
+
+```bash
+# Trust a prepared workspace's local .dtctl.yaml — e.g. an automation harness
+# that generates a clean working directory with its own config, skills, and hooks
+export DTCTL_CONFIG="$PWD/.dtctl.yaml"
+```
+
+Setting `DTCTL_CONFIG` skips auto-discovery entirely and honors that file's aliases and hooks without changing any invocation (an agent keeps running `dtctl apply` unchanged). An alias can never shadow a built-in command (`get`, `apply`, `version`, etc.) regardless of where it's defined. Agents relying on an untouched local `.dtctl.yaml` should use explicit contexts/flags instead of assuming aliases or hooks will fire.
+
+## Command Profiles
+
+A command profile restricts **which commands dtctl exposes** — shaping `--help`, the `dtctl commands` catalog, and shell completion all at once, and hard-blocking invocation of anything outside the set. This is aimed squarely at embedding dtctl in AI agents: an investigation agent that only ever needs `query` and Davis analyzers doesn't need `auth login` or the cloud-provisioning verbs cluttering its command catalog.
+
+```bash
+# Bind a built-in profile to a context — an embedded agent inherits the
+# reduced surface with zero flags
+dtctl config set-context prod-agent \
+  --environment https://abc12345.apps.dynatrace.com \
+  --token-ref prod-token \
+  --profile query \
+  --safety-level readonly
+
+# Or select a profile for one invocation/environment (highest precedence)
+DTCTL_PROFILE=query dtctl commands
+```
+
+Built-in profiles: `full` (default, everything), `query` (`query`, `get analyzers`, `describe analyzer`, `exec analyzer`, `verify analyzer`), `investigate` (`query`, `logs`, `get`, `find`, `describe`). Define custom profiles under a top-level `profiles:` map in the config (`description` + a flat `commands` allowlist — default-deny, so adding a new dtctl command never silently widens an existing profile).
+
+Only `commands`/`commands howto` and `help` are always available regardless of profile — everything else, including `config`/`ctx`, is subject to the allowlist. Profiles are a convenience, not a security boundary (client-side, like safety levels); a determined caller can unset `DTCTL_PROFILE`. For real restriction, scope the API token itself. Profiles and safety levels are orthogonal — set both on a context to express "this agent only sees `query` and can never mutate."
