@@ -1,11 +1,16 @@
 # Changelog
 
-## [6.0.0] - 2026-07-13
+## [5.1.0] - 2026-07-13
 
 ### Breaking
 - Raised the minimum required `dtctl` version from v0.32.0 to **v0.34.0** in `setup.sh`, `README.md`, `ARCHITECTURE.md`, `CLAUDE.md`, and `.github/copilot-instructions.md`.
 
 ### Added
+- **`dt-obs-genai` skill** — LLM/GenAI observability: golden signals (traffic, errors, latency, saturation), LLM signals (model, provider, tokens), cost/token analytics and usage attribution, agent signals (tool calls, steps, loop detection), conversation/session analytics, guardrails, and evaluation results — reads OpenTelemetry GenAI spans and LLM evaluation bizevents.
+- **`dt-obs-log-semantic-mapping` skill** — suggests and validates semantic dictionary mappings for audit log integrations (authentication, authorization, user actions, HTTP traffic) from raw vendor payloads or live ingested events; includes sample mappings for CyberArk, Okta, Azure, GitHub, Sonatype, and HTTP logs.
+- **`dt-sec-semantic-mapping` skill** — suggests and validates semantic dictionary mappings for new security integrations (vulnerabilities, detections, compliance) against vendor API samples or live tenant data; includes sample mappings for Dynatrace-native and external security event shapes.
+- `.claude/skills/` symlinks added for all 3 new skills.
+- All 3 new skills added to the skill tables in `README.md`, `ARCHITECTURE.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `llms.txt`, `docs/CHEATSHEET.md`.
 - `dtctl` skill: documented v0.33.0–v0.34.0 dtctl capabilities —
   - `dtctl commands` now defaults to a compact TOON overview instead of ~52 KB JSON; `--brief`/`--full` retained for more detail
   - Query result agent-mode `result.kind` branching (`records` / `result-file` / `summary-only`) and `--spill=auto|never`, `--spill-to`, `--spill-threshold` flags
@@ -20,20 +25,6 @@
 - `dtctl` skill: re-applied local-only content that upstream's own token-efficiency rewrite dropped but which is still valid against the current CLI — scope preflighting (`--check-scopes`/`--required-scopes`), `classic-pipelines-translation`, the anomaly-detector round-trip recipe, the `error.details` 400-response note, `--feature-set-metrics` on `describe extension`, and the config-trust model (untrusted local `.dtctl.yaml`). These must be re-applied on every future upstream sync until upstream restores them.
 
 ### Changed
-- `dtctl` skill fully resynced from upstream `dynatrace-oss/dtctl` (main branch, v0.34.0 release commit) — adopts upstream's leaner, more token-efficient `SKILL.md` structure.
-- `docs/CHEATSHEET.md`: dtctl section updated with the TOON-default command catalog, command profiles, `DTCTL_CONFIG`, and scan-limit truncation behavior.
-- `setup.sh`: updated the dtctl-required-features callout shown on a failed version gate to reflect v0.34.0 capabilities.
-
-## [5.1.0] - 2026-07-13
-
-### Added
-- **`dt-obs-genai` skill** — LLM/GenAI observability: golden signals (traffic, errors, latency, saturation), LLM signals (model, provider, tokens), cost/token analytics and usage attribution, agent signals (tool calls, steps, loop detection), conversation/session analytics, guardrails, and evaluation results — reads OpenTelemetry GenAI spans and LLM evaluation bizevents.
-- **`dt-obs-log-semantic-mapping` skill** — suggests and validates semantic dictionary mappings for audit log integrations (authentication, authorization, user actions, HTTP traffic) from raw vendor payloads or live ingested events; includes sample mappings for CyberArk, Okta, Azure, GitHub, Sonatype, and HTTP logs.
-- **`dt-sec-semantic-mapping` skill** — suggests and validates semantic dictionary mappings for new security integrations (vulnerabilities, detections, compliance) against vendor API samples or live tenant data; includes sample mappings for Dynatrace-native and external security event shapes.
-- `.claude/skills/` symlinks added for all 3 new skills.
-- All 3 new skills added to the skill tables in `README.md`, `ARCHITECTURE.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `llms.txt`, `docs/CHEATSHEET.md`.
-
-### Changed
 - Skill count updated from 24 to 27 across all documentation files.
 - Resynced 9 skills from upstream dynatrace-for-ai v5.0.0:
   - `dt-sec-insights` — tightened trigger description and added a CIS-primary standard summary vs. entity security-tab view distinction to `references/compliance.md`, plus refreshed `all-security-events.md`, `common-patterns.md`, `data-model.md`, `mistakes-and-troubleshooting.md`, `vulnerabilities.md`.
@@ -43,7 +34,9 @@
   - `dt-alerting` — refreshed `references/workflow-notifications.md`.
   - `dt-obs-frontends` — refreshed `references/troubleshooting.md` and `references/user-sessions.md`.
   - `dt-obs-ios-sdk` — refreshed `SKILL.md`.
-- `docs/CHEATSHEET.md`: added quick-reference rows for GenAI observability and semantic mapping questions; "Last Updated" refreshed to July 13, 2026.
+- `dtctl` skill fully resynced from upstream `dynatrace-oss/dtctl` (main branch, v0.34.0 release commit) — adopts upstream's leaner, more token-efficient `SKILL.md` structure.
+- `docs/CHEATSHEET.md`: added quick-reference rows for GenAI observability and semantic mapping questions; dtctl section updated with the TOON-default command catalog, command profiles, `DTCTL_CONFIG`, and scan-limit truncation behavior; "Last Updated" refreshed to July 13, 2026.
+- `setup.sh`: updated the dtctl-required-features callout shown on a failed version gate to reflect v0.34.0 capabilities.
 
 ### Compatibility
 - dynatrace-for-ai v5.0.0
