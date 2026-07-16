@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.5.0] - 2026-07-16
+
+### Breaking
+- **Migrated from the local (stdio/npx) Dynatrace MCP server to the official remote HTTP MCP server.** The local server is being deprecated by Dynatrace; the remote server runs inside the Dynatrace tenant itself and is reached over HTTPS with a Platform Token instead of a local `npx`-launched process.
+  - `.vscode/mcp.json` and `.mcp.json` are no longer checked into git. They are now generated, `.gitignore`'d files produced by `setup.sh` from new checked-in `.vscode/mcp.json.template` and `.mcp.json.template` files.
+  - MCP server `type` changed from `stdio` to `http`; `url` now points at the tenant's `/platform-reserved/mcp-gateway/v0.1/servers/dynatrace-mcp/mcp` gateway path instead of launching `@dynatrace-oss/dynatrace-mcp-server` via `npx`.
+  - Authentication changed from local OAuth browser SSO to a user-generated Platform Token, supplied as a Bearer token in the `Authorization` header.
+  - **Node.js is no longer a prerequisite** — it was only required to run the local server via `npx`. Removed from `README.md`, `ARCHITECTURE.md`, and `docs/ELI5.md` prerequisite tables, and from the `setup.sh` prerequisite checks.
+- `setup.sh`: token/config generation is no longer gated behind the one-time documentation-substitution idempotency check — re-running `setup.sh` on an already-configured clone now skips doc substitution but still regenerates `.vscode/mcp.json` / `.mcp.json` with a freshly entered Platform Token, to support token rotation without a full re-clone.
+
+### Added
+- `.vscode/mcp.json.template` and `.mcp.json.template` — checked-in templates for the remote MCP server config, with tenant URL and Platform Token placeholders.
+- `setup.sh` now prints the full list of required and optional Platform Token scopes before prompting for the token: mandatory gateway scopes (`mcp-gateway:servers:invoke`, `mcp-gateway:servers:read`), `app-engine:apps:run`, Grail read scopes (`storage:buckets:read`, `storage:logs:read`, `storage:events:read`, `storage:metrics:read`, `storage:spans:read`, `storage:entities:read`, `storage:bizevents:read`, `storage:security.events:read`, `storage:system:read`), Davis scopes (`davis:analyzers:read`, `davis:analyzers:execute`, `davis-copilot:nl2dql:execute`, `davis-copilot:dql2nl:execute`, `davis-copilot:conversations:execute`), and `document:documents:read`. Scope list last verified 2026-07-16 against `docs.dynatrace.com`'s "Server and server tools" reference.
+- Security note in `README.md`: the generated config files hold the Platform Token in plaintext, are `chmod 600`'d, and are scoped to the cloned folder — deleting the folder removes the token completely, but this is not equivalent to OS-keychain protection against non-git backup/sync tools sweeping up the folder.
+
+### Changed
+- `ARCHITECTURE.md`: rewrote the architecture diagram (both VS Code and Claude Code CLI now connect via `HTTPS + Bearer Token` directly to the Dynatrace platform-reserved MCP gateway, no local process in between) and the MCP Server section's authentication description.
+- `README.md`: restructured the setup flow to front-load Platform Token creation and its required scopes; rewrote the "MCP Configuration Files" section to describe the template/generated split; updated the file-tree diagram to show `.template` files instead of the old live config files.
+- `CONTRIBUTING.md`: "Updating MCP Configuration" now describes editing `.vscode/mcp.json.template` (never the generated, gitignored live files).
+- `docs/ELI5.md`, `docs/CHEATSHEET.md`, `llms.txt`: reworded stdio-process language ("MCP server starts automatically") and Node.js prerequisite mentions to match the new HTTP model.
+- `.gitignore`: added `.vscode/mcp.json` and `.mcp.json` (the generated, secret-bearing files).
+
 ## [5.1.0] - 2026-07-13
 
 ### Breaking

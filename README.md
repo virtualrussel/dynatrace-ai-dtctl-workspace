@@ -44,9 +44,9 @@ dynatrace-ai-dtctl-workspace/
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
-├── .mcp.json                     # MCP server configuration for Claude Code CLI and other non-VS Code clients
+├── .mcp.json.template             # Checked-in template — setup.sh generates .mcp.json (gitignored) from this
 ├── .vscode/
-│   ├── mcp.json                  # MCP server configuration for VS Code Copilot
+│   ├── mcp.json.template          # Checked-in template — setup.sh generates mcp.json (gitignored) from this
 │   ├── extensions.json           # Recommended VS Code extensions
 │   └── settings.json             # Workspace editor settings
 ```
@@ -124,7 +124,7 @@ The script will:
 2. **Account Management** → **Identity & access management** → **Platform tokens**
 3. Click the **user profile link** shown in the page description (not a "create" button)
 4. Click **Generate new token**
-5. Add the scopes listed by `setup.sh` before running (gateway scopes are mandatory; others are tool-specific)
+5. Add the scopes listed by `setup.sh` before running (gateway scopes are mandatory; others are tool-specific). Scope list last verified 2026-07-16 against [docs.dynatrace.com](https://docs.dynatrace.com/docs/dynatrace-intelligence/dynatrace-mcp)'s "Server and server tools" reference — check there if a tool reports a missing scope, as Dynatrace adds new tools/scopes over time.
 6. Copy the token — it looks like `dt0s16.ABC12345XYZ.••••••••`
 7. Paste it into `setup.sh` when prompted
 
