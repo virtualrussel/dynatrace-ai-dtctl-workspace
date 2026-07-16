@@ -122,9 +122,14 @@ exit 1
 fi
 
 # --- Idempotency check for doc substitution ----------------------------------
-if ! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/CLAUDE.md" 2>/dev/null; then
+# Matches only real unsubstituted placeholders (which always carry the domain
+# suffix) — a bare "YOUR_TENANT_ID" also appears in README's own regeneration
+# example code and must not be mistaken for an unconfigured clone.
+EXISTING_TENANT=""
+if ! grep -qE "YOUR_TENANT_ID\.(apps\.dynatrace\.com|sprint\.apps\.dynatracelabs\.com)" "$SCRIPT_DIR/README.md" 2>/dev/null; then
 echo "Documentation already configured."
 DOCS_ALREADY_SUBSTITUTED=true
+EXISTING_TENANT=$(grep -o 'https://[a-z0-9-]*\.apps\.dynatrace\.com\|https://[a-z0-9-]*\.sprint\.apps\.dynatracelabs\.com' "$SCRIPT_DIR/README.md" | head -1 | sed 's|https://||')
 else
 DOCS_ALREADY_SUBSTITUTED=false
 fi
@@ -135,8 +140,17 @@ echo "Examples:"
 echo " abc12345.apps.dynatrace.com"
 echo " abc12345.sprint.apps.dynatracelabs.com"
 echo ""
+if [[ -n "$EXISTING_TENANT" ]]; then
+echo "Detected existing tenant: $EXISTING_TENANT"
+echo "Press Enter to keep it (e.g. for Platform Token rotation), or type a different tenant to reconfigure."
+echo ""
+fi
 while true; do
 read -rp "Tenant URL: " TENANT_URL
+if [[ -z "$TENANT_URL" && -n "$EXISTING_TENANT" ]]; then
+TENANT_URL="$EXISTING_TENANT"
+break
+fi
 TENANT_URL="${TENANT_URL#https://}"
 TENANT_URL="${TENANT_URL#http://}"
 TENANT_URL="${TENANT_URL%/}"
@@ -151,8 +165,26 @@ done
 echo ""
 echo "Tenant URL: $TENANT_URL"
 
-# If docs not already substituted, ask about updating them
-if [[ "$DOCS_ALREADY_SUBSTITUTED" == "false" ]]; then
+# Detect reconfiguration to a different tenant on an already-configured clone
+TENANT_CHANGED=false
+if [[ "$DOCS_ALREADY_SUBSTITUTED" == "true" && -n "$EXISTING_TENANT" && "$TENANT_URL" != "$EXISTING_TENANT" ]]; then
+TENANT_CHANGED=true
+echo "⚠ This differs from the tenant currently documented ($EXISTING_TENANT)."
+echo " The generated MCP config will point at $TENANT_URL, but README/ARCHITECTURE/ELI5/CHEATSHEET"
+echo " still describe $EXISTING_TENANT unless you update them now."
+echo ""
+read -rp "Update documentation to match the new tenant? (y/N) " CONFIRM_RETARGET
+echo ""
+if [[ "$CONFIRM_RETARGET" =~ ^[Yy]$ ]]; then
+DOCS_ALREADY_SUBSTITUTED=false
+else
+echo "Keeping documentation as-is — it will describe $EXISTING_TENANT while the config points at $TENANT_URL."
+echo ""
+fi
+fi
+
+# If docs not already substituted (fresh clone, or confirmed retarget), ask about updating them
+if [[ "$DOCS_ALREADY_SUBSTITUTED" == "false" && "$TENANT_CHANGED" == "false" ]]; then
 read -rp "Update documentation files? (y/N) " CONFIRM_DOCS
 if [[ ! "$CONFIRM_DOCS" =~ ^[Yy]$ ]]; then
 echo "Aborted."
@@ -217,13 +249,17 @@ exit 1
 fi
 echo ""
 
-# --- Apply doc substitution (one-time) ----------------------------------------
+# --- Apply doc substitution (one-time on a fresh clone, or on confirmed retarget) ---
 if [[ "$DOCS_ALREADY_SUBSTITUTED" == "false" ]]; then
 echo "Updating documentation files..."
 for FILE in "${DOC_FILES[@]}"; do
 if [[ -f "$FILE" ]]; then
+if [[ "$TENANT_CHANGED" == "true" ]]; then
+perl -pi -e "s|\\Q${EXISTING_TENANT}\\E|${TENANT_URL}|g" "$FILE"
+else
 perl -pi -e "s|YOUR_TENANT_ID\\.apps\\.dynatrace\\.com|${TENANT_URL}|g" "$FILE"
 perl -pi -e "s|YOUR_TENANT_ID\\.sprint\\.apps\\.dynatracelabs\\.com|${TENANT_URL}|g" "$FILE"
+fi
 echo " ✓ $FILE"
 fi
 done

@@ -114,10 +114,13 @@ bash setup.sh
 
 The script will:
 1. Check prerequisites (dtctl, jq, Claude CLI)
-2. Prompt for your Dynatrace environment URL (accepts `*.apps.dynatrace.com` and `*.sprint.apps.dynatracelabs.com`)
-3. Update all documentation files with your tenant URL (one-time, idempotent)
-4. Print the **required Platform Token scopes** you need to create in your Dynatrace tenant
-5. Prompt you to paste your Platform Token
+2. Prompt for your Dynatrace environment URL (accepts `*.apps.dynatrace.com` and `*.sprint.apps.dynatracelabs.com`). On an already-configured clone, it detects the existing tenant and lets you press Enter to keep it (for Platform Token rotation) or type a different one to reconfigure
+3. Print the **required Platform Token scopes** you need to create in your Dynatrace tenant
+4. Prompt you to paste your Platform Token
+5. Update documentation files with your tenant URL (one-time on a fresh clone, or if you confirm retargeting to a new tenant)
+6. Generate `.vscode/mcp.json` and `.mcp.json` from templates
+
+**Reconfiguring an existing clone:** re-running `bash setup.sh` is also how you rotate an expiring Platform Token (press Enter at the tenant prompt to keep the current tenant) or point the same clone at a different tenant (type a new tenant URL — the script will offer to update the documentation to match, so it doesn't end up describing the old tenant while the config points at the new one).
 
 **To create a Platform Token:**
 1. Go to your Dynatrace tenant: `https://YOUR_TENANT_ID.apps.dynatrace.com`
@@ -177,11 +180,14 @@ Using the dynatrace-mcp server, list the top 5 services by request volume in the
 
 **Claude Code users:** In Claude Code (VS Code plugin or CLI), type the same query or use `/health-check` for a guided workflow.
 
+> **Claude Code CLI, first run in a new clone:** Claude Code requires a one-time approval before it will connect to a project-scoped MCP server it hasn't seen before. Run `claude` and check `claude mcp list` — a fresh clone shows `dynatrace-mcp` as **"Pending approval (run `claude` to approve)"** until you approve it interactively in the session. This is expected; it's Claude Code's own trust mechanism for any new project's `.mcp.json`, not specific to this workspace.
+
 If you see a table of services with request counts — you are live.
 
 If you get no results or an error:
 - Check that `dtctl doctor` passes
 - Verify the workspace was opened or refreshed in VS Code after setup
+- **Claude Code CLI:** run `claude mcp list` — if `dynatrace-mcp` shows "Pending approval," start `claude` and approve it
 - Confirm your Platform Token has the required scopes: `mcp-gateway:servers:invoke`, `mcp-gateway:servers:read`, and `app-engine:apps:run`
 - See [ARCHITECTURE.md](./ARCHITECTURE.md) for how the components connect
 

@@ -59,7 +59,7 @@ bash setup.sh
 ```
 
 The script will:
-1. Ask for your Dynatrace environment URL (e.g., `abc12345.apps.dynatrace.com`)
+1. Ask for your Dynatrace environment URL (e.g., `abc12345.apps.dynatrace.com`). On an already-configured clone, press Enter to keep the existing tenant (e.g. to rotate your token) or type a new one to reconfigure
 2. Print the **required Platform Token scopes** to create in your Dynatrace tenant
 3. Prompt you to paste your Platform Token
 
@@ -93,7 +93,7 @@ When `dtctl doctor` reports pass, you are connected.
 
 **VS Code users:** If this is your first time opening the workspace in VS Code, use **File → Open Folder** and select this repository directory. If the workspace is already open in VS Code, press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter.
 
-**Claude Code CLI users:** No reload needed. Run `claude` from the workspace directory.
+**Claude Code CLI users:** No reload needed. Run `claude` from the workspace directory. The first time you do this in a new clone, Claude Code will ask you to approve the `dynatrace-mcp` MCP server before it connects — this is a one-time, per-clone security step, not something specific to this workspace.
 
 ---
 
