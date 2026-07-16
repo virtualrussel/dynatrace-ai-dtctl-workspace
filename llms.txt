@@ -9,7 +9,7 @@ This workspace teaches AI assistants how to work with a live Dynatrace environme
 ## Key Components
 
 **MCP Server:**
-One Dynatrace environment is pre-wired via the `dynatrace-mcp` server. Run `bash setup.sh` on first use to configure your tenant URL; `.mcp.json` is a derived copy for non-VS Code clients.
+One Dynatrace environment is pre-wired via the `dynatrace-mcp` server (remote HTTP with Bearer token). Run `bash setup.sh` on first use to configure your tenant URL and create/paste a Platform Token; the script generates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code CLI) from templates, both of which are `.gitignore`'d and never committed.
 
 **dtctl CLI:**
 A kubectl-style CLI for Dynatrace that exposes settings, configuration, and operational tasks beyond what the MCP server covers. Used for verification steps and terminal-level queries alongside MCP-based investigations.

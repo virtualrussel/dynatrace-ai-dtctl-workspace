@@ -17,6 +17,8 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+.vscode/mcp.json
+.mcp.json
 
 # Node
 node_modules/

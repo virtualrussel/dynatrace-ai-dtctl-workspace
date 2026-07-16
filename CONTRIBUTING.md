@@ -67,22 +67,27 @@ Make sure examples in the skill match the installed version.
 
 ## Updating MCP Configuration
 
-MCP configuration is dual-file: `.vscode/mcp.json` (source) and `.mcp.json` (generated).
+MCP configuration uses templates: `.vscode/mcp.json.template` (source) and `.mcp.json.template` (source), which `setup.sh` generates into `.vscode/mcp.json` and `.mcp.json`. The generated files are `.gitignore`'d and contain user credentials — never commit them.
 
-When updating MCP server configuration:
+When updating the MCP server structure (e.g., changing the gateway URL path, adding a new server, changing header names):
 
-1. Edit `.vscode/mcp.json`
-2. Regenerate `.mcp.json`:
+1. Edit `.vscode/mcp.json.template`
+2. Regenerate `.mcp.json.template` via jq:
    ```bash
-   jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
+   jq '{"mcpServers": .servers}' .vscode/mcp.json.template > .mcp.json.template
    ```
-3. Commit both:
+3. Commit both templates:
    ```bash
-   git add .vscode/mcp.json .mcp.json
-   git commit -m "Update MCP configuration"
+   git add .vscode/mcp.json.template .mcp.json.template
+   git commit -m "Update MCP configuration templates"
    ```
 
-The `setup.sh` script handles initial configuration. Manual regeneration is only needed after hand-editing `.vscode/mcp.json`.
+**Do not commit the generated `.vscode/mcp.json` or `.mcp.json` files.** They are git-ignored because they contain real tenant URLs and Platform Tokens. Users regenerate them by running `setup.sh`.
+
+To verify your changes work before committing, test locally:
+1. Re-run `setup.sh` to regenerate the live config from your modified templates
+2. Test the MCP connection in VS Code or Claude Code CLI
+3. Verify `git status` shows only the `.template` files as changed (the generated files should not appear)
 
 ---
 

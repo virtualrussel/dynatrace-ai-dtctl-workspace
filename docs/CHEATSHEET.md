@@ -145,12 +145,14 @@ These work well when you're not sure which workflow to reach for:
 
 ## Session targeting
 
-MCP server: `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com`
+MCP server: `dynatrace-mcp` → `https://YOUR_TENANT_ID.apps.dynatrace.com/platform-reserved/mcp-gateway/v0.1/servers/dynatrace-mcp/mcp`
 
-Run `bash setup.sh` to configure on first use. For subsequent URL changes, edit `.vscode/mcp.json` and regenerate: `jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json`.
+Run `bash setup.sh` on first use to configure your tenant URL and Platform Token. The script generates `.vscode/mcp.json` and `.mcp.json` (both `.gitignore`'d; never commit).
 
-**Claude Code CLI:** run `claude` from the workspace directory — MCP config is in `.mcp.json` and the server starts automatically.
+To rotate your Platform Token or change tenants, re-run `bash setup.sh` — it will regenerate the config files with a fresh token.
+
+**Claude Code CLI:** run `claude` from the workspace directory — MCP config is loaded from `.mcp.json` automatically.
 
 ---
 
-**MCP server:** dynatrace-mcp | **Last Updated:** July 13, 2026
+**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** July 16, 2026

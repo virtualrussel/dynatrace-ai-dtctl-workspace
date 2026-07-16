@@ -14,14 +14,19 @@ version_ge() {
   [[ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" == "$1" ]]
 }
 
-FILES=(
-"$SCRIPT_DIR/.vscode/mcp.json"
-"$SCRIPT_DIR/.mcp.json"
+# Files to substitute tenant URL into (documentation only; not secrets)
+DOC_FILES=(
 "$SCRIPT_DIR/CLAUDE.md"
 "$SCRIPT_DIR/ARCHITECTURE.md"
 "$SCRIPT_DIR/README.md"
 "$SCRIPT_DIR/docs/ELI5.md"
 "$SCRIPT_DIR/docs/CHEATSHEET.md"
+)
+
+# Template files that generate config
+TEMPLATE_FILES=(
+"$SCRIPT_DIR/.vscode/mcp.json.template"
+"$SCRIPT_DIR/.mcp.json.template"
 )
 
 echo ""
@@ -35,30 +40,12 @@ echo ""
 PREREQ_FAILED=false
 DTCTL_STATUS="unavailable"
 
-# Node.js v18+
-if command -v node &>/dev/null; then
-NODE_VERSION=$(node --version | sed 's/^v//')
-NODE_MAJOR=$(echo "$NODE_VERSION" | cut -d. -f1)
-if [[ "$NODE_MAJOR" -ge 18 ]]; then
-echo " [ok] Node.js v${NODE_VERSION}"
-else
-echo " [fail] Node.js v${NODE_VERSION} — v18 or higher required"
-echo " Install the LTS version: https://nodejs.org/"
-PREREQ_FAILED=true
-fi
-else
-echo " [fail] Node.js not found — v18 or higher required"
-echo " Install the LTS version: https://nodejs.org/"
-PREREQ_FAILED=true
-fi
-
 # jq
 if command -v jq &>/dev/null; then
 JQ_VERSION=$(jq --version 2>/dev/null | sed 's/^jq-//' || echo "installed")
 echo " [ok] jq ${JQ_VERSION}"
 else
-echo " [warn] jq not found — needed for manual MCP config updates"
-echo " Install: brew install jq / apt install jq / choco install jq"
+echo " [warn] jq not found — needed for template regeneration if you hand-edit templates"
 fi
 
 # Claude Code CLI
@@ -134,15 +121,15 @@ echo "Fix the above errors and re-run setup.sh."
 exit 1
 fi
 
-# --- Idempotency check -------------------------------------------------------
-if ! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/.vscode/mcp.json" 2>/dev/null && \
-! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/CLAUDE.md" 2>/dev/null; then
-echo "This workspace has already been configured."
-echo "setup.sh only works on the initial setup."
-exit 1
+# --- Idempotency check for doc substitution ----------------------------------
+if ! grep -q "YOUR_TENANT_ID" "$SCRIPT_DIR/CLAUDE.md" 2>/dev/null; then
+echo "Documentation already configured."
+DOCS_ALREADY_SUBSTITUTED=true
+else
+DOCS_ALREADY_SUBSTITUTED=false
 fi
 
-# --- Tenant URL --------------------------------------------------------------
+# --- Tenant URL step (always run to get TENANT_URL for config generation) -----
 echo "Enter your Dynatrace environment URL."
 echo "Examples:"
 echo " abc12345.apps.dynatrace.com"
@@ -163,23 +150,100 @@ echo ""
 done
 echo ""
 echo "Tenant URL: $TENANT_URL"
-read -rp "Update ${#FILES[@]} workspace files? (y/N) " CONFIRM
-if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+
+# If docs not already substituted, ask about updating them
+if [[ "$DOCS_ALREADY_SUBSTITUTED" == "false" ]]; then
+read -rp "Update documentation files? (y/N) " CONFIRM_DOCS
+if [[ ! "$CONFIRM_DOCS" =~ ^[Yy]$ ]]; then
 echo "Aborted."
 exit 0
 fi
 echo ""
+fi
 
-# --- Apply replacements ------------------------------------------------------
-for FILE in "${FILES[@]}"; do
+# --- MCP Configuration (always runnable for token rotation) -------------------
+echo "Dynatrace Remote MCP Server Configuration"
+echo "========================================="
+echo ""
+echo "Required Platform Token Scopes:"
+echo ""
+echo "  Gateway (mandatory):"
+echo "    • mcp-gateway:servers:invoke"
+echo "    • mcp-gateway:servers:read"
+echo ""
+echo "  App Engine (required by most tools):"
+echo "    • app-engine:apps:run"
+echo ""
+echo "  Grail (read-only; add only what you need):"
+echo "    • storage:buckets:read"
+echo "    • storage:logs:read"
+echo "    • storage:events:read"
+echo "    • storage:metrics:read"
+echo "    • storage:spans:read"
+echo "    • storage:entities:read"
+echo "    • storage:bizevents:read"
+echo "    • storage:security.events:read"
+echo "    • storage:system:read"
+echo ""
+echo "  Davis (optional; for AI-driven analysis):"
+echo "    • davis:analyzers:read"
+echo "    • davis:analyzers:execute"
+echo "    • davis-copilot:nl2dql:execute"
+echo "    • davis-copilot:dql2nl:execute"
+echo "    • davis-copilot:conversations:execute"
+echo ""
+echo "  Documents (optional; for reading notebooks/dashboards):"
+echo "    • document:documents:read"
+echo ""
+echo "To create a token:"
+echo "  1. Go to your Dynatrace environment"
+echo "  2. Account Management → Identity & access management → Platform tokens"
+echo "  3. Click your user profile link (shown in the page description)"
+echo "  4. Click 'Generate new token'"
+echo "  5. Add the scopes above (choose write scopes deliberately, not by default)"
+echo "  6. Copy the token — it looks like: dt0s16.ABC12345XYZ.••••••••"
+echo ""
+echo "Docs: https://docs.dynatrace.com/docs/dynatrace-intelligence/dynatrace-mcp"
+echo ""
+read -rsp "Paste your Platform Token: " PLATFORM_TOKEN
+echo ""
+if [[ -z "$PLATFORM_TOKEN" ]]; then
+echo "Token cannot be empty. Aborted."
+exit 1
+fi
+echo ""
+
+# --- Apply doc substitution (one-time) ----------------------------------------
+if [[ "$DOCS_ALREADY_SUBSTITUTED" == "false" ]]; then
+echo "Updating documentation files..."
+for FILE in "${DOC_FILES[@]}"; do
 if [[ -f "$FILE" ]]; then
 perl -pi -e "s|YOUR_TENANT_ID\\.apps\\.dynatrace\\.com|${TENANT_URL}|g" "$FILE"
-echo " updated $FILE"
+perl -pi -e "s|YOUR_TENANT_ID\\.sprint\\.apps\\.dynatracelabs\\.com|${TENANT_URL}|g" "$FILE"
+echo " ✓ $FILE"
 fi
 done
-
-# --- Next steps --------------------------------------------------------------
 echo ""
+fi
+
+# --- Generate MCP config (always runnable) -----------------------------------
+echo "Generating MCP configuration..."
+for TEMPLATE in "${TEMPLATE_FILES[@]}"; do
+if [[ ! -f "$TEMPLATE" ]]; then
+echo " [fail] Template not found: $TEMPLATE"
+exit 1
+fi
+
+TARGET="${TEMPLATE%.template}"
+cp "$TEMPLATE" "$TARGET"
+perl -pi -e "s|YOUR_TENANT_DOMAIN|${TENANT_URL}|g" "$TARGET"
+perl -pi -e "s|YOUR_PLATFORM_TOKEN|${PLATFORM_TOKEN}|g" "$TARGET"
+chmod 600 "$TARGET"
+echo " ✓ $(basename "$TARGET") (mode 600)"
+done
+echo ""
+
+# --- Next steps ---------------------------------------------------------------
 echo "Done. Next steps:"
 echo ""
 STEP=1
@@ -206,7 +270,7 @@ echo ""
 STEP=$((STEP + 1))
 echo "${STEP}. Launch VS Code and verify the connection:"
 echo " code"
-echo " Then open the chat window (Claude Code or GitHub Copilot) and enter:"
+echo " Then open Copilot Chat or Claude Code chat and enter:"
 echo " /health-check"
 echo ""
 STEP=$((STEP + 1))
@@ -217,3 +281,5 @@ echo " The MCP server and all skills will load automatically."
 echo ""
 STEP=$((STEP + 1))
 fi
+echo "For more details, see README.md"
+echo ""

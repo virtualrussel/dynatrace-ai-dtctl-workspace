@@ -12,20 +12,13 @@ You need these tools installed:
 |---|---|---|
 | [VS Code](https://code.visualstudio.com/) | Editor with Copilot/Claude Chat — **skip if using Claude Code CLI** | Download and install |
 | GitHub Copilot or Claude Code | The AI brain | Copilot: sign in at github.com/features/copilot · Claude: sign in at claude.ai/code |
-| [Node.js](https://nodejs.org/) v18+ | Required to run the MCP server — the live data bridge between the AI and your Dynatrace environment | Download LTS version |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) | CLI for verifying and managing Dynatrace resources | Offered for installation by `setup.sh` in Step 1 — or install manually |
-
-Quick prerequisite verification:
-
-```bash
-node --version
-```
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.34.0+ | CLI for verifying and managing Dynatrace resources | Offered for installation by `setup.sh` — or install manually |
 
 > **Prefer the terminal over VS Code?** Install Claude Code CLI instead of the VS Code extensions:
 > ```bash
 > npm install -g @anthropic-ai/claude-code
 > ```
-> Then skip to Step 1 (clone) → Step 2 (dtctl) → run `claude` from the workspace directory.
+> Then skip to Step 1 (clone) and Step 2 (platform token), then run `claude` from the workspace directory.
 
 Install required VS Code extensions (VS Code users only):
 
@@ -55,19 +48,30 @@ cd dynatrace-ai-dtctl-workspace
 
 Continue in the cloned directory for setup.
 
-Next, run the setup script:
+---
+
+## Step 2 — Set Up Your Dynatrace Tenant and Platform Token
+
+Run the setup script:
 
 ```bash
 bash setup.sh
 ```
 
-Enter your Dynatrace environment URL when prompted (example: `abc12345.apps.dynatrace.com`). The script checks prerequisites, updates all workspace files in one step, and offers to install dtctl if not already present.
+The script will:
+1. Ask for your Dynatrace environment URL (e.g., `abc12345.apps.dynatrace.com`)
+2. Print the **required Platform Token scopes** to create in your Dynatrace tenant
+3. Prompt you to paste your Platform Token
+
+**To create a Platform Token:** In your Dynatrace tenant, go to **Account Management** → **Identity & access management** → **Platform tokens** → click your **user profile link** → **Generate new token**. Add the scopes the script prints, copy the token, and paste it when prompted.
+
+The script generates `.vscode/mcp.json` and `.mcp.json` with your tenant URL and token — these files are `.gitignore`'d and never committed to git.
 
 ---
 
-## Step 2 — Install dtctl
+## Step 3 — Install dtctl (Optional)
 
-`dtctl` is a command-line tool that lets you verify what the AI creates — like checking that a notebook it built actually exists in Dynatrace.
+`dtctl` is a command-line tool that lets you verify what the AI creates — like checking that a notebook it built actually exists in Dynatrace. The setup script offers to install it; you can install manually later if needed.
 
 ```bash
 # Install (macOS / Linux)
@@ -81,19 +85,19 @@ dtctl auth login --context production \
 dtctl doctor
 ```
 
-When `dtctl doctor` reports pass, you are connected. On platform tokens in v0.27.0+, a user identity warning can appear and is expected.
+When `dtctl doctor` reports pass, you are connected.
 
 ---
 
-## Step 3 — Activate the MCP Connection
+## Step 4 — Activate the MCP Connection
 
-**VS Code users:** If this is your first time opening the workspace in VS Code, use **File → Open Folder** and select this repository directory. If the workspace is already open in VS Code, press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter. This activates the Dynatrace live data connection. The first time you use a prompt, a browser window will open for Dynatrace login — complete it and come back.
+**VS Code users:** If this is your first time opening the workspace in VS Code, use **File → Open Folder** and select this repository directory. If the workspace is already open in VS Code, press `Cmd/Ctrl+Shift+P` → type `Developer: Reload Window` → press Enter.
 
-**Claude Code CLI users:** No reload needed. Run `claude` from the workspace directory — the MCP server starts automatically. A browser window will open for Dynatrace login on first use.
+**Claude Code CLI users:** No reload needed. Run `claude` from the workspace directory.
 
 ---
 
-## Step 4 — Try It
+## Step 5 — Try It
 
 In GitHub Copilot Chat, Claude Code, or Claude Code CLI, type this prompt (or use `/health-check` for a guided workflow):
 
@@ -101,7 +105,7 @@ In GitHub Copilot Chat, Claude Code, or Claude Code CLI, type this prompt (or us
 Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour
 ```
 
-If you see a table of services with request counts — you are live.
+If you see a table of services with request counts — you are live. If not, double-check that your Platform Token has the required scopes: `mcp-gateway:servers:invoke`, `mcp-gateway:servers:read`, and `app-engine:apps:run`.
 
 ---
 
