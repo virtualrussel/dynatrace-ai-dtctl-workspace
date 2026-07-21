@@ -12,18 +12,20 @@ This workspace teaches AI assistants how to work with a live Dynatrace environme
 One Dynatrace environment is pre-wired via the `dynatrace-mcp` server (remote HTTP with Bearer token). Run `bash setup.sh` on first use to configure your tenant URL and create/paste a Platform Token; the script generates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code CLI) from templates, both of which are `.gitignore`'d and never committed.
 
 **dtctl CLI:**
-A kubectl-style CLI for Dynatrace that exposes settings, configuration, and operational tasks beyond what the MCP server covers. Used for verification steps and terminal-level queries alongside MCP-based investigations.
+A kubectl-style CLI for Dynatrace that owns notebook, dashboard, workflow, settings, and other resource lifecycle operations beyond the MCP server's supported analysis and lookup tools. It also provides terminal-level queries and verification.
 
 **Agent Skills:**
 27 domain knowledge packages load automatically when relevant. They cover DQL query fundamentals, service monitoring, frontend/RUM analytics, distributed tracing, infrastructure (hosts, Kubernetes, AWS, Azure, GCP), logging, problem analysis, dashboards, notebooks, migration, predictive analytics, alerting lifecycle, JavaScript runtime, security insights (vulnerabilities, detections, posture), platform cost analysis, mobile instrumentation (Android, Flutter, iOS, React Native), LLM/GenAI observability, semantic dictionary mapping for audit logs and security integrations, and the dtctl CLI.
 
 **Prompts / Slash Commands:**
-7 task templates cover common workflows: daily standup, health check, error investigation, problem troubleshooting, incident response, performance regression, and standup with notebook creation (the last one combines MCP-based analysis, Dynatrace notebook creation, and dtctl verification in a single workflow).
+6 upstream task templates cover common workflows: daily standup, health check, error investigation, problem troubleshooting, incident response, and performance regression.
 
 ## Operational Rule
 
-Always start with Dynatrace problems before querying logs or metrics. The built-in prompts enforce this automatically.
+Start incident, error, and known-problem investigations with Davis Problems. Never query logs or spans without an entity and bounded timeframe. Bounded metric, inventory, known-entity, deployment-comparison, and document queries do not require a Davis Problem.
+
+Treat `401` and `403` responses as authorization failures, never as evidence that telemetry is absent. Identify the failed MCP capability, report the required Platform Token scope, and distinguish identity IAM or Grail policy restrictions. Degrade gracefully to capabilities that remain authorized. `docs/PERMISSIONS.md` is the authoritative permission reference.
 
 ## Technical Details
 
-Skills follow a `dt-<domain>[-<usecase>]` naming convention with a `SKILL.md` and optional `references/` subdirectory. Load `dt-dql-essentials` before writing any DQL queries. The `dtctl` skill covers the Dynatrace CLI for settings, configuration, and operational tasks beyond what the MCP server exposes.
+Skills follow a `dt-<domain>[-<usecase>]` naming convention with a `SKILL.md` and optional `references/` subdirectory. Load `dt-dql-essentials` before writing any DQL queries. Domain skills define resource structure and intent; the `dtctl` skill performs notebook, dashboard, workflow, settings, and other lifecycle operations that the MCP server does not expose.

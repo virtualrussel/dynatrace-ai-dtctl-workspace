@@ -8,19 +8,21 @@ An AI-powered observability workspace for Dynatrace that combines GitHub Copilot
 
 > **What this gives you:** Ask AI natural language questions about your Dynatrace environment and get accurate, production-aware answers. All powered by verified domain knowledge, live API access, and pre-built investigation workflows.
 
-> **New here?** Start with [docs/ELI5.md](./docs/ELI5.md) for a quick setup, then read [docs/OVERVIEW.md](./docs/OVERVIEW.md) for the big-picture operating model.
+> **New here?** Start with [docs/ELI5.md](./docs/ELI5.md) for a quick setup, use [docs/PERMISSIONS.md](./docs/PERMISSIONS.md) to configure access, then read [docs/OVERVIEW.md](./docs/OVERVIEW.md) for the big-picture operating model.
 
 ---
 
 ## What's Inside
 
-Recommended reading order: [docs/ELI5.md](./docs/ELI5.md) → [docs/OVERVIEW.md](./docs/OVERVIEW.md) → [ARCHITECTURE.md](./ARCHITECTURE.md).
+Recommended reading order: [docs/ELI5.md](./docs/ELI5.md) → [docs/PERMISSIONS.md](./docs/PERMISSIONS.md) → [docs/OVERVIEW.md](./docs/OVERVIEW.md) → [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ```
 dynatrace-ai-dtctl-workspace/
 ├── README.md                     # Setup guide and quick reference
 ├── docs/
 │   ├── ELI5.md                   # Beginner-friendly 15-minute install guide
+│   ├── PERMISSIONS.md            # MCP permission profiles and authorization troubleshooting
+│   ├── PROMPT_CONTRACTS.md       # Portable runtime contracts for bundled prompts
 │   ├── OVERVIEW.md               # Newcomer guide: purpose, value, and operating model
 │   └── CHEATSHEET.md             # Quick reference — workflows, outputs, dtctl, and key rules
 ├── ARCHITECTURE.md               # How the workspace is built and how components connect
@@ -28,14 +30,16 @@ dynatrace-ai-dtctl-workspace/
 ├── CLAUDE.md                     # Auto-loaded session briefing for Claude Code
 ├── llms.txt                      # Machine-readable workspace summary for LLMs
 ├── setup.sh                      # First-time setup script
+├── scripts/sync-upstream.sh      # Verify or synchronize pinned upstream content
+├── upstream-sources.lock.json    # Immutable source revisions, mappings, inventories, and hashes
+├── upstream-patches/             # Explicit overlays applied to pinned upstream content
 ├── LICENSE
 ├── .gitignore
 ├── .github/
 │   ├── copilot-instructions.md   # Auto-loaded session briefing for GitHub Copilot
-│   └── prompts/                  # 7 investigation workflows
+│   └── prompts/                  # 6 upstream investigation workflows
 │       ├── health-check.prompt.md
 │       ├── daily-standup.prompt.md
-│       ├── daily-standup-notebook.prompt.md
 │       ├── investigate-error.prompt.md
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
@@ -114,20 +118,21 @@ bash setup.sh
 
 The script will:
 1. Check prerequisites (dtctl, jq, Claude CLI)
-2. Prompt for your Dynatrace environment URL (accepts `*.apps.dynatrace.com` and `*.sprint.apps.dynatracelabs.com`). On an already-configured clone, it detects the existing tenant and lets you press Enter to keep it (for Platform Token rotation) or type a different one to reconfigure
-3. Print the **required Platform Token scopes** you need to create in your Dynatrace tenant
+2. Prompt for your Dynatrace environment URL (accepts `*.apps.dynatrace.com` and `*.sprint.apps.dynatracelabs.com`). On an already-configured clone, it detects a matching tenant from both generated MCP configs and lets you press Enter to keep it
+3. Let you choose a **Full read-only MCP** (recommended) or **Core incident analysis** permission profile and print its exact Platform Token scopes
 4. Prompt you to paste your Platform Token
-5. Update documentation files with your tenant URL (one-time on a fresh clone, or if you confirm retargeting to a new tenant)
-6. Generate `.vscode/mcp.json` and `.mcp.json` from templates
+5. Generate `.vscode/mcp.json` and `.mcp.json` from templates
 
-**Reconfiguring an existing clone:** re-running `bash setup.sh` is also how you rotate an expiring Platform Token (press Enter at the tenant prompt to keep the current tenant) or point the same clone at a different tenant (type a new tenant URL — the script will offer to update the documentation to match, so it doesn't end up describing the old tenant while the config points at the new one).
+**Reconfiguring an existing clone:** re-running `bash setup.sh` is also how you rotate an expiring Platform Token. Press Enter at the tenant prompt to keep the tenant when both generated configs agree, or type a different tenant to regenerate both configs for it. If either config is missing, malformed, or points at a different tenant, setup requires the tenant explicitly.
+
+Tracked documentation intentionally keeps generic examples such as `YOUR_TENANT_ID.apps.dynatrace.com`. Tenant-specific values are written only to the generated, `.gitignore`'d MCP configs, so setup does not dirty the repository.
 
 **To create a Platform Token:**
 1. Go to your Dynatrace tenant: `https://YOUR_TENANT_ID.apps.dynatrace.com`
 2. **Account Management** → **Identity & access management** → **Platform tokens**
 3. Click the **user profile link** shown in the page description (not a "create" button)
 4. Click **Generate new token**
-5. Add the scopes listed by `setup.sh` before running (gateway scopes are mandatory; others are tool-specific). Scope list last verified 2026-07-16 against [docs.dynatrace.com](https://docs.dynatrace.com/docs/dynatrace-intelligence/dynatrace-mcp)'s "Server and server tools" reference — check there if a tool reports a missing scope, as Dynatrace adds new tools/scopes over time.
+5. Add the scopes listed by `setup.sh`. Choose Full read-only MCP unless your administrator requires the smaller Core profile. See [docs/PERMISSIONS.md](./docs/PERMISSIONS.md) for capabilities, IAM and Grail requirements, and the current verification date.
 6. Copy the token — it looks like `dt0s16.ABC12345XYZ.••••••••`
 7. Paste it into `setup.sh` when prompted
 
@@ -135,13 +140,9 @@ The token is stored in a `.gitignore`'d generated config file inside this worksp
 
 ### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. `setup.sh` installs it if not already present. If you chose to skip dtctl installation when setup.sh prompted you, install it now manually:
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.34.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
-```
-
-Then authenticate:
+After setup verifies the binary, authenticate dtctl independently:
 
 ```bash
 # Local desktop (macOS/Windows/Linux with keyring): OAuth login
@@ -188,7 +189,7 @@ If you get no results or an error:
 - Check that `dtctl doctor` passes
 - Verify the workspace was opened or refreshed in VS Code after setup
 - **Claude Code CLI:** run `claude mcp list` — if `dynatrace-mcp` shows "Pending approval," start `claude` and approve it
-- Confirm your Platform Token has the required scopes: `mcp-gateway:servers:invoke`, `mcp-gateway:servers:read`, and `app-engine:apps:run`
+- For a `401` or `403`, use [docs/PERMISSIONS.md](./docs/PERMISSIONS.md) to check the tool's Platform Token scope, assigned identity IAM permissions, and Grail policies. Authorization failures do not mean the tenant has no telemetry.
 - See [ARCHITECTURE.md](./ARCHITECTURE.md) for how the components connect
 
 ---
@@ -279,7 +280,6 @@ All three clients use `/command-name`. The prompt files are sourced from:
 |---|---|
 | `/health-check` | Routine service health — performance, problems, deployments, vulnerabilities |
 | `/daily-standup` | Morning team report across multiple services with today vs yesterday comparison |
-| `/daily-standup-notebook` | Standup report + Dynatrace notebook creation + dtctl verification |
 | `/investigate-error` | "Something is wrong with this service" — error-focused investigation |
 | `/troubleshoot-problem` | Deep 7-step investigation into a specific Dynatrace problem |
 | `/incident-response` | Full production incident triage — all active problems, prioritized by business impact |
@@ -296,6 +296,17 @@ The prompts follow a structured drill-down pattern:
       → /troubleshoot-problem →  deep-dive a specific problem
 ```
 
+### Resource Lifecycle
+
+The MCP server provides supported live analysis and document lookup tools. It does not create or update notebooks, dashboards, workflows, or settings. For those resources, skills provide domain structure and dtctl performs the lifecycle operation.
+
+| Resource | Domain guidance | Read or inspect | Create, update, or execute |
+|---|---|---|---|
+| Notebooks | `dt-app-notebooks` | `dtctl get notebook <id>` | Validate queries, download first when updating, then `dtctl apply` |
+| Dashboards | `dt-app-dashboards` | `dtctl get dashboard <id>` | `dtctl apply` |
+| Workflows | `dt-alerting` for notification design | `dtctl get` / `dtctl describe` | `dtctl apply` / `dtctl exec workflow --input` |
+| Settings | Relevant domain skill | Discover schema and inspect current objects with dtctl | Use `--validate-only`, obtain approval, then create/edit/delete with dtctl |
+
 ---
 
 ## Key Concepts
@@ -310,7 +321,7 @@ The Dynatrace MCP server gives the AI assistant live API access to your environm
 
 ### The Investigation Rule
 
-**Always start with problems, never with broad log searches.** Broad log queries without a problem context will hit Dynatrace's 500GB scan limit and return zero results. The prompts enforce this automatically.
+Start incident, error, and known-problem investigations with Davis Problems so the affected entities and timeframe come from concrete evidence. Log and span queries always need an entity scope and bounded timeframe; otherwise high-volume searches can hit Dynatrace's 500GB scan limit. Routine bounded metric, inventory, known-entity, deployment-comparison, and document queries can run without a Davis Problem.
 
 ### MCP Configuration Files
 
@@ -327,16 +338,7 @@ This workspace uses **template files** to generate MCP configuration. The genera
 1. Edit the `.template` files if you need to make permanent changes to the structure
 2. Re-run `setup.sh` to regenerate the live config with a fresh token (useful for Platform Token rotation)
 
-If you hand-edit a `.template` file, regenerate the live config (requires `jq`):
-
-```bash
-jq '{"mcpServers": .servers}' .vscode/mcp.json.template > .vscode/mcp.json
-perl -pi -e 's|YOUR_TENANT_ID|<your-tenant-id>|g' .vscode/mcp.json
-perl -pi -e 's|YOUR_PLATFORM_TOKEN|<your-token>|g' .vscode/mcp.json
-chmod 600 .vscode/mcp.json
-```
-
-Or simply re-run `setup.sh` — it's idempotent and will regenerate from the templates.
+The committed templates use `YOUR_TENANT_DOMAIN` and `YOUR_PLATFORM_TOKEN` placeholders. Users should always run `bash setup.sh` to replace them in both generated files, set mode `600`, and keep the two client configurations aligned. Maintainers changing the template structure should follow [Updating MCP Configuration](./CONTRIBUTING.md#updating-mcp-configuration).
 
 ---
 
@@ -367,17 +369,14 @@ dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.prob
 ## Keeping Up to Date
 
 ```bash
-# Update skills — copy latest files from upstream into .agents/skills/, then commit
-git add .agents/skills/
-git commit -m "Update skills to latest"
-git push
+# Confirm skills, prompts, dtctl overlays, and Claude links match the lock
+bash scripts/sync-upstream.sh verify
 
-# Regenerate .mcp.json after any MCP server changes
-jq '{"mcpServers": .servers}' .vscode/mcp.json > .mcp.json
-git add .vscode/mcp.json .mcp.json
-git commit -m "Update MCP configuration"
-git push
+# Restore imported content from the immutable revisions in the lock
+bash scripts/sync-upstream.sh sync
 ```
+
+Maintainers updating an upstream revision or MCP template should use the reviewed procedures in [CONTRIBUTING.md](./CONTRIBUTING.md). Generated `.vscode/mcp.json` and `.mcp.json` files contain credentials and must never be staged.
 
 ---
 
@@ -385,6 +384,7 @@ git push
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — How the workspace components connect
 - [docs/ELI5.md](./docs/ELI5.md) — Beginner-friendly 15-minute quick start
+- [docs/PERMISSIONS.md](./docs/PERMISSIONS.md) — MCP permission profiles, capability map, and authorization troubleshooting
 - [docs/CHEATSHEET.md](./docs/CHEATSHEET.md) — Workflow picker and operational quick reference
 - [docs/OVERVIEW.md](./docs/OVERVIEW.md) — Business and operator-oriented purpose guide
 - [dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) — Skills and prompts source repo

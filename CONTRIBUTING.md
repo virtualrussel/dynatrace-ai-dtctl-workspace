@@ -1,30 +1,37 @@
 # Contributing to the Dynatrace AI Workspace
 
-This document explains how to update skills, prompts, and MCP configuration in this workspace.
+This document explains how to update pinned skills and prompts, registered overlays, documentation, and MCP templates in this workspace.
 
 ---
 
-## Updating Skills
+## Updating Upstream Content
 
 Skills are domain knowledge files sourced from [Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai) and [dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl).
 
-To update skills, copy the latest files from the upstream repos into `.agents/skills/` and commit:
+`upstream-sources.lock.json` is the source of truth for repository URLs, immutable commit SHAs, source/destination mappings, inventories, content hashes, and registered patches. Never copy individual files into an imported tree.
+
+Verify the current checkout offline:
 
 ```bash
-git add .agents/skills/
-git commit -m "Update skills to latest"
-git push
+bash scripts/sync-upstream.sh verify
 ```
 
-Skills are managed via git — the committed files are the authoritative version.
+Restore every import from its locked revision:
+
+```bash
+bash scripts/sync-upstream.sh sync
+```
+
+To update an upstream source:
+
+1. Resolve and review the new upstream revision, then place its full 40-character commit SHA in `upstream-sources.lock.json`. Never pin a branch or moving tag.
+2. Update source/destination mappings when upstream renamed a file. Update an existing file under `upstream-patches/` only when its documented local behavior is still required and applies cleanly to the new revision.
+3. Run `bash scripts/sync-upstream.sh sync --refresh-lock`. The command fetches into a temporary directory, applies registered patches, refreshes inventory and hashes, rebuilds Claude compatibility links, and verifies the result before replacing tracked imports. A failed install restores the prior trees and lock.
+4. Review the complete diff, especially added/removed files and patch changes. Run `bash scripts/sync-upstream.sh verify` again before staging.
 
 ### Skill Content Is Upstream-Owned
 
-Files under `.agents/skills/` (excluding `dtctl/`, sourced separately — see below) are maintained upstream in `dynatrace-for-ai` and are expected to be **overwritten wholesale** on every sync, matching that repo's own read-only policy for its `skills/` directory. Do not hand-edit these files expecting the change to survive — the next sync will silently discard it, exactly as happened historically with several files (`dt-obs-aws`, `dt-obs-hosts`, `dt-app-dashboards`, `dt-migration`, `dt-obs-problems`) that fell multiple releases behind because partial syncs missed them.
-
-**Known local override:** `dt-obs-aws/SKILL.md` contains a paragraph under "Check health alerts when:" that uses `dtctl` to query the `builtin:health-experience.cloud-alert` settings schema. This content does not exist upstream — it's a deliberate addition tying the AWS skill to dtctl. **Every sync of `dt-obs-aws/SKILL.md` must manually re-apply this paragraph** after copying the upstream file; check `git diff` against the previous version before committing to confirm it's still present.
-
-If you introduce a new local override to an otherwise upstream-owned skill file, list it here so the next sync doesn't lose it.
+Files under `.agents/skills/` are synchronized as complete imported roots. The `dynatrace-for-ai` skill tree is exact upstream content. The separately sourced `dtctl` skill may contain only the overlay declared in the lock and stored under `upstream-patches/`. Unregistered edits fail verification and must not be committed.
 
 ---
 
@@ -44,13 +51,7 @@ After upgrading dtctl:
 dtctl version
 ```
 
-If the version is different from what you last synced, run:
-
-```bash
-git add .agents/skills/dtctl/
-git commit -m "Sync dtctl skill after dtctl upgrade to v$(dtctl version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
-git push
-```
+If the version differs from the locked dtctl source, update the `dtctl-skill` commit and overlay through the lock-refresh procedure above. Do not copy the skill manually.
 
 ### What the Skill Documents
 
@@ -84,6 +85,8 @@ When updating the MCP server structure (e.g., changing the gateway URL path, add
 
 **Do not commit the generated `.vscode/mcp.json` or `.mcp.json` files.** They are git-ignored because they contain real tenant URLs and Platform Tokens. Users regenerate them by running `setup.sh`.
 
+**Do not substitute tenant hostnames into tracked documentation or templates during setup.** Product docs and source templates must remain tenant-neutral; tenant-specific MCP state belongs only in the two generated, ignored config files.
+
 To verify your changes work before committing, test locally:
 1. Re-run `setup.sh` to regenerate the live config from your modified templates
 2. Test the MCP connection in VS Code or Claude Code CLI
@@ -93,24 +96,23 @@ To verify your changes work before committing, test locally:
 
 ## Updating Prompts
 
-Prompts are located in `.github/prompts/` (source) and symlinked in `.claude/commands/` for Claude Code CLI compatibility.
+Prompts are exact mapped imports in `.github/prompts/` and symlinked in `.claude/commands/` for Claude Code compatibility. Do not edit prompt bytes locally. Cross-client runtime requirements belong in `docs/PROMPT_CONTRACTS.md` and are checked one-to-one against the locked prompt inventory.
 
-When adding or modifying a prompt:
+When upstream adds, removes, renames, or modifies a prompt:
 
-1. Edit the markdown file in `.github/prompts/`
-2. Test locally:
+1. Update the prompt commit and source/destination mappings in `upstream-sources.lock.json`.
+2. Update `docs/PROMPT_CONTRACTS.md` so every mapped prompt has exactly one complete contract.
+3. Run `bash scripts/sync-upstream.sh sync --refresh-lock` and review prompt and symlink changes.
+4. Test locally:
    - In VS Code with GitHub Copilot: `/your-command`
    - In Claude Code CLI: `claude` then `/your-command`
-3. Verify it loads and executes correctly
-4. Commit:
-   ```bash
-   git add .github/prompts/ .claude/commands/
-   git commit -m "Add or update prompt: your-command"
-   ```
 
 ### Prompt Best Practices
 
-- **Always start with problems.** Never encourage broad log searches without problem context.
+- **Start incident workflows with problems.** Never encourage log or span searches without an entity and bounded timeframe; bounded metric and inventory workflows do not require a problem.
+- **Keep prompt bytes upstream-owned.** Put portable capability requirements in `docs/PROMPT_CONTRACTS.md`, not client-specific prompt frontmatter.
+- **Name the real lifecycle tool.** Artifact prompts must route notebook, dashboard, workflow, and settings mutations through dtctl rather than imply unsupported MCP capabilities.
+- **Keep resource types distinct.** Never substitute a notebook, dashboard, workflow, or settings object for another resource type to fit an available tool.
 - **Document version requirements.** If a prompt uses dtctl features from v0.30.0+, add a note at the top.
 - **Test with real data.** Run the prompt against your test environment before committing.
 
@@ -118,7 +120,17 @@ When adding or modifying a prompt:
 
 ## Updating Documentation
 
-Session briefing files are auto-loaded by the AI assistants and should be kept synchronized.
+Each document has one primary responsibility. Link to the owner instead of copying detailed procedures or scope lists into multiple files.
+
+| File | Owns |
+| --- | --- |
+| `README.md` | User setup, quick start, and the user-facing skill/prompt catalog |
+| `docs/CHEATSHEET.md` | Operational workflow routing and concise guardrails |
+| `ARCHITECTURE.md` | Component boundaries, data flow, and resource ownership |
+| `docs/PERMISSIONS.md` | MCP authorization profiles, layers, and troubleshooting |
+| `docs/PROMPT_CONTRACTS.md` | Portable per-prompt runtime requirements and degradation behavior |
+| `upstream-sources.lock.json` and `scripts/sync-upstream.sh` | Source provenance, inventory, hashes, overlays, and synchronization |
+| `CLAUDE.md` and `.github/copilot-instructions.md` | Startup-critical client routing only |
 
 ### Files to Update Together
 

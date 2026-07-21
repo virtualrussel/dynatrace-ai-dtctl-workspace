@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "imports": [
+    {
+      "id": "dynatrace-for-ai-skills",
+      "repository": "https://github.com/Dynatrace/dynatrace-for-ai.git",
+      "commit": "670a003c9715449ba1ec6205b296de019ed34401",
+      "source": "skills",
+      "destination": ".agents/skills",
+      "policy": "exact",
+      "exclude": ["dtctl"],
+      "aggregateSha256": "1c2434bab45afcf67d62c6d61384c92fa19ae51bf7bfd01ed500719f6eb0c55c",
+      "inventory": [
+        "dt-alerting",
+        "dt-app-dashboards",
+        "dt-app-notebooks",
+        "dt-dql-essentials",
+        "dt-js-runtime",
+        "dt-migration",
+        "dt-obs-android",
+        "dt-obs-aws",
+        "dt-obs-azure",
+        "dt-obs-flutter",
+        "dt-obs-frontends",
+        "dt-obs-gcp",
+        "dt-obs-genai",
+        "dt-obs-hosts",
+        "dt-obs-ios-sdk",
+        "dt-obs-kubernetes",
+        "dt-obs-log-semantic-mapping",
+        "dt-obs-logs",
+        "dt-obs-predictive-analytics",
+        "dt-obs-problems",
+        "dt-obs-react-native",
+        "dt-obs-services",
+        "dt-obs-tracing",
+        "dt-platform-costs",
+        "dt-sec-insights",
+        "dt-sec-semantic-mapping"
+      ]
+    },
+    {
+      "id": "dynatrace-for-ai-prompts",
+      "repository": "https://github.com/Dynatrace/dynatrace-for-ai.git",
+      "commit": "49913562109499b8d2a6e5f40de24fc929649c68",
+      "source": "prompts",
+      "destination": ".github/prompts",
+      "policy": "exact-mapped",
+      "aggregateSha256": "a5a2cf7f9c3fda635979faf62804a782acc1fcdc6f048237ad7a5dd814aa3346",
+      "files": [
+        { "source": "dt-daily-standup.prompt.md", "destination": "daily-standup.prompt.md" },
+        { "source": "dt-health-check.prompt.md", "destination": "health-check.prompt.md" },
+        { "source": "dt-incident-response.prompt.md", "destination": "incident-response.prompt.md" },
+        { "source": "dt-investigate-error.prompt.md", "destination": "investigate-error.prompt.md" },
+        { "source": "dt-performance-regression.prompt.md", "destination": "performance-regression.prompt.md" },
+        { "source": "dt-troubleshoot-problem.prompt.md", "destination": "troubleshoot-problem.prompt.md" }
+      ]
+    },
+    {
+      "id": "dtctl-skill",
+      "repository": "https://github.com/dynatrace-oss/dtctl.git",
+      "commit": "6ae420555c1e1c3102d1ac5d6cb32d386706fd84",
+      "source": "skills/dtctl",
+      "destination": ".agents/skills/dtctl",
+      "policy": "patched",
+      "patch": "upstream-patches/dtctl-v0.34.0.patch",
+      "aggregateSha256": "3cacb74ecfff29677c19e40ee58ca595462a7b5b85d38ea5d8741c0c002f1578"
+    }
+  ],
+  "compatibilityLinks": {
+    "skills": ".claude/skills",
+    "prompts": ".claude/commands"
+  },
+  "promptContracts": "docs/PROMPT_CONTRACTS.md"
+}

@@ -52,7 +52,7 @@ For SREs, operations engineers, and on-call teams, this repository improves dail
 
 1. Faster daily health checks
 - `/health-check` gives service-level status quickly.
-- `/daily-standup` and `/daily-standup-notebook` produce shareable summaries across services.
+- `/daily-standup` produces a shareable summary across services.
 
 2. Better incident triage under pressure
 - `/incident-response` prioritizes active issues by impact.
@@ -63,7 +63,7 @@ For SREs, operations engineers, and on-call teams, this repository improves dail
 
 4. Terminal verification and automation with dtctl
 - `dtctl doctor` validates connectivity and auth.
-- `dtctl get notebooks` and `dtctl describe notebook "name"` verify generated artifacts.
+- `dtctl get notebook <id>` and `dtctl apply` manage notebook lifecycle operations.
 - `dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems | filter event.status == "ACTIVE" | limit 5'` runs direct checks.
 
 ## AIOps Outcomes and ServiceNow Assist
@@ -122,7 +122,6 @@ Prompt templates are the operating procedures. The same prompt files serve all t
 Examples:
 - `/health-check`
 - `/daily-standup`
-- `/daily-standup-notebook`
 - `/investigate-error`
 - `/troubleshoot-problem`
 - `/incident-response`
@@ -150,10 +149,10 @@ This gives readers a clear mental model: the prompt provides the investigation s
 
 ## The Role of dtctl in This Repository
 
-dtctl is the operational bridge between AI-generated outputs and command-line verification.
+dtctl is the operational bridge between AI-assisted design and Dynatrace resource lifecycle operations.
 
 Use it to:
-- Verify objects created by AI workflows (notebooks, workflows)
+- Create, update, inspect, and verify notebooks, dashboards, workflows, and settings
 - Run direct DQL checks
 - Script repeatable checks in pipelines or runbooks
 - Keep environment targeting explicit with the `production` context used in this workspace

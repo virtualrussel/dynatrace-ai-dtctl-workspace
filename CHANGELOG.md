@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+## [5.6.0] - 2026-07-21
+
+### Removed
+- Removed the local `/daily-standup-notebook` prompt from Copilot and Claude command surfaces. The upstream `dynatrace-for-ai` prompt set contains six investigation prompts and does not include this workflow.
+
+### Changed
+- Clarified resource ownership: MCP handles its supported analysis and document lookup tools, domain skills define structure and intent, and dtctl performs notebook, dashboard, workflow, and settings lifecycle operations.
+- Updated notebook guidance to follow the upstream `dt-app-notebooks` workflow: validate DQL, download the existing notebook before updates, preview with `dtctl apply --dry-run`, and deploy with `dtctl apply`.
+- Replaced the stale flat MCP scope list with selectable Full read-only and Core incident-analysis profiles, documented the separate token, identity IAM, and Grail authorization layers, and made permission failures explicit across setup and agent guidance.
+- Stopped `setup.sh` from modifying tracked documentation. Token rotation now offers a tenant default only when both generated MCP configs contain the same valid gateway tenant; fresh setup and ambiguous config state require explicit input.
+- Enforced dtctl v0.34.0+ as a true fail-fast prerequisite: declined or failed installation, an unavailable binary, and broken, unparseable, or outdated versions now stop setup before tenant or token collection. Beginner guidance now consistently marks dtctl authentication as required.
+- Replaced the universal problems-first rule with incident-first and bounded-query guardrails: logs and spans always require entity and timeframe scope, while bounded metrics, inventory, deployment comparisons, and document queries can run directly.
+- Added portable contracts for all six exact upstream prompts, including required skills, capabilities, stopping conditions, and authorization-failure behavior shared by Copilot and Claude Code.
+- Added immutable upstream provenance, deterministic drift verification and synchronization, an explicit dtctl overlay, and automatic Claude compatibility-link checks.
+- Removed the local AWS skill override and its manual reapplication rule so the `dynatrace-for-ai` skill tree remains exact upstream content.
+- Repaired MCP recovery and maintenance instructions so generated credential-bearing configs are rebuilt only by `setup.sh` and are never used as committed sources or staging targets.
+
 ## [5.5.0] - 2026-07-16
 
 ### Breaking

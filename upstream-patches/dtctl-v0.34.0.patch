@@ -1,0 +1,161 @@
+diff -ruN a/dtctl/SKILL.md b/dtctl/SKILL.md
+--- a/dtctl/SKILL.md
++++ b/dtctl/SKILL.md
+@@ -35,6 +35,8 @@
+ dtctl query "timeseries avg(dt.host.cpu.usage)" -o chart --plain
+ ```
+ 
++Long-running queries show a live progress bar on stderr; add `--no-progress` to suppress it (e.g. when piping stderr somewhere unexpected).
++
+ dtctl not installed/working? See [references/troubleshooting.md](references/troubleshooting.md).
+ 
+ ## Resources & verbs
+@@ -55,6 +57,14 @@
+ 
+ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its required/optional inputs and result schema (add `--doc` for full docs, `-o json` for the raw schemas); `dtctl verify analyzer <id> -f in.json` validates an input without executing (exit 0 valid / 1 invalid).
+ 
++Anomaly detectors are round-trippable between environments: `dtctl get anomaly-detector <id> -o yaml --plain > detector.yaml` then `dtctl apply -f detector.yaml --context <target-context> --plain`.
++
++Migrating a Classic pipeline to OpenPipeline: `dtctl get classic-pipelines-translation <scope>` (e.g. `logs`, `bizevents`) calls the translation endpoint and prints a ready-to-review translated config — a starting point, not an apply-in-place operation. If a scope has no Classic pipeline configured, dtctl reports that on stderr (and emits `null` in structured output) rather than erroring.
++
++Settings mutations support a dry run: `dtctl create settings -f settings.yaml --schema <schema> --scope <scope> --validate-only` validates against the API without creating/editing/deleting anything (same flag on `edit settings` / `delete settings`).
++
++Cloud monitoring configs (aws/azure/gcp) support `disable`/`enable` (toggles the config and its credentials off/on in one step, config and connection preserved) and `edit` in addition to `create`/`update`/`delete`: `dtctl disable azure monitoring --name "my-azure-monitoring"`.
++
+ ## Output for agents
+ 
+ `--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). It wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`).
+@@ -148,8 +158,10 @@
+ ## Permissions & safety
+ 
+ - Verify before mutating: `dtctl auth can-i <verb> <resource>`. Scopes: [TOKEN_SCOPES.md](https://github.com/dynatrace-oss/dtctl/blob/main/docs/TOKEN_SCOPES.md).
++- Preflight scopes before a mutating command instead of discovering a gap via a mid-task 403: `dtctl <verb> <resource> --check-scopes` (preflights the active token, doesn't execute) and `dtctl commands "<verb> <resource>" --required-scopes` (least-privilege scope union for a command). In agent mode, mutating commands auto-preflight and return a structured `insufficient_scope` envelope instead of a raw 403.
+ - Destructive ops may be blocked by safety level — switch with `dtctl config use-context <name>`, or raise the level when creating the context.
+ - Prefer `get`/`describe` first; `--mine` scopes to resources you own; `--plain` for all machine consumption.
++- Restrict the exposed command surface itself with a command profile (`--profile query` on a context, or `DTCTL_PROFILE=query`) — useful when embedding dtctl for a narrowly-scoped agent. See [references/config-management.md](references/config-management.md).
+ 
+ ## More
+ 
+diff -ruN a/dtctl/references/DQL-reference.md b/dtctl/references/DQL-reference.md
+--- a/dtctl/references/DQL-reference.md
++++ b/dtctl/references/DQL-reference.md
+@@ -73,6 +73,8 @@
+ timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}, from:now()-6h, interval:5m
+ ```
+ 
++In agent mode, `dtctl query` results for `timeseries` metrics automatically carry each metric's display name, description, and unit alongside the values — no extra flag needed to see what a returned field actually measures.
++
+ ### Log time-series (makeTimeseries, NOT summarize)
+ ```dql
+ fetch logs, from:now()-4h
+@@ -166,6 +168,10 @@
+ | fields content, dt.smartscape.host
+ | limit 100
+ ```
++
++## Scan Limit Truncation
++
++If a query hits Dynatrace's scan limit, agent mode flags the truncation explicitly instead of silently returning a partial or empty result, and includes data-reduction advice (narrower timeframe, tighter filter, added entity scope) in `context`. Treat a truncation flag as a signal to scope the query down — narrower timeframe, an entity or problem filter — not as "no data found".
+ 
+ ## Key Functions
+ 
+diff -ruN a/dtctl/references/config-management.md b/dtctl/references/config-management.md
+--- a/dtctl/references/config-management.md
++++ b/dtctl/references/config-management.md
+@@ -47,3 +47,39 @@
+ | `dangerously-unrestricted` | Emergency admin |
+ 
+ Actual permissions depend on API token scopes, not just safety level.
++
++## Config Trust Model
++
++An auto-discovered local `.dtctl.yaml` (found by walking up from the current directory) is treated as **untrusted** — the same threat model as a checked-out repo or an unpacked tarball. dtctl therefore ignores **command aliases** and **pre-/post-apply hooks** defined in it, printing a warning to stderr when it does. Contexts, tokens, and other preferences in a local config still work normally. Aliases and hooks are honored only from:
++
++- The global config (`$XDG_CONFIG_HOME/dtctl/config`), or
++- A config named explicitly with `--config <path>` or the `DTCTL_CONFIG` environment variable
++
++```bash
++# Trust a prepared workspace's local .dtctl.yaml — e.g. an automation harness
++# that generates a clean working directory with its own config, skills, and hooks
++export DTCTL_CONFIG="$PWD/.dtctl.yaml"
++```
++
++Setting `DTCTL_CONFIG` skips auto-discovery entirely and honors that file's aliases and hooks without changing any invocation (an agent keeps running `dtctl apply` unchanged). An alias can never shadow a built-in command (`get`, `apply`, `version`, etc.) regardless of where it's defined. Agents relying on an untouched local `.dtctl.yaml` should use explicit contexts/flags instead of assuming aliases or hooks will fire.
++
++## Command Profiles
++
++A command profile restricts **which commands dtctl exposes** — shaping `--help`, the `dtctl commands` catalog, and shell completion all at once, and hard-blocking invocation of anything outside the set. This is aimed squarely at embedding dtctl in AI agents: an investigation agent that only ever needs `query` and Davis analyzers doesn't need `auth login` or the cloud-provisioning verbs cluttering its command catalog.
++
++```bash
++# Bind a built-in profile to a context — an embedded agent inherits the
++# reduced surface with zero flags
++dtctl config set-context prod-agent \
++  --environment https://abc12345.apps.dynatrace.com \
++  --token-ref prod-token \
++  --profile query \
++  --safety-level readonly
++
++# Or select a profile for one invocation/environment (highest precedence)
++DTCTL_PROFILE=query dtctl commands
++```
++
++Built-in profiles: `full` (default, everything), `query` (`query`, `get analyzers`, `describe analyzer`, `exec analyzer`, `verify analyzer`), `investigate` (`query`, `logs`, `get`, `find`, `describe`). Define custom profiles under a top-level `profiles:` map in the config (`description` + a flat `commands` allowlist — default-deny, so adding a new dtctl command never silently widens an existing profile).
++
++Only `commands`/`commands howto` and `help` are always available regardless of profile — everything else, including `config`/`ctx`, is subject to the allowlist. Profiles are a convenience, not a security boundary (client-side, like safety levels); a determined caller can unset `DTCTL_PROFILE`. For real restriction, scope the API token itself. Profiles and safety levels are orthogonal — set both on a context to express "this agent only sees `query` and can never mutate."
+diff -ruN a/dtctl/references/resources/extensions.md b/dtctl/references/resources/extensions.md
+--- a/dtctl/references/resources/extensions.md
++++ b/dtctl/references/resources/extensions.md
+@@ -16,7 +16,24 @@
+ dtctl describe extension com.dynatrace.extension.host-monitoring         # Show detailed info (active version by default)
+ dtctl describe extension com.dynatrace.extension.host-monitoring 1.2.3   # Show details for a specific version
+ dtctl describe extension com.dynatrace.extension.host-monitoring -o json # Output as JSON
++
++# Include each feature set's metrics (name, display name, unit)
++dtctl describe extension com.dynatrace.extension.host-monitoring --feature-set-metrics -o json
++
++# Inspect bundled assets (alert templates, Smartscape config) without downloading the zip yourself
++dtctl describe extension com.dynatrace.extension.postgres --version 3.0.12 --assets=alert_templates
++dtctl describe extension com.dynatrace.extension.postgres --version 3.0.12 --assets=alert_templates,smartscape --full  # full file content
+ ```
++
++> **Breaking change:** the default JSON/YAML shape of `featureSets` on `describe extension` is a plain array (`["name"]`), not a map (`{"name": []}`) — regardless of whether `--feature-set-metrics` is passed. dtctl is pre-1.0, so this shipped without a compatibility shim. If anything parses `describe extension` output for `featureSets`, check which shape it expects.
++
++## Download
++
++`-o zip` is not supported on `describe extension`; download the raw package instead:
++```bash
++dtctl download extension com.dynatrace.extension.postgres --version 2.9.3 > postgres.zip
++```
++Writes binary data to stdout — always redirect. Incompatible with agent mode (`-A`): raw binary can't be wrapped in a JSON envelope.
+ 
+ ## Get Monitoring Configurations
+ ```bash
+diff -ruN a/dtctl/references/troubleshooting.md b/dtctl/references/troubleshooting.md
+--- a/dtctl/references/troubleshooting.md
++++ b/dtctl/references/troubleshooting.md
+@@ -47,12 +47,25 @@
+ 
+ # Check permissions
+ dtctl auth can-i <verb> <resource>
++
++# Preflight required scopes before running the command — catches a scope gap
++# before a mid-task 403, rather than after
++dtctl <verb> <resource> --check-scopes
++dtctl commands "<verb> <resource>" --required-scopes
+ ```
+ 
+ > **Note:** `dtctl auth whoami` is not a connectivity check. It hits the platform
+ > metadata API and needs an OAuth/JWT token with `app-engine:apps:run`; a plain API
+ > token or read-scoped platform token returns a spurious 403 here even though read
+ > access works. Confirm connectivity with a real `dtctl get`/`dtctl query`.
++
++### 400 Errors Include Details
++When the API rejects a request with 400, dtctl appends `error.details` (field paths and constraint violations) after the generic top-level message:
++```
++Before:  API error (400): Invalid request.
++After:   API error (400): Invalid request. - {"tasks":["noop -> position -> y: Input should be greater than or equal to 1"]}
++```
++If anything parses dtctl error text with a regex, expect a trailing JSON blob after the message on 400s.
+ 
+ ### Wrong Tenant
+ ```bash

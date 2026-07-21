@@ -58,25 +58,24 @@ Run the setup script:
 bash setup.sh
 ```
 
+Before asking for tenant or token information, setup verifies that dtctl v0.34.0+ is runnable. If dtctl is missing, setup offers to install it. Declining installation or failing the version check stops setup.
+
 The script will:
-1. Ask for your Dynatrace environment URL (e.g., `abc12345.apps.dynatrace.com`). On an already-configured clone, press Enter to keep the existing tenant (e.g. to rotate your token) or type a new one to reconfigure
-2. Print the **required Platform Token scopes** to create in your Dynatrace tenant
+1. Ask for your Dynatrace environment URL (e.g., `abc12345.apps.dynatrace.com`). On an already-configured clone, setup offers the tenant as the Enter default only when `.vscode/mcp.json` and `.mcp.json` both contain the same valid tenant
+2. Let you choose **Full read-only MCP** (recommended) or the smaller **Core incident analysis** profile, then print its exact Platform Token scopes
 3. Prompt you to paste your Platform Token
 
-**To create a Platform Token:** In your Dynatrace tenant, go to **Account Management** → **Identity & access management** → **Platform tokens** → click your **user profile link** → **Generate new token**. Add the scopes the script prints, copy the token, and paste it when prompted.
+**To create a Platform Token:** In your Dynatrace tenant, go to **Account Management** → **Identity & access management** → **Platform tokens** → click your **user profile link** → **Generate new token**. Add the scopes the script prints, copy the token, and paste it when prompted. See [PERMISSIONS.md](./PERMISSIONS.md) for what each profile enables.
 
-The script generates `.vscode/mcp.json` and `.mcp.json` with your tenant URL and token — these files are `.gitignore`'d and never committed to git.
+The script generates `.vscode/mcp.json` and `.mcp.json` with your tenant URL and token — these files are `.gitignore`'d and never committed to git. Tracked documentation keeps generic tenant examples and is not modified by setup.
 
 ---
 
-## Step 3 — Install dtctl (Optional)
+## Step 3 — Authenticate dtctl (Required)
 
-`dtctl` is a command-line tool that lets you verify what the AI creates — like checking that a notebook it built actually exists in Dynatrace. The setup script offers to install it; you can install manually later if needed.
+`dtctl` is the required command-line tool that lets the AI create, update, inspect, and verify Dynatrace resources such as notebooks and workflows. The setup script has already verified or installed v0.34.0+; now connect it to your environment.
 
 ```bash
-# Install (macOS / Linux)
-curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash
-
 # Connect to your environment — opens a browser for Dynatrace SSO login
 dtctl auth login --context production \
   --environment "https://YOUR_TENANT_ID.apps.dynatrace.com"
@@ -105,7 +104,7 @@ In GitHub Copilot Chat, Claude Code, or Claude Code CLI, type this prompt (or us
 Using the dynatrace-mcp server, list the top 5 services by request volume in the last hour
 ```
 
-If you see a table of services with request counts — you are live. If not, double-check that your Platform Token has the required scopes: `mcp-gateway:servers:invoke`, `mcp-gateway:servers:read`, and `app-engine:apps:run`.
+If you see a table of services with request counts — you are live. A `401` or `403` is an authorization failure, not proof that no telemetry exists. Follow [PERMISSIONS.md](./PERMISSIONS.md) to check Platform Token scopes, identity permissions, and Grail policies.
 
 ---
 
@@ -116,7 +115,7 @@ If you see a table of services with request counts — you are live. If not, dou
 | Skills | Domain knowledge about Dynatrace | A textbook the AI reads before answering |
 | MCP server | Live connection to your Dynatrace data | A phone line to production |
 | Prompts | Pre-built investigation workflows | Recipes you follow step by step |
-| dtctl | Terminal access for verification | An inspector who checks the AI's work |
+| dtctl | Terminal resource lifecycle and verification | A control panel for managed changes |
 
 ---
 

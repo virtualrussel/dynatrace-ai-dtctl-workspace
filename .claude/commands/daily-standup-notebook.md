@@ -1,1 +1,0 @@
-../../.github/prompts/daily-standup-notebook.prompt.md
