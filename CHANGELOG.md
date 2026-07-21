@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [5.6.0] - 2026-07-21
+
 ### Removed
 - Removed the local `/daily-standup-notebook` prompt from Copilot and Claude command surfaces. The upstream `dynatrace-for-ai` prompt set contains six investigation prompts and does not include this workflow.
 
