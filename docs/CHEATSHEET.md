@@ -14,7 +14,6 @@
 | Investigating error noise from a service | `/investigate-error [service-name]` | Top 3 error patterns with example logs, related traces, and remediation suggestions |
 | Routine service health check | `/health-check [service-name]` | RED metrics, active problems, recent deployments, top slow endpoints, vulnerabilities |
 | Morning catch-up across all services | `/daily-standup` | Per-service health status, today vs yesterday comparison, and action items |
-| Standup + notebook for sharing | `/daily-standup-notebook` | Same as `/daily-standup` plus a Dynatrace notebook created and verified via dtctl |
 
 ---
 
@@ -68,6 +67,23 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 ---
 
+## Resource lifecycle
+
+MCP is preferred for supported live analysis and document lookup. It does not create or update notebooks, dashboards, workflows, or settings.
+
+| Resource | Route |
+|---|---|
+| Notebook | Load `dt-app-notebooks`, validate every DQL query, download first when updating, then deploy with `dtctl apply` |
+| Dashboard | Load `dt-app-dashboards`, then deploy with `dtctl apply` |
+| Workflow | Use `dt-alerting` for notification design; use dtctl to inspect, apply, execute, and view history or logs |
+| Settings | Load the relevant domain skill, discover the schema with dtctl, run `--validate-only`, obtain approval, then mutate |
+
+## MCP permissions
+
+Use **Full read-only MCP** by default. Choose **Core incident analysis** only when an administrator requires a smaller permission surface; it excludes RUM, business events, platform costs, document and lookup-file access, query helpers, product help, and Davis analyzers. A `401` or `403` is an authorization failure, not a no-data result. Check the Platform Token scope, assigned identity IAM permissions, and Grail policies using [PERMISSIONS.md](./PERMISSIONS.md).
+
+---
+
 ## dtctl — terminal companion
 
 `dtctl` is the CLI-side of this workspace (all dtctl examples below are terminal commands). Use it when you want to verify, query, or manage resources from the terminal rather than through chat.
@@ -78,8 +94,11 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Run a DQL query | `dtctl query --client-context "workspace-quick-check" 'fetch dt.davis.problems \| filter event.status == "ACTIVE"'` |
 | Verify DQL syntax only | `dtctl verify query --client-context "workspace-quick-check" 'fetch dt.davis.problems \| limit 5'` |
 | List workflows | `dtctl get workflows` |
+| Execute a workflow | `dtctl exec workflow <id> --input '{"key":"value"}'` |
 | List notebooks | `dtctl get notebooks` |
-| Filter notebook lookup precisely | `dtctl get notebooks --filter 'name == "<notebook-name>"' --sort "-modificationInfo.lastModifiedTime"` |
+| Fetch a notebook for update | `dtctl get notebook <id> -o json --plain > notebook.json` |
+| Preview a notebook deployment | `dtctl apply -f notebook.json --dry-run` |
+| Validate a settings mutation | `dtctl create settings ... --validate-only` |
 | Include extra document metadata | `dtctl get documents --add-fields "originExtensionId,labels,shareInfo.isShared"` |
 | Switch environments | `dtctl config use-context production` / `dtctl config use-context sprint` |
 
@@ -99,7 +118,7 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 
 - Scan-limit feedback: agent mode now flags DQL scan-limit truncation explicitly with data-reduction advice (v0.33.0+) instead of returning a silent partial/empty result — treat it as "narrow the query," not "no data."
 
-The AI workflows and dtctl point at the same environment — use chat for investigation, dtctl for spot-checks and verification.
+The AI workflows and dtctl point at the same environment — use MCP for supported investigation and dtctl for resource lifecycle operations and verification.
 
 ---
 
@@ -119,11 +138,11 @@ These are expected behaviours, not errors:
 
 ## Key rules
 
-**Start with problems. Never open-ended log searches.**
-All workflows enforce this. If you skip it, you'll hit the 500GB scan limit.
+**Start incidents, errors, and known-problem investigations with Davis Problems.**
+Use the problem record to establish affected entities and the investigation window.
 
-**Scope everything to a problem timeframe.**
-Workflows extract the timeframe automatically. If you're writing your own query, use ±5 min around the incident window.
+**Never run open-ended log or span searches.**
+Always provide an entity and bounded timeframe. During incidents, use the problem window with a small buffer such as ±5 minutes. Routine bounded metric, inventory, known-entity, deployment-comparison, and document queries do not need a problem first.
 
 **Let the workflow drive DQL. Don't write queries from scratch.**
 Ask: *"What were the error patterns during the last problem on [service]?"* — not *"Write a DQL query for..."*
@@ -155,4 +174,4 @@ To rotate your Platform Token or change tenants, re-run `bash setup.sh` — it w
 
 ---
 
-**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** July 16, 2026
+**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** July 21, 2026

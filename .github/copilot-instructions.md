@@ -8,38 +8,44 @@
 
 ## Global Rule
 
-**Always start with problems — never run broad log searches.** Broad queries without problem context hit Dynatrace's 500GB scan limit and return zero results.
-All investigation workflows enforce this automatically.
+- Start incident, error, and known-problem investigations with Davis Problems to establish the affected entities and timeframe.
+- Never query logs or spans without both an entity scope and a bounded timeframe. Unbounded high-volume searches can hit Dynatrace's 500GB scan limit.
+- Bounded metric, inventory, known-entity, deployment-comparison, and document queries do not require a Davis Problem.
 
 Consult [docs/CHEATSHEET.md](../docs/CHEATSHEET.md) first for workflow selection and operational guardrails before choosing a prompt, skill, or writing any DQL.
 
 ## Tool Priority
 
-**Default to MCP tools and the relevant `dt-*` domain skill** for telemetry reads, problem and RCA analysis, log and trace exploration, dashboard/notebook content lookups, security findings, and cost analysis. Skills load automatically based on relevance — no manual selection needed.
+**Default to MCP tools and the relevant `dt-*` domain skill** for telemetry reads, problem and RCA analysis, log and trace exploration, supported document lookups, security findings, and cost analysis. Skills load automatically based on relevance — no manual selection needed.
 
 Use the `dtctl` skill for:
 
 - Resource lifecycle: `apply`, `delete`, `share`, `unshare`, `history`, `restore`
+- Notebook and dashboard creation or updates; load `dt-app-notebooks` or `dt-app-dashboards` for structure, then deploy with `dtctl apply`
 - Workflow execution (`dtctl exec workflow`)
   - Prefer structured input with `--input '{"key":"value"}'` (v0.30.0+)
   - Legacy `--params key=value` still supported but deprecated
+- Settings discovery and validated mutation (`--validate-only` before create/edit/delete)
 - Bulk or scripted operations and CI/CD-style automation
 - Validating DQL syntax before execution (`dtctl verify query`)
 - Tasks not exposed via MCP, or when the user explicitly asks for the CLI
 
 When both paths can satisfy a request, prefer MCP.
 
-**Never substitute one resource type for another to fit an available tool.** If the user asks for a dashboard and only a notebook tool is available via MCP, route to `dtctl` for the dashboard. Refusal-then-route is preferred over delivering a different artifact than requested.
+**Never substitute one resource type for another to fit an available tool.** The current MCP server does not create notebooks, dashboards, workflows, or settings. Route those lifecycle operations to `dtctl` and use the relevant domain skill for structure and intent.
+
+**Treat MCP `401` and `403` responses as authorization failures, never as evidence that no telemetry exists.** Identify the failed capability and missing Platform Token scope, distinguish identity IAM or Grail policy restrictions, and continue only with authorized capabilities. Use [docs/PERMISSIONS.md](../docs/PERMISSIONS.md) as the authoritative permission reference.
 
 ## Prompts
 
 Type `/` to run these slash commands:
 
+Before executing a bundled prompt, apply its portable runtime contract from [docs/PROMPT_CONTRACTS.md](../docs/PROMPT_CONTRACTS.md). The contract defines required skills, capability classes, scope, stopping conditions, and authorization-failure behavior without relying on client-specific tool names.
+
 | Prompt                    | When to use                                                               |
 | ------------------------- | ------------------------------------------------------------------------- |
 | `/health-check`           | Routine service health — metrics, problems, deployments, vulnerabilities  |
 | `/daily-standup`          | Morning report across services — today vs yesterday comparison            |
-| `/daily-standup-notebook` | Standup report + Dynatrace notebook creation + dtctl verification         |
 | `/investigate-error`      | Error-focused investigation from a service name                           |
 | `/troubleshoot-problem`   | Deep 7-step investigation into a specific Dynatrace problem               |
 | `/incident-response`      | Full triage of all active problems during a live incident                 |
