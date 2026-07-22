@@ -1,6 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [5.6.1] - 2026-07-22
+
+### Changed
+- Updated the workspace to align with `dtctl` v0.35.0 and raised the minimum required version across setup and user guidance. The gate now guarantees environment inventory, plugin discovery, Live Debugger commands, reliable agent/query/auth behavior, and explicit first-apply ID handling.
+- Resynchronized the imported `dtctl` skill to the immutable v0.35.0 release commit and rebased the registered local overlay. The skill now covers `inventory`, `plugin`, breakpoints, snapshot decoding, `inspect --jq`, query metadata, progress handling, and `apply --write-id`/`--id`.
+- Corrected DTCTL skill DQL examples to use double-quoted DQL string literals with shell-safe single-quoted query wrappers.
+
+### Removed
+- Retired the obsolete v0.34.0 DTCTL overlay after replacing it with the provenance-verified v0.35.0 patch.
 
 ## [5.6.0] - 2026-07-21
 

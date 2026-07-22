@@ -1,7 +1,30 @@
 diff -ruN a/dtctl/SKILL.md b/dtctl/SKILL.md
---- a/dtctl/SKILL.md
-+++ b/dtctl/SKILL.md
-@@ -35,6 +35,8 @@
+--- a/dtctl/SKILL.md	2026-07-22 09:02:24
++++ b/dtctl/SKILL.md	2026-07-22 09:02:24
+@@ -7,11 +7,14 @@
+ 
+ Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
+ 
++This skill targets dtctl v0.35.0 or newer. Confirm with `dtctl version`.
++
+ ## Initialization
+ 
+ Run once to establish context, permissions, and the command catalog:
+ 
+ ```bash
++dtctl doctor                            # config, context, token, connectivity, auth
+ dtctl commands                          # compact overview: verbs, resources, subcommands (TOON default)
+ # dtctl commands --brief                 # + mutating/access/scopes + flag types
+ # dtctl commands --full                  # exhaustive catalog: descriptions, flag defaults, global flags
+@@ -32,25 +35,29 @@
+ Before writing, modifying, or running any DQL (`dtctl query`, `dtctl wait query`, query files), consult `references/DQL-reference.md` and follow it over any assumption or memory.
+ 
+ ```bash
+-dtctl query "fetch logs | filter status='ERROR' | limit 100" -o json --plain
++dtctl query 'fetch logs | filter status == "ERROR" | limit 100' -o json --plain
+ dtctl query -f query.dql --set host=h-123 --set timerange=2h -o json --plain   # Go-template vars
+-dtctl wait query "fetch spans | filter test_id='test-123'" --for=count=1 --timeout 5m
++dtctl wait query 'fetch spans | filter test_id == "test-123"' --for=count=1 --timeout 5m
  dtctl query "timeseries avg(dt.host.cpu.usage)" -o chart --plain
  ```
  
@@ -10,7 +33,25 @@ diff -ruN a/dtctl/SKILL.md b/dtctl/SKILL.md
  dtctl not installed/working? See [references/troubleshooting.md](references/troubleshooting.md).
  
  ## Resources & verbs
-@@ -55,6 +57,14 @@
+ 
+-Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, group, intent, lookup, notebook, notification, sdk-version, segment, settings, settings-schema, slo, slo-template, trash, user, workflow, workflow-execution. **Use IDs, not names** — names may be ambiguous and fail.
++Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, breakpoint, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, hub-extension, intent, lookup, notebook, notification, segment, settings, settings-schema, slo, slo-template, trash, workflow, workflow-execution, and workflow task result. **Use IDs, not names** — names may be ambiguous and fail.
+ 
+ | Verb | Example |
+ |------|---------|
+ | get / describe | `dtctl get workflows --mine` · `dtctl describe workflow <id>` |
+-| apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod` · `dtctl delete workflow <id>` |
++| create / update | `dtctl create breakpoint path/File.java:42` · `dtctl update breakpoint <id> --enabled=false` |
++| apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod --write-id` · `dtctl delete workflow <id>` |
++| enable / disable | `dtctl enable aws monitoring --name prod` · `dtctl disable azure monitoring --name prod` |
+ | exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` (also workflow, copilot) |
+ | query / wait | `dtctl query "fetch logs \| limit 10"` · `dtctl wait query ... --for=any` |
+-| inspect | `dtctl inspect <file> --head 20` · `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (row access over a spilled result file — no Grail re-query) |
++| inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
+ | logs / history / restore | `dtctl logs workflow-execution <id>` · `dtctl restore dashboard <id> --version 3` |
+ | share / unshare | `dtctl share dashboard <id> --user a@example.com` |
+ | find / open | `dtctl find intents --data trace.id=abc` · `dtctl open intent <app/intent> --data k=v` |
+@@ -58,9 +65,19 @@
  
  Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its required/optional inputs and result schema (add `--doc` for full docs, `-o json` for the raw schemas); `dtctl verify analyzer <id> -f in.json` validates an input without executing (exit 0 valid / 1 invalid).
  
@@ -22,10 +63,60 @@ diff -ruN a/dtctl/SKILL.md b/dtctl/SKILL.md
 +
 +Cloud monitoring configs (aws/azure/gcp) support `disable`/`enable` (toggles the config and its credentials off/on in one step, config and connection preserved) and `edit` in addition to `create`/`update`/`delete`: `dtctl disable azure monitoring --name "my-azure-monitoring"`.
 +
++Other top-level utilities: `dtctl ctx` quickly lists or switches contexts; `dtctl alias set|list|delete|export|import` manages reusable commands; `dtctl doctor` checks local health; `dtctl commands howto` emits a Markdown guide; `dtctl inventory` discovers environment data; and `dtctl plugin list` shows kubectl-style `dtctl-*` exec plugins found on `PATH`. Built-ins always win over plugins, and dtctl passes context metadata to plugins but strips its documented token variables.
++
  ## Output for agents
  
- `--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). It wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`).
-@@ -148,8 +158,10 @@
+-`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). It wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`).
++`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). Explicit `-o json` preserves auto-detected agent mode; explicit non-JSON output opts out. Agent mode wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`). Query cost/performance metadata such as scanned bytes and query ID is emitted under the envelope's top-level `metadata` key.
+ 
+ ```bash
+ -o toon          # token-efficient structured output — prefer for agents
+@@ -101,12 +118,13 @@
+ dtctl inspect <path> --tail 10                          # last N rows
+ dtctl inspect <path> --page --offset 1000 --limit 50    # a window deep in the result (file order)
+ dtctl inspect <path> --head 20 --fields timestamp,content  # project columns (composable)
++dtctl inspect <path> --jq 'select(.status == 500)' --head 20  # first 20 matches from a full-file filter
+ dtctl inspect <path> --schema                           # re-derive columns + types + null counts
+ dtctl inspect <path> --stats                            # re-derive the per-column profile (or --stats=col,col)
+ dtctl inspect --list                                    # lost the path? enumerate spilled files in this context
+ ```
+ 
+-It is not a query engine — no filter/SQL/GROUP BY. For aggregates, push the work back into DQL (`… | summarize …`); for complex local analysis, hand the file to your preferred local analytics tooling. An oversized `inspect` window re-spills to a new file rather than flooding context, and refuses files from another context/tenant.
++`inspect --jq` is a streaming, per-record jq filter over the whole file. It composes with one row window (`--head`/`--tail`/`--page`) and `--fields`, but not with `--schema`, `--stats`, or `--sample`; its program must emit objects. `inspect` is not a query engine — there is no SQL or `GROUP BY`. For aggregates, push the work back into DQL (`… | summarize …`); for complex local analysis, hand the file to your preferred local analytics tooling. An oversized result re-spills to a new file rather than flooding context, and `inspect` refuses files from another context/tenant.
+ 
+ ## Log pattern analysis (token-frugal)
+ 
+@@ -117,7 +135,7 @@
+ 
+ ## Apply & templates
+ 
+-`dtctl apply` is idempotent: POST when new, PUT when the file has an `id`. YAML/DQL files support Go templates filled via `--set`:
++`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file; use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. YAML/DQL files support Go templates filled via `--set`:
+ 
+ ```yaml
+ title: "{{.environment}} Deployment"
+@@ -125,6 +143,19 @@
+ ```
+ `dtctl apply -f file.yaml --set environment=prod --set schedule="0 6 * * *"`
+ 
++## Live Debugger
++
++Breakpoints require OAuth authentication. Scope workspace filters carefully because changing them re-scopes all existing breakpoints in that workspace.
++
++```bash
++dtctl create breakpoint com/example/Service.java:42 --filters k8s.namespace.name:prod
++dtctl get breakpoints
++dtctl describe breakpoint <id>
++dtctl update breakpoint <id> --condition "userId != null"
++dtctl query "fetch application.snapshots | limit 10" --decode-snapshots=simplified
++dtctl delete breakpoint <id>
++```
++
+ ## Dashboards
+ 
+ Create/update: `dtctl apply -f dashboard.yaml`. Export for reference: `dtctl get dashboard <id> -o yaml --plain`. Full schema + visualizationSettings: [references/resources/dashboards.md](references/resources/dashboards.md).
+@@ -151,8 +182,10 @@
  ## Permissions & safety
  
  - Verify before mutating: `dtctl auth can-i <verb> <resource>`. Scopes: [TOKEN_SCOPES.md](https://github.com/dynatrace-oss/dtctl/blob/main/docs/TOKEN_SCOPES.md).
@@ -37,9 +128,9 @@ diff -ruN a/dtctl/SKILL.md b/dtctl/SKILL.md
  ## More
  
 diff -ruN a/dtctl/references/DQL-reference.md b/dtctl/references/DQL-reference.md
---- a/dtctl/references/DQL-reference.md
-+++ b/dtctl/references/DQL-reference.md
-@@ -73,6 +73,8 @@
+--- a/dtctl/references/DQL-reference.md	2026-07-22 09:02:24
++++ b/dtctl/references/DQL-reference.md	2026-07-22 09:02:24
+@@ -99,6 +99,8 @@
  timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}, from:now()-6h, interval:5m
  ```
  
@@ -48,7 +139,7 @@ diff -ruN a/dtctl/references/DQL-reference.md b/dtctl/references/DQL-reference.m
  ### Log time-series (makeTimeseries, NOT summarize)
  ```dql
  fetch logs, from:now()-4h
-@@ -166,6 +168,10 @@
+@@ -192,6 +194,10 @@
  | fields content, dt.smartscape.host
  | limit 100
  ```
@@ -60,8 +151,8 @@ diff -ruN a/dtctl/references/DQL-reference.md b/dtctl/references/DQL-reference.m
  ## Key Functions
  
 diff -ruN a/dtctl/references/config-management.md b/dtctl/references/config-management.md
---- a/dtctl/references/config-management.md
-+++ b/dtctl/references/config-management.md
+--- a/dtctl/references/config-management.md	2026-07-22 09:02:24
++++ b/dtctl/references/config-management.md	2026-07-22 09:02:24
 @@ -47,3 +47,39 @@
  | `dangerously-unrestricted` | Emergency admin |
  
@@ -103,8 +194,8 @@ diff -ruN a/dtctl/references/config-management.md b/dtctl/references/config-mana
 +
 +Only `commands`/`commands howto` and `help` are always available regardless of profile — everything else, including `config`/`ctx`, is subject to the allowlist. Profiles are a convenience, not a security boundary (client-side, like safety levels); a determined caller can unset `DTCTL_PROFILE`. For real restriction, scope the API token itself. Profiles and safety levels are orthogonal — set both on a context to express "this agent only sees `query` and can never mutate."
 diff -ruN a/dtctl/references/resources/extensions.md b/dtctl/references/resources/extensions.md
---- a/dtctl/references/resources/extensions.md
-+++ b/dtctl/references/resources/extensions.md
+--- a/dtctl/references/resources/extensions.md	2026-07-22 09:02:24
++++ b/dtctl/references/resources/extensions.md	2026-07-22 09:02:24
 @@ -16,7 +16,24 @@
  dtctl describe extension com.dynatrace.extension.host-monitoring         # Show detailed info (active version by default)
  dtctl describe extension com.dynatrace.extension.host-monitoring 1.2.3   # Show details for a specific version
@@ -131,9 +222,9 @@ diff -ruN a/dtctl/references/resources/extensions.md b/dtctl/references/resource
  ## Get Monitoring Configurations
  ```bash
 diff -ruN a/dtctl/references/troubleshooting.md b/dtctl/references/troubleshooting.md
---- a/dtctl/references/troubleshooting.md
-+++ b/dtctl/references/troubleshooting.md
-@@ -47,12 +47,25 @@
+--- a/dtctl/references/troubleshooting.md	2026-07-22 09:02:24
++++ b/dtctl/references/troubleshooting.md	2026-07-22 09:02:24
+@@ -73,12 +73,25 @@
  
  # Check permissions
  dtctl auth can-i <verb> <resource>

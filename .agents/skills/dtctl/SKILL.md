@@ -7,20 +7,26 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
+This skill targets dtctl v0.35.0 or newer. Confirm with `dtctl version`.
+
 ## Initialization
 
 Run once to establish context, permissions, and the command catalog:
 
 ```bash
+dtctl doctor                            # config, context, token, connectivity, auth
 dtctl commands                          # compact overview: verbs, resources, subcommands (TOON default)
 # dtctl commands --brief                 # + mutating/access/scopes + flag types
 # dtctl commands --full                  # exhaustive catalog: descriptions, flag defaults, global flags
 dtctl config current-context            # active context
 dtctl config describe-context $(dtctl config current-context) --plain  # env URL + safety level
 dtctl auth status --plain               # token type (OAuth vs API/platform) + safety level
+dtctl inventory                         # what data exists HERE: fetchable objects, buckets, entity census, capabilities
 ```
 
 Safety levels: `readonly`, `readwrite-mine`, `readwrite-all`, `dangerously-unrestricted`.
+
+`dtctl commands` answers "what can I run?"; `dtctl inventory` answers "what is there to query?" — run it before exploratory DQL. It partitions catalog objects into fetchable vs query-only (never `fetch metrics` or `fetch smartscape.*`), and reports capabilities as present, absent (with the evidence checked — cite it instead of re-probing), or unknown (no verdict; not evidence of absence). Org-specific capability definitions: `--definitions file.yaml`.
 
 Don't use `dtctl auth whoami` to test connectivity — it needs an OAuth token with `app-engine:apps:run` and returns a spurious 403 for plain API or read-scoped tokens even when reads work. Confirm with a real `get`/`query`.
 
@@ -29,9 +35,9 @@ Don't use `dtctl auth whoami` to test connectivity — it needs an OAuth token w
 Before writing, modifying, or running any DQL (`dtctl query`, `dtctl wait query`, query files), consult `references/DQL-reference.md` and follow it over any assumption or memory.
 
 ```bash
-dtctl query "fetch logs | filter status='ERROR' | limit 100" -o json --plain
+dtctl query 'fetch logs | filter status == "ERROR" | limit 100' -o json --plain
 dtctl query -f query.dql --set host=h-123 --set timerange=2h -o json --plain   # Go-template vars
-dtctl wait query "fetch spans | filter test_id='test-123'" --for=count=1 --timeout 5m
+dtctl wait query 'fetch spans | filter test_id == "test-123"' --for=count=1 --timeout 5m
 dtctl query "timeseries avg(dt.host.cpu.usage)" -o chart --plain
 ```
 
@@ -41,15 +47,17 @@ dtctl not installed/working? See [references/troubleshooting.md](references/trou
 
 ## Resources & verbs
 
-Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, group, intent, lookup, notebook, notification, sdk-version, segment, settings, settings-schema, slo, slo-template, trash, user, workflow, workflow-execution. **Use IDs, not names** — names may be ambiguous and fail.
+Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, breakpoint, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, hub-extension, intent, lookup, notebook, notification, segment, settings, settings-schema, slo, slo-template, trash, workflow, workflow-execution, and workflow task result. **Use IDs, not names** — names may be ambiguous and fail.
 
 | Verb | Example |
 |------|---------|
 | get / describe | `dtctl get workflows --mine` · `dtctl describe workflow <id>` |
-| apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod` · `dtctl delete workflow <id>` |
+| create / update | `dtctl create breakpoint path/File.java:42` · `dtctl update breakpoint <id> --enabled=false` |
+| apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod --write-id` · `dtctl delete workflow <id>` |
+| enable / disable | `dtctl enable aws monitoring --name prod` · `dtctl disable azure monitoring --name prod` |
 | exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` (also workflow, copilot) |
 | query / wait | `dtctl query "fetch logs \| limit 10"` · `dtctl wait query ... --for=any` |
-| inspect | `dtctl inspect <file> --head 20` · `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (row access over a spilled result file — no Grail re-query) |
+| inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
 | logs / history / restore | `dtctl logs workflow-execution <id>` · `dtctl restore dashboard <id> --version 3` |
 | share / unshare | `dtctl share dashboard <id> --user a@example.com` |
 | find / open | `dtctl find intents --data trace.id=abc` · `dtctl open intent <app/intent> --data k=v` |
@@ -65,9 +73,11 @@ Settings mutations support a dry run: `dtctl create settings -f settings.yaml --
 
 Cloud monitoring configs (aws/azure/gcp) support `disable`/`enable` (toggles the config and its credentials off/on in one step, config and connection preserved) and `edit` in addition to `create`/`update`/`delete`: `dtctl disable azure monitoring --name "my-azure-monitoring"`.
 
+Other top-level utilities: `dtctl ctx` quickly lists or switches contexts; `dtctl alias set|list|delete|export|import` manages reusable commands; `dtctl doctor` checks local health; `dtctl commands howto` emits a Markdown guide; `dtctl inventory` discovers environment data; and `dtctl plugin list` shows kubectl-style `dtctl-*` exec plugins found on `PATH`. Built-ins always win over plugins, and dtctl passes context metadata to plugins but strips its documented token variables.
+
 ## Output for agents
 
-`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). It wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`).
+`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). Explicit `-o json` preserves auto-detected agent mode; explicit non-JSON output opts out. Agent mode wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`). Query cost/performance metadata such as scanned bytes and query ID is emitted under the envelope's top-level `metadata` key.
 
 ```bash
 -o toon          # token-efficient structured output — prefer for agents
@@ -108,12 +118,13 @@ dtctl inspect <path> --head 20                          # first N rows (the mani
 dtctl inspect <path> --tail 10                          # last N rows
 dtctl inspect <path> --page --offset 1000 --limit 50    # a window deep in the result (file order)
 dtctl inspect <path> --head 20 --fields timestamp,content  # project columns (composable)
+dtctl inspect <path> --jq 'select(.status == 500)' --head 20  # first 20 matches from a full-file filter
 dtctl inspect <path> --schema                           # re-derive columns + types + null counts
 dtctl inspect <path> --stats                            # re-derive the per-column profile (or --stats=col,col)
 dtctl inspect --list                                    # lost the path? enumerate spilled files in this context
 ```
 
-It is not a query engine — no filter/SQL/GROUP BY. For aggregates, push the work back into DQL (`… | summarize …`); for complex local analysis, hand the file to your preferred local analytics tooling. An oversized `inspect` window re-spills to a new file rather than flooding context, and refuses files from another context/tenant.
+`inspect --jq` is a streaming, per-record jq filter over the whole file. It composes with one row window (`--head`/`--tail`/`--page`) and `--fields`, but not with `--schema`, `--stats`, or `--sample`; its program must emit objects. `inspect` is not a query engine — there is no SQL or `GROUP BY`. For aggregates, push the work back into DQL (`… | summarize …`); for complex local analysis, hand the file to your preferred local analytics tooling. An oversized result re-spills to a new file rather than flooding context, and `inspect` refuses files from another context/tenant.
 
 ## Log pattern analysis (token-frugal)
 
@@ -124,13 +135,26 @@ For free-text log triage, don't dump raw `content` — extract the taxonomy serv
 
 ## Apply & templates
 
-`dtctl apply` is idempotent: POST when new, PUT when the file has an `id`. YAML/DQL files support Go templates filled via `--set`:
+`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file; use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. YAML/DQL files support Go templates filled via `--set`:
 
 ```yaml
 title: "{{.environment}} Deployment"
 cron: "{{.schedule | default "0 0 * * *"}}"
 ```
 `dtctl apply -f file.yaml --set environment=prod --set schedule="0 6 * * *"`
+
+## Live Debugger
+
+Breakpoints require OAuth authentication. Scope workspace filters carefully because changing them re-scopes all existing breakpoints in that workspace.
+
+```bash
+dtctl create breakpoint com/example/Service.java:42 --filters k8s.namespace.name:prod
+dtctl get breakpoints
+dtctl describe breakpoint <id>
+dtctl update breakpoint <id> --condition "userId != null"
+dtctl query "fetch application.snapshots | limit 10" --decode-snapshots=simplified
+dtctl delete breakpoint <id>
+```
 
 ## Dashboards
 

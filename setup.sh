@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MIN_DTCTL_VERSION="0.34.0"
+MIN_DTCTL_VERSION="0.35.0"
 
 # Returns 0 if $1 >= $2 for dotted numeric versions (e.g. 0.30.10 vs 0.30.9).
 # Anything that isn't a strict X.Y.Z version (including "unknown" or empty)
@@ -146,10 +146,10 @@ else
 echo " [fail] dtctl v${DTCTL_VERSION:-unknown} — v${MIN_DTCTL_VERSION} or higher required"
 echo ""
 echo " v${MIN_DTCTL_VERSION} is required for this workspace:"
-echo "  • dtctl inspect — analyze large query results locally without re-scanning Grail"
-echo "  • --check-scopes — preflight token scopes before running a command"
-echo "  • dtctl commands — compact TOON catalog by default, less agent context spent on discovery"
-echo "  • DTCTL_CONFIG — trust a prepared workspace's local .dtctl.yaml (aliases/hooks) explicitly"
+echo "  • dtctl inventory — discover queryable data and capabilities before exploratory DQL"
+echo "  • dtctl plugin — discover kubectl-style dtctl-* extensions safely"
+echo "  • reliable agent envelopes, query polling, authentication, and first-apply ID handling"
+echo "  • breakpoint and snapshot workflows for Live Debugger investigations"
 echo ""
 echo " Upgrade dtctl:"
 echo "  curl -fsSL https://raw.githubusercontent.com/dynatrace-oss/dtctl/main/install.sh | bash"

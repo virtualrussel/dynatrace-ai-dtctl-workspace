@@ -83,4 +83,4 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
 | `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.34.0+ required)                   |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.35.0+ required)                   |

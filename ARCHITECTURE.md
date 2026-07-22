@@ -31,7 +31,7 @@ This workspace requires specific minimum versions of core components. Older vers
 
 | Component | Minimum Version | Why |
 | --- | --- | --- |
-| **dtctl** | 0.34.0 | CLI for managing Dynatrace platform resources |
+| **dtctl** | 0.35.0 | CLI for managing Dynatrace platform resources, environment inventory, and agent-safe query execution |
 | **jq** | any | Needed for template regeneration if you hand-edit `.vscode/mcp.json.template` |
 
 ---
@@ -205,7 +205,7 @@ Both files use `/command-name` for prompt invocation. They are kept separate bec
 
 ### 5. dtctl CLI
 
-**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.34.0 (see [Version Requirements](#version-requirements) above)
+**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.35.0 (see [Version Requirements](#version-requirements) above)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements MCP analysis with direct resource lifecycle operations. The current MCP server does not create notebooks, dashboards, workflows, or settings; dtctl owns those operations while domain skills define the correct structure and intent.
 
