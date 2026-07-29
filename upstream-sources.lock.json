@@ -7,11 +7,12 @@
       "commit": "29ad20b2673e207101a1d71aa4ea5464de03b343",
       "source": "skills",
       "destination": ".agents/skills",
-      "policy": "exact",
+      "policy": "patched",
       "exclude": [
         "dtctl"
       ],
-      "aggregateSha256": "edae253a6971ad8f297c08641cf37a8835bf0fb79cd29026cbc4ef8927b6cd80",
+      "patch": "upstream-patches/dt-obs-frontends-csp-link-fix.patch",
+      "aggregateSha256": "e439264abdfd55cb30c038f052e2d385c14e50734d7814f826b8c4d1a8815119",
       "inventory": [
         "dt-alerting",
         "dt-app-dashboards",

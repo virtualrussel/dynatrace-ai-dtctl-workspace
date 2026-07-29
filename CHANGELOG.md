@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.0.1] - 2026-07-29
+
+### Fixed
+- Fixed a broken relative link in `dt-obs-frontends/references/error-tracking.md` (linked to `references/csp-violations.md` from inside `references/`, resolving to a nonexistent nested path) — an upstream bug present as of `dynatrace-for-ai` commit `29ad20b` (v6.0.0). Applied as a registered local patch (`upstream-patches/dt-obs-frontends-csp-link-fix.patch`) rather than a direct edit, since `.agents/skills/` content is normally verified as exact upstream content.
+
+### Changed
+- Extended `scripts/sync-upstream.sh` and `upstream-sources.lock.json` to support an optional registered patch on the `dynatrace-for-ai-skills` import (previously only `dtctl-skill` supported this), so local fixes on top of a pinned upstream commit survive both `verify` and `sync` (restore-from-lock). See "Registered Local Patches" in `CONTRIBUTING.md`.
+
 ## [6.0.0] - 2026-07-29
 
 ### Added

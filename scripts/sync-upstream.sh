@@ -125,7 +125,7 @@ sync_locked() {
   local refresh_lock=${1:-false}
   local original_lock=$LOCK_FILE
   local work_dir candidate backup candidate_lock skills_checkout prompts_checkout dtctl_checkout
-  local prompt_source prompt_destination expected actual
+  local prompt_source prompt_destination expected actual skills_patch
   work_dir=$(mktemp -d)
   candidate="$work_dir/candidate"
   backup="$work_dir/backup"
@@ -143,6 +143,12 @@ sync_locked() {
 
   cp -R "$skills_checkout/$(import_value "dynatrace-for-ai-skills" source)/." \
     "$candidate/.agents/skills/"
+
+  skills_patch=$(jq -r '.imports[] | select(.id == "dynatrace-for-ai-skills") | .patch // empty' "$LOCK_FILE")
+  if [[ -n "$skills_patch" ]]; then
+    patch -d "$candidate/.agents/skills" -p1 --forward --batch \
+      < "$ROOT_DIR/$skills_patch" >/dev/null
+  fi
 
   while IFS=$'\t' read -r prompt_source prompt_destination; do
     cp "$prompts_checkout/$(import_value "dynatrace-for-ai-prompts" source)/$prompt_source" \
@@ -251,10 +257,13 @@ sync_locked() {
 verify() {
   local skills_destination="$ROOT_DIR/.agents/skills"
   local prompts_destination="$ROOT_DIR/.github/prompts"
-  local skill prompt prompt_name
+  local skill prompt prompt_name skills_patch
 
   assert_inventory "dynatrace-for-ai-skills" "$skills_destination"
   assert_hash "dynatrace-for-ai-skills" "$skills_destination"
+  skills_patch=$(jq -r '.imports[] | select(.id == "dynatrace-for-ai-skills") | .patch // empty' "$LOCK_FILE")
+  [[ -z "$skills_patch" || -f "$ROOT_DIR/$skills_patch" ]] \
+    || fail "dynatrace-for-ai-skills patch declared by the lock file is missing"
   assert_prompt_inventory "$prompts_destination"
   assert_hash "dynatrace-for-ai-prompts" "$prompts_destination"
   [[ -f "$ROOT_DIR/$(jq -r '.imports[] | select(.id == "dtctl-skill") | .patch' "$LOCK_FILE")" ]] \

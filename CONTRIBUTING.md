@@ -31,7 +31,19 @@ To update an upstream source:
 
 ### Skill Content Is Upstream-Owned
 
-Files under `.agents/skills/` are synchronized as complete imported roots. The `dynatrace-for-ai` skill tree is exact upstream content. The separately sourced `dtctl` skill may contain only the overlay declared in the lock and stored under `upstream-patches/`. Unregistered edits fail verification and must not be committed.
+Files under `.agents/skills/` are synchronized as complete imported roots. The `dynatrace-for-ai` skill tree is exact upstream content, unless a registered patch overrides it (see below). The separately sourced `dtctl` skill may contain only the overlay declared in the lock and stored under `upstream-patches/`. Unregistered edits fail verification and must not be committed.
+
+### Registered Local Patches
+
+`dynatrace-for-ai-skills` defaults to `"policy": "exact"` with no patch. When a local fix is needed on top of a pinned upstream commit, switch it to `"policy": "patched"` and add a `"patch"` field pointing at a file under `upstream-patches/`; the sync script applies it to the fetched tree (via `patch -p1 --forward`) before the aggregate hash is computed, exactly like the `dtctl-skill` overlay. This is the only sanctioned way to carry a local fix on top of upstream content — hand-editing a file under `.agents/skills/` without a registered patch will fail `sync-upstream.sh verify` and be silently overwritten (and `sync` with no `--refresh-lock` will fail its integrity check) on the next sync.
+
+Currently registered: `upstream-patches/dt-obs-frontends-csp-link-fix.patch` fixes a broken relative link in `dt-obs-frontends/references/error-tracking.md` (upstream links to `references/csp-violations.md` from inside `references/`, which resolves to a nonexistent nested path — confirmed present as of upstream commit `29ad20b`, filed as a low-severity doc bug). Remove this patch and drop the `patch` field once the fix lands upstream, then re-run `sync-upstream.sh sync --refresh-lock`.
+
+To register a new patch:
+
+1. Make the desired local edit against a copy of the pristine fetched content, then generate a unified diff rooted at the skill's path relative to `.agents/skills/` (e.g. `diff -ruN a/<skill>/<file> b/<skill>/<file>`), matching the format already used by `upstream-patches/dtctl-v0.35.0.patch`.
+2. Save it under `upstream-patches/` and set the `patch` field on the `dynatrace-for-ai-skills` import in `upstream-sources.lock.json`.
+3. Run `bash scripts/sync-upstream.sh sync --refresh-lock` to apply it and recompute the hash, then `bash scripts/sync-upstream.sh sync` (no flag) to confirm the restore path still succeeds.
 
 ---
 
