@@ -55,9 +55,13 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | LLM/GenAI cost, latency, tokens, agent or conversation analytics | `dt-obs-genai` |
 | Mapping vendor audit logs to the Dynatrace semantic dictionary | `dt-obs-log-semantic-mapping` |
 | Mapping new security vendor data to the Dynatrace semantic dictionary | `dt-sec-semantic-mapping` |
-| Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-obs-android` / `dt-obs-ios-sdk` / `dt-obs-flutter` / `dt-obs-react-native` |
+| Mapping security findings/IoCs to runtime entities across topology levels | `dt-sec-contextualization` |
+| Hunting threat-intel IoCs across logs/spans with a threat-exposure score | `dt-sec-ioc-hunting` |
+| Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-obs-android` / `dt-obs-ios` / `dt-obs-flutter` / `dt-obs-react-native` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
+| Analyzing a dashboard/notebook with Davis (anomalies, novelty, correlation) | `dt-obs-analytics` |
+| Ingesting 3rd-party test/monitor results into Grail | `dt-obs-ext-monitors` |
 | Migrating classic entity DQL to Smartscape | `dt-migration` |
 | Alerting, anomaly detectors, problem notifications | `dt-alerting` |
 | Dynatrace JS runtime functions and SDKs | `dt-js-runtime` |
@@ -182,4 +186,4 @@ To rotate your Platform Token or change tenants, re-run `bash setup.sh` — it w
 
 ---
 
-**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** July 22, 2026
+**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** July 29, 2026

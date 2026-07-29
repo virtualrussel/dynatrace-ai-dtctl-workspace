@@ -73,12 +73,16 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-obs-log-semantic-mapping` | Suggest and validate semantic dictionary mappings for audit log integrations         |
 | `dt-sec-insights`             | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture (KSPM/CSPM/VSPM) |
 | `dt-sec-semantic-mapping`     | Suggest and validate semantic dictionary mappings for new security integrations      |
+| `dt-sec-contextualization`    | Resolve security signals/IoC matches to runtime entities across topology levels     |
+| `dt-sec-ioc-hunting`          | Hunt threat-intel indicators of compromise across logs and spans with a threat-exposure score |
 | `dt-obs-android`              | Instrument Android projects with the Dynatrace Mobile Agent                          |
 | `dt-obs-flutter`              | Integrate the Dynatrace Flutter Plugin                                               |
-| `dt-obs-ios-sdk`              | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
+| `dt-obs-ios`                  | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
 | `dt-obs-react-native`         | Integrate the Dynatrace React Native Plugin (bare RN and Expo)                       |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                             |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                                            |
+| `dt-obs-analytics`            | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
+| `dt-obs-ext-monitors`         | Ingest 3rd-party test/monitor results into Grail via the platform events ingest API  |
 | `dt-migration`                | Classic entity DQL → Smartscape migration                                            |
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |

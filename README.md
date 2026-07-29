@@ -44,7 +44,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 27 Dynatrace domain skills
+├── .agents/skills/               # 31 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -228,6 +228,7 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-alerting` | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-obs-genai` | LLM/GenAI observability — golden signals, token/cost analytics, agent signals, conversation analytics, guardrails, evaluations |
 | `dt-obs-log-semantic-mapping` | Suggest and validate semantic dictionary mappings for audit log integrations |
+| `dt-obs-ext-monitors` | Ingest 3rd-party test/monitor results into Grail via the platform events ingest API |
 
 ### Security
 
@@ -235,6 +236,8 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 |---|---|
 | `dt-sec-insights` | Security events — vulnerabilities (RVA/RAP), MITRE ATT&CK detections, posture findings (KSPM/CSPM/VSPM) |
 | `dt-sec-semantic-mapping` | Suggest and validate semantic dictionary mappings for new security integrations |
+| `dt-sec-contextualization` | Resolve security signals/IoC matches to runtime entities across topology levels |
+| `dt-sec-ioc-hunting` | Hunt threat-intel indicators of compromise across logs and spans with a threat-exposure score |
 
 ### Mobile Instrumentation
 
@@ -242,7 +245,7 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 |---|---|
 | `dt-obs-android` | Instrument Android projects with the Dynatrace Mobile Agent |
 | `dt-obs-flutter` | Integrate the Dynatrace Flutter Plugin |
-| `dt-obs-ios-sdk` | Set up the Dynatrace iOS SDK via Swift Package Manager |
+| `dt-obs-ios` | Set up the Dynatrace iOS SDK via Swift Package Manager |
 | `dt-obs-react-native` | Integrate the Dynatrace React Native Plugin (bare RN and Expo) |
 
 ### Platform
@@ -251,6 +254,7 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 |---|---|
 | `dt-app-dashboards` | Dashboard JSON creation and modification |
 | `dt-app-notebooks` | Notebook creation and analytics workflows |
+| `dt-obs-analytics` | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
 | `dt-js-runtime` | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits |
 | `dt-platform-costs` | DPS billing and usage analysis — cost breakdown, spend ranking, chargeback, entity drill-down |
 

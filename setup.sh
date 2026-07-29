@@ -296,6 +296,10 @@ echo ""
 echo "Docs: https://docs.dynatrace.com/docs/dynatrace-intelligence/dynatrace-mcp"
 echo "Workspace guide: docs/PERMISSIONS.md"
 echo ""
+echo "Note: a few skills (e.g. dt-obs-ext-monitors) call write/ingest APIs directly"
+echo "and need their own separately-scoped token — this profile does not cover them."
+echo "See 'Some Skills Need a Separate Write-Scoped Token' in docs/PERMISSIONS.md."
+echo ""
 read -rsp "Paste your Platform Token: " PLATFORM_TOKEN
 echo ""
 if [[ -z "$PLATFORM_TOKEN" ]]; then

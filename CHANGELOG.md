@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.0.0] - 2026-07-29
+
+### Added
+- Synced `.agents/skills/` to `dynatrace-for-ai` v6.0.0 (commit `29ad20b`), adding four new skills: `dt-obs-analytics` (Davis analyzers on dashboards/notebooks — anomaly detection, novelty, correlation), `dt-obs-ext-monitors` (3rd-party test/monitor ingestion into Grail via the platform events ingest API), `dt-sec-contextualization` (map security signals/IoCs to runtime entities across topology levels), and `dt-sec-ioc-hunting` (hunt threat-intel IoCs across logs/spans with a threat-exposure score). Skill count is now 31 (30 `dynatrace-for-ai` skills + `dtctl`).
+- Documented that `dt-obs-ext-monitors` requires a separate write-scoped token (`openpipeline:events.custom:ingest`) not covered by either standard MCP permission profile, in a new `docs/PERMISSIONS.md` section, with a pointer from `setup.sh`'s token-creation output and the Troubleshooting checklist.
+
+### Changed
+- Renamed `dt-obs-ios-sdk` to `dt-obs-ios` across all skill tables, following the upstream rename (frontmatter `description` is unchanged).
+- Refreshed reference docs for `dt-migration`, `dt-sec-insights`, `dt-sec-semantic-mapping`, and `dt-obs-log-semantic-mapping` as part of the v6.0.0 sync (no doc-table or frontmatter changes).
+
 ## [5.6.1] - 2026-07-22
 
 ### Changed

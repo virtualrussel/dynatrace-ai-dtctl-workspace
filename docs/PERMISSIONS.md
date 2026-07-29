@@ -103,6 +103,12 @@ ALLOW storage:fieldsets:read WHERE storage:fieldset-name="builtin-sensitive-user
 
 This is not part of either standard Platform Token profile. Grant it only when the use case intentionally requires sensitive fields.
 
+## Some Skills Need a Separate Write-Scoped Token
+
+Neither MCP profile above grants write access. `dt-obs-ext-monitors` calls the platform events ingest API (`platform/ingest/custom/events/`) directly — not through an MCP tool — and needs its own token with the `openpipeline:events.custom:ingest` scope (classic API tokens use `openpipeline.events.custom`).
+
+Rotating or regenerating your Platform Token via `setup.sh` does not provision this scope; it only manages the read-only MCP token. If a request from this skill returns a `403`, check that you created a separate, correctly-scoped token for it before following the general troubleshooting steps below.
+
 ## dtctl Permissions Are Separate
 
 The MCP profiles enable MCP analysis and lookup tools. They do not grant notebook, dashboard, workflow, settings, or other dtctl lifecycle access.
@@ -122,7 +128,7 @@ Authenticate dtctl independently with OAuth or a token-backed context. Use `--va
 A `401` or `403` is an authorization failure, not evidence that no telemetry exists.
 
 1. Identify which MCP tool or data source failed.
-2. Find its capability in the table above.
+2. Find its capability in the table above. If it's a skill that writes or ingests data rather than reading through MCP (for example `dt-obs-ext-monitors`), see "Some Skills Need a Separate Write-Scoped Token" above instead — `setup.sh` and token rotation will not fix it.
 3. Confirm the Platform Token includes the corresponding scope.
 4. Confirm the assigned user or service user has the matching IAM permission.
 5. Confirm Grail bucket, table, record, and field policies permit the requested data.
