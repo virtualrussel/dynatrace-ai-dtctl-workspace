@@ -60,7 +60,7 @@ dynatrace-ai-dtctl-workspace/
 | [VS Code](https://code.visualstudio.com/) | Editor with Copilot/Claude Chat |
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.35.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.37.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` with permission to create a **Platform Token** |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -140,7 +140,7 @@ The token is stored in a `.gitignore`'d generated config file inside this worksp
 
 ### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.35.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.37.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
 
 After setup verifies the binary, authenticate dtctl independently:
 

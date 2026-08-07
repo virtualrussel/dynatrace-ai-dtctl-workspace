@@ -122,9 +122,9 @@ Use **Full read-only MCP** by default. Choose **Core incident analysis** only wh
 
 - Scan-limit feedback: agent mode now flags DQL scan-limit truncation explicitly with data-reduction advice (v0.33.0+) instead of returning a silent partial/empty result — treat it as "narrow the query," not "no data."
 
-- Environment inventory: run `dtctl inventory -o json` (v0.35.0+) before exploratory DQL to discover fetchable objects, buckets, entity types, and supported capabilities. It is read-only and budgeted; use `--budget-queries`, `--budget-seconds`, and `--scan-limit-gbytes` to tune discovery.
+- Environment inventory: run `dtctl inventory -o json` before exploratory DQL to discover fetchable objects, buckets, entity types, and supported capabilities. It is read-only and budgeted; use `--budget-queries`, `--budget-seconds`, and `--scan-limit-gbytes` to tune discovery.
 
-- Agent/query correctness: v0.35.0 preserves auto-detected agent envelopes with explicit `-o json`, exposes query cost and ID under top-level `metadata`, polls long-running queries reliably, and reports authentication failures consistently. DQL string values still require double quotes; in bash/zsh, single-quote the whole query: `dtctl query 'fetch logs | filter status == "ERROR"'`.
+- Agent/query correctness: dtctl preserves auto-detected agent envelopes with explicit `-o json`, exposes query cost and ID under top-level `metadata`, polls long-running queries reliably, and reports authentication failures consistently. DQL string values still require double quotes; in bash/zsh, single-quote the whole query: `dtctl query 'fetch logs | filter status == "ERROR"'`.
 
 - Extensibility and debugging: `dtctl plugin list` discovers kubectl-style `dtctl-*` plugins, while `create|get|describe|update|delete breakpoint` and `query --decode-snapshots` support Live Debugger investigations. Breakpoints require OAuth.
 
@@ -159,6 +159,9 @@ Always provide an entity and bounded timeframe. During incidents, use the proble
 **Let the workflow drive DQL. Don't write queries from scratch.**
 Ask: *"What were the error patterns during the last problem on [service]?"* — not *"Write a DQL query for..."*
 
+**Verify DQL syntax before executing against Grail.**
+Use `dtctl verify query '<dql>'` first — whether the query will run via MCP or `dtctl query` directly. It catches parse errors locally without consuming scan budget.
+
 ---
 
 ## Useful natural language prompts
@@ -186,4 +189,4 @@ To rotate your Platform Token or change tenants, re-run `bash setup.sh` — it w
 
 ---
 
-**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** July 29, 2026
+**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** August 7, 2026

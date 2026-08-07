@@ -11,6 +11,7 @@
 - Start incident, error, and known-problem investigations with Davis Problems to establish the affected entities and timeframe.
 - Never query logs or spans without both an entity scope and a bounded timeframe. Unbounded high-volume searches can hit Dynatrace's 500GB scan limit.
 - Bounded metric, inventory, known-entity, deployment-comparison, and document queries do not require a Davis Problem.
+- Verify proposed DQL with `dtctl verify query '<dql>'` before executing against Grail — whether via MCP or `dtctl query` directly. It catches parse errors locally without consuming scan budget.
 
 Consult [docs/CHEATSHEET.md](../docs/CHEATSHEET.md) first for workflow selection and operational guardrails before choosing a prompt, skill, or writing any DQL.
 
@@ -87,4 +88,4 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
 | `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.35.0+ required)                   |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.37.0+ required)                   |

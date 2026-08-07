@@ -12,7 +12,7 @@ You need these tools installed:
 |---|---|---|
 | [VS Code](https://code.visualstudio.com/) | Editor with Copilot/Claude Chat — **skip if using Claude Code CLI** | Download and install |
 | GitHub Copilot or Claude Code | The AI brain | Copilot: sign in at github.com/features/copilot · Claude: sign in at claude.ai/code |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.35.0+ | CLI for verifying and managing Dynatrace resources | Offered for installation by `setup.sh` — or install manually |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.37.0+ | CLI for verifying and managing Dynatrace resources | Offered for installation by `setup.sh` — or install manually |
 
 > **Prefer the terminal over VS Code?** Install Claude Code CLI instead of the VS Code extensions:
 > ```bash
@@ -58,7 +58,7 @@ Run the setup script:
 bash setup.sh
 ```
 
-Before asking for tenant or token information, setup verifies that dtctl v0.35.0+ is runnable. If dtctl is missing, setup offers to install it. Declining installation or failing the version check stops setup.
+Before asking for tenant or token information, setup verifies that dtctl v0.37.0+ is runnable. If dtctl is missing, setup offers to install it. Declining installation or failing the version check stops setup.
 
 The script will:
 1. Ask for your Dynatrace environment URL (e.g., `abc12345.apps.dynatrace.com`). On an already-configured clone, setup offers the tenant as the Enter default only when `.vscode/mcp.json` and `.mcp.json` both contain the same valid tenant
@@ -73,7 +73,7 @@ The script generates `.vscode/mcp.json` and `.mcp.json` with your tenant URL and
 
 ## Step 3 — Authenticate dtctl (Required)
 
-`dtctl` is the required command-line tool that lets the AI create, update, inspect, and verify Dynatrace resources such as notebooks and workflows. The setup script has already verified or installed v0.35.0+; now connect it to your environment.
+`dtctl` is the required command-line tool that lets the AI create, update, inspect, and verify Dynatrace resources such as notebooks and workflows. The setup script has already verified or installed v0.37.0+; now connect it to your environment.
 
 ```bash
 # Connect to your environment — opens a browser for Dynatrace SSO login

@@ -41,7 +41,7 @@ Currently registered: `upstream-patches/dt-obs-frontends-csp-link-fix.patch` fix
 
 To register a new patch:
 
-1. Make the desired local edit against a copy of the pristine fetched content, then generate a unified diff rooted at the skill's path relative to `.agents/skills/` (e.g. `diff -ruN a/<skill>/<file> b/<skill>/<file>`), matching the format already used by `upstream-patches/dtctl-v0.35.0.patch`.
+1. Make the desired local edit against a copy of the pristine fetched content, then generate a unified diff rooted at the skill's path relative to `.agents/skills/` (e.g. `diff -ruN a/<skill>/<file> b/<skill>/<file>`), matching the format already used by `upstream-patches/dtctl-v0.37.0.patch`.
 2. Save it under `upstream-patches/` and set the `patch` field on the `dynatrace-for-ai-skills` import in `upstream-sources.lock.json`.
 3. Run `bash scripts/sync-upstream.sh sync --refresh-lock` to apply it and recompute the hash, then `bash scripts/sync-upstream.sh sync` (no flag) to confirm the restore path still succeeds.
 

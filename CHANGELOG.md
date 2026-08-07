@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.0.2] - 2026-08-07
+
+### Changed
+- Aligned the dtctl skill with dtctl v0.37.0. Extended the registered patch overlay to cover two releases of new feature documentation: the `translate` verb (`dtctl translate lql-to-dql`, `dtctl translate classic-pipelines`), OpenPipeline verify and preview resources (`dtctl verify openpipeline-matcher`, `dtctl verify openpipeline-dql-processor`, `dtctl exec preview-processor`), `dtctl get snapshots <breakpoint>` (by `filename:line` or stable rule ID), breakpoint log messages (`dtctl update breakpoint --log-message`), custom document `update document` and `apply --type`, `--typed`/`--include-types` query output flags, and the parquet self-describing footer change (DQL type block written under `dtctl.dql.types`, readable via DuckDB's `parquet_kv_metadata()`). Replaced the removed `dtctl get classic-pipelines-translation` reference with `dtctl translate classic-pipelines`, and corrected its required OAuth scope (`settings:objects:read`, not `openpipeline:configurations:read`).
+- Raised the minimum required dtctl version from v0.35.0 to v0.37.0 in `setup.sh`, `CLAUDE.md`, `README.md`, `ARCHITECTURE.md`, `docs/ELI5.md`, `docs/CHEATSHEET.md`, `.github/copilot-instructions.md`, and `CONTRIBUTING.md`.
+
+### Removed
+- Retired the v0.35.0 overlay patch (`upstream-patches/dtctl-v0.35.0.patch`) after replacing it with `upstream-patches/dtctl-v0.37.0.patch`.
+
 ## [6.0.1] - 2026-07-29
 
 ### Fixed

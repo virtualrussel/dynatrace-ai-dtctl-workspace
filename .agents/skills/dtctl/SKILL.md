@@ -7,7 +7,7 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
-This skill targets dtctl v0.35.0 or newer. Confirm with `dtctl version`.
+This skill targets dtctl v0.37.0 or newer. Confirm with `dtctl version`.
 
 ## Initialization
 
@@ -55,19 +55,20 @@ Resources and aliases are discoverable via `dtctl commands` (run at init). They 
 | create / update | `dtctl create breakpoint path/File.java:42` · `dtctl update breakpoint <id> --enabled=false` |
 | apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod --write-id` · `dtctl delete workflow <id>` |
 | enable / disable | `dtctl enable aws monitoring --name prod` · `dtctl disable azure monitoring --name prod` |
-| exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` (also workflow, copilot) |
+| exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` · `dtctl exec preview-processor --config-id <id>` (also workflow, copilot) |
 | query / wait | `dtctl query "fetch logs \| limit 10"` · `dtctl wait query ... --for=any` |
 | inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
 | logs / history / restore | `dtctl logs workflow-execution <id>` · `dtctl restore dashboard <id> --version 3` |
 | share / unshare | `dtctl share dashboard <id> --user a@example.com` |
 | find / open | `dtctl find intents --data trace.id=abc` · `dtctl open intent <app/intent> --data k=v` |
-| diff / verify | `dtctl diff -f wf.yaml` · `dtctl verify query 'fetch logs' --fail-on-warn` · `dtctl verify analyzer <id> -f in.json` |
+| diff / verify | `dtctl diff -f wf.yaml` · `dtctl verify query 'fetch logs' --fail-on-warn` · `dtctl verify analyzer <id> -f in.json` · `dtctl verify openpipeline-matcher '<dql>'` · `dtctl verify openpipeline-dql-processor '<script>'` · `dtctl exec preview-processor --config-id <id>` |
+| translate | `dtctl translate lql-to-dql 'log.source="x"'` · `dtctl translate classic-pipelines logs` |
 
 Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its required/optional inputs and result schema (add `--doc` for full docs, `-o json` for the raw schemas); `dtctl verify analyzer <id> -f in.json` validates an input without executing (exit 0 valid / 1 invalid).
 
 Anomaly detectors are round-trippable between environments: `dtctl get anomaly-detector <id> -o yaml --plain > detector.yaml` then `dtctl apply -f detector.yaml --context <target-context> --plain`.
 
-Migrating a Classic pipeline to OpenPipeline: `dtctl get classic-pipelines-translation <scope>` (e.g. `logs`, `bizevents`) calls the translation endpoint and prints a ready-to-review translated config — a starting point, not an apply-in-place operation. If a scope has no Classic pipeline configured, dtctl reports that on stderr (and emits `null` in structured output) rather than erroring.
+Migrating a Classic pipeline to OpenPipeline: `dtctl translate classic-pipelines <scope>` (e.g. `logs`, `bizevents`) calls the translation endpoint and prints a ready-to-review translated config — a starting point, not an apply-in-place operation. Requires `settings:objects:read` scope. If a scope has no Classic pipeline configured, dtctl reports that on stderr (and emits `null` in structured output) rather than erroring.
 
 Settings mutations support a dry run: `dtctl create settings -f settings.yaml --schema <schema> --scope <scope> --validate-only` validates against the API without creating/editing/deleting anything (same flag on `edit settings` / `delete settings`).
 
@@ -86,7 +87,11 @@ Other top-level utilities: `dtctl ctx` quickly lists or switches contexts; `dtct
 -o chart|sparkline|barchart   # time series
 -o table|wide    # human-readable (table is the default)
 --jq '.[].id'    # filter structured output (json|yaml|toon; other formats auto-promote to json)
+--typed          # cast scalar columns to native types: long/duration→number, boolean→real bool; safe for jq arithmetic; opt-in
+--include-types  # add DQL declared type block for all columns (including nulls) to json/yaml output; implied by --typed
 ```
+
+Parquet output is self-describing: the full DQL type block (including null-only columns Grail omits) is written into the file footer under `dtctl.dql.types`. Readable via DuckDB's `parquet_kv_metadata()` for full schema recovery without re-querying.
 
 Prefer `--agent` plus `-o toon` and `--jq` to cut tokens.
 
@@ -119,6 +124,7 @@ dtctl inspect <path> --tail 10                          # last N rows
 dtctl inspect <path> --page --offset 1000 --limit 50    # a window deep in the result (file order)
 dtctl inspect <path> --head 20 --fields timestamp,content  # project columns (composable)
 dtctl inspect <path> --jq 'select(.status == 500)' --head 20  # first 20 matches from a full-file filter
+dtctl inspect <path> --sample 20                        # random N-row sample — for profiling, not sequential reading
 dtctl inspect <path> --schema                           # re-derive columns + types + null counts
 dtctl inspect <path> --stats                            # re-derive the per-column profile (or --stats=col,col)
 dtctl inspect --list                                    # lost the path? enumerate spilled files in this context
@@ -135,7 +141,9 @@ For free-text log triage, don't dump raw `content` — extract the taxonomy serv
 
 ## Apply & templates
 
-`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file; use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. YAML/DQL files support Go templates filled via `--set`:
+`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file; use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
+
+For custom document types, prefer `dtctl update document -f <file> [--type <type>] [--id <id>]` over `apply` when updating an existing document — it fails instead of silently creating when the target ID is missing, so a typo in the ID never spawns a stray document. Use `--label key=value` (repeatable) on `create document` or via `apply` to set document labels; the SDK applies them in a follow-up update since the create API can't set them directly.
 
 ```yaml
 title: "{{.environment}} Deployment"
@@ -149,12 +157,16 @@ Breakpoints require OAuth authentication. Scope workspace filters carefully beca
 
 ```bash
 dtctl create breakpoint com/example/Service.java:42 --filters k8s.namespace.name:prod
-dtctl get breakpoints
-dtctl describe breakpoint <id>
+dtctl get breakpoints                                    # includes LOG MESSAGE column
+dtctl describe breakpoint <id>                           # shows condition and log message
 dtctl update breakpoint <id> --condition "userId != null"
+dtctl update breakpoint <id> --log-message "{frame.line}: {x}"  # {variable} placeholders; backend prefixes stripped in display
+dtctl get snapshots <breakpoint>                         # by filename:line or stable rule ID — no immutableId lookup needed
 dtctl query "fetch application.snapshots | limit 10" --decode-snapshots=simplified
 dtctl delete breakpoint <id>
 ```
+
+`dtctl get snapshots` supports `--decode-snapshots`, `-o json/yaml`, timeframe flags, and `--max-result-records`.
 
 ## Dashboards
 
