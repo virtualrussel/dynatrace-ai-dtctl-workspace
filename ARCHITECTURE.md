@@ -31,7 +31,7 @@ This workspace requires specific minimum versions of core components. Older vers
 
 | Component | Minimum Version | Why |
 | --- | --- | --- |
-| **dtctl** | 0.37.0 | CLI for managing Dynatrace platform resources, environment inventory, and agent-safe query execution |
+| **dtctl** | 0.38.0 | CLI for managing Dynatrace platform resources, environment inventory, and agent-safe query execution |
 | **jq** | any | Needed for template regeneration if you hand-edit `.vscode/mcp.json.template` |
 
 ---
@@ -107,6 +107,8 @@ This means all skills can be installed without performance penalty — the AI as
 | `dt-obs-aws`                  | EC2, RDS, Lambda, ECS/EKS, cost optimization                            |
 | `dt-obs-azure`                | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
 | `dt-obs-gcp`                  | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management  |
+| `dt-obs-network-devices`      | SNMP-monitored network devices (switches, routers, firewalls, load balancers) — topology, device/interface metrics, SNMP trap and syslog analysis |
+| `dt-obs-network-flows`        | Network flow analysis across OneAgent flows, NetFlow/IPFIX/sFlow, and cloud VPC flow logs — top talkers, communication dependencies, connection health |
 | `dt-obs-frontends`            | RUM, Web Vitals, user sessions, mobile crashes                          |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
 | `dt-obs-genai`                | LLM/GenAI observability — golden signals, token/cost analytics, agent signals, conversation analytics, guardrails, evaluations |
@@ -115,10 +117,11 @@ This means all skills can be installed without performance penalty — the AI as
 | `dt-sec-semantic-mapping`     | Suggest and validate semantic dictionary mappings for new security integrations |
 | `dt-sec-contextualization`    | Resolve security signals/IoC matches to runtime entities across topology levels |
 | `dt-sec-ioc-hunting`          | Hunt threat-intel indicators of compromise across logs and spans with a threat-exposure score |
-| `dt-obs-android`              | Instrument Android projects with the Dynatrace Mobile Agent            |
-| `dt-obs-flutter`              | Integrate the Dynatrace Flutter Plugin                                  |
-| `dt-obs-ios`                  | Set up the Dynatrace iOS SDK via Swift Package Manager                 |
-| `dt-obs-react-native`         | Integrate the Dynatrace React Native Plugin (bare RN and Expo)         |
+| `dt-obs-compliance-assistant` | EU DORA compliance posture — compliance score, CIF health, incident lifecycle, and ICT risk inputs |
+| `dt-setup-android`            | Instrument Android projects with the Dynatrace Mobile Agent            |
+| `dt-setup-flutter`            | Integrate the Dynatrace Flutter Plugin                                  |
+| `dt-setup-ios`                | Set up the Dynatrace iOS SDK via Swift Package Manager                 |
+| `dt-setup-react-native`       | Integrate the Dynatrace React Native Plugin (bare RN and Expo)         |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                               |
 | `dt-obs-analytics`            | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
@@ -200,7 +203,7 @@ Each file contains:
 - Default MCP server
 - Global rule: incidents start from problems; all log/span searches require entity and timeframe scope
 - Prompt directory with all 6 upstream slash commands and when to use them
-- The 31 skills are installed and load automatically
+- The 34 skills are installed and load automatically
 
 Both files use `/command-name` for prompt invocation. They are kept separate because each tool reads from a different path:
 
@@ -209,7 +212,7 @@ Both files use `/command-name` for prompt invocation. They are kept separate bec
 
 ### 5. dtctl CLI
 
-**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.37.0 (see [Version Requirements](#version-requirements) above)
+**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.38.0 (see [Version Requirements](#version-requirements) above)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements MCP analysis with direct resource lifecycle operations. The current MCP server does not create notebooks, dashboards, workflows, or settings; dtctl owns those operations while domain skills define the correct structure and intent.
 

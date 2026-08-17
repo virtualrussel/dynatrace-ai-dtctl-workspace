@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MIN_DTCTL_VERSION="0.37.0"
+MIN_DTCTL_VERSION="0.38.0"
 
 # Returns 0 if $1 >= $2 for dotted numeric versions (e.g. 0.30.10 vs 0.30.9).
 # Anything that isn't a strict X.Y.Z version (including "unknown" or empty)

@@ -1,11 +1,11 @@
 diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
---- upstream/dtctl/SKILL.md	2026-08-07 09:48:28
-+++ patched/dtctl/SKILL.md	2026-08-07 10:08:55
+--- upstream/dtctl/SKILL.md	2026-08-17 09:43:20
++++ patched/dtctl/SKILL.md	2026-08-17 09:43:28
 @@ -7,11 +7,14 @@
  
  Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
  
-+This skill targets dtctl v0.37.0 or newer. Confirm with `dtctl version`.
++This skill targets dtctl v0.38.0 or newer. Confirm with `dtctl version`.
 +
  ## Initialization
  
@@ -16,7 +16,7 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  dtctl commands                          # compact overview: verbs, resources, subcommands (TOON default)
  # dtctl commands --brief                 # + mutating/access/scopes + flag types
  # dtctl commands --full                  # exhaustive catalog: descriptions, flag defaults, global flags
-@@ -32,35 +35,50 @@
+@@ -32,35 +35,68 @@
  Before writing, modifying, or running any DQL (`dtctl query`, `dtctl wait query`, query files), consult `references/DQL-reference.md` and follow it over any assumption or memory.
  
  ```bash
@@ -35,7 +35,7 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  ## Resources & verbs
  
 -Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, group, intent, lookup, notebook, notification, sdk-version, segment, settings, settings-schema, slo, slo-template, trash, user, workflow, workflow-execution. **Use IDs, not names** — names may be ambiguous and fail.
-+Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, breakpoint, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, hub-extension, intent, lookup, notebook, notification, segment, settings, settings-schema, slo, slo-template, trash, workflow, workflow-execution, and workflow task result. **Use IDs, not names** — names may be ambiguous and fail.
++Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, api, app, aws/azure/gcp connection & monitoring, breakpoint, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, hub-extension, intent, lookup, notebook, notification, segment, settings, settings-schema, slo, slo-template, trash, workflow, workflow-execution, and workflow task result. **Use IDs, not names** — names may be ambiguous and fail.
  
  | Verb | Example |
  |------|---------|
@@ -45,7 +45,7 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
 +| create / update | `dtctl create breakpoint path/File.java:42` · `dtctl update breakpoint <id> --enabled=false` |
 +| apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod --write-id` · `dtctl delete workflow <id>` |
 +| enable / disable | `dtctl enable aws monitoring --name prod` · `dtctl disable azure monitoring --name prod` |
-+| exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` · `dtctl exec preview-processor --config-id <id>` (also workflow, copilot) |
++| exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` · `dtctl exec preview-processor --config-id <id>` · `dtctl exec api /path [-X METHOD] [-d BODY\|@file\|@-] [--dry-run]` (also workflow, copilot) |
  | query / wait | `dtctl query "fetch logs \| limit 10"` · `dtctl wait query ... --for=any` |
 -| inspect | `dtctl inspect <file> --head 20` · `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (row access over a spilled result file — no Grail re-query) |
 +| inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
@@ -58,6 +58,8 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  
  Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its required/optional inputs and result schema (add `--doc` for full docs, `-o json` for the raw schemas); `dtctl verify analyzer <id> -f in.json` validates an input without executing (exit 0 valid / 1 invalid).
  
++All `exec` subcommands (including `exec function`) gate on the active safety level from v0.38.0 — a `readonly` context blocks them.
++
 +Anomaly detectors are round-trippable between environments: `dtctl get anomaly-detector <id> -o yaml --plain > detector.yaml` then `dtctl apply -f detector.yaml --context <target-context> --plain`.
 +
 +Migrating a Classic pipeline to OpenPipeline: `dtctl translate classic-pipelines <scope>` (e.g. `logs`, `bizevents`) calls the translation endpoint and prints a ready-to-review translated config — a starting point, not an apply-in-place operation. Requires `settings:objects:read` scope. If a scope has no Classic pipeline configured, dtctl reports that on stderr (and emits `null` in structured output) rather than erroring.
@@ -68,6 +70,22 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
 +
 +Other top-level utilities: `dtctl ctx` quickly lists or switches contexts; `dtctl alias set|list|delete|export|import` manages reusable commands; `dtctl doctor` checks local health; `dtctl commands howto` emits a Markdown guide; `dtctl inventory` discovers environment data; and `dtctl plugin list` shows kubectl-style `dtctl-*` exec plugins found on `PATH`. Built-ins always win over plugins, and dtctl passes context metadata to plugins but strips its documented token variables.
 +
++## API Discovery & Passthrough
++
++dtctl wraps ~20 platform APIs natively; reach any other via API discovery and the governed HTTP passthrough. This surface is intentionally low-profile — visible only in `dtctl commands --full` and granted by no command profile:
++
++```bash
++dtctl get apis                              # all APIs the environment publishes; DTCTL column shows native coverage
++dtctl get apis --uncovered                  # only APIs with no native dtctl command (contribution backlog)
++dtctl get apis --ops-count                  # include operation count per API
++dtctl describe api <name>                   # operation index: METHOD /path, summary, declared scopes
++dtctl describe api <name> --operation 'GET /path'  # full drill-in: params, body schema, responses, ready-to-run invocation
++dtctl describe api <name> --raw             # raw spec dump
++dtctl exec api /path [-X METHOD] [-d BODY|@file|@-] [-H 'Name: value'] [--dry-run]
++```
++
++The safety verdict for `exec api` is derived from the API's own specification — not just the HTTP method. A POST that declares only a read scope (e.g., a search endpoint) is treated as read-safe; the verdict takes the stricter of method and spec floors. An unresolvable request defaults to **delete** safety, and there is no flag to override. A `readonly` context blocks any operation that doesn't resolve as safe.
++
  ## Output for agents
  
 -`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). It wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`).
@@ -75,7 +93,7 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  
  ```bash
  -o toon          # token-efficient structured output — prefer for agents
-@@ -69,8 +87,12 @@
+@@ -69,8 +105,12 @@
  -o chart|sparkline|barchart   # time series
  -o table|wide    # human-readable (table is the default)
  --jq '.[].id'    # filter structured output (json|yaml|toon; other formats auto-promote to json)
@@ -88,7 +106,7 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  Prefer `--agent` plus `-o toon` and `--jq` to cut tokens.
  
  ### Query results: branch on `result.kind`
-@@ -101,12 +123,14 @@
+@@ -101,12 +141,14 @@
  dtctl inspect <path> --tail 10                          # last N rows
  dtctl inspect <path> --page --offset 1000 --limit 50    # a window deep in the result (file order)
  dtctl inspect <path> --head 20 --fields timestamp,content  # project columns (composable)
@@ -104,12 +122,12 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  
  ## Log pattern analysis (token-frugal)
  
-@@ -117,14 +141,33 @@
+@@ -117,14 +159,33 @@
  
  ## Apply & templates
  
 -`dtctl apply` is idempotent: POST when new, PUT when the file has an `id`. YAML/DQL files support Go templates filled via `--set`:
-+`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file; use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
++`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file (v0.38.0: this now actually rewrites the file — it was a silent no-op before); use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. When creating without `--write-id`, dtctl prints a stderr hint suggesting how to make future runs update instead of create. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
  
 +For custom document types, prefer `dtctl update document -f <file> [--type <type>] [--id <id>]` over `apply` when updating an existing document — it fails instead of silently creating when the target ID is missing, so a typo in the ID never spawns a stray document. Use `--label key=value` (repeatable) on `create document` or via `apply` to set document labels; the SDK applies them in a follow-up update since the create API can't set them directly.
 +
@@ -139,7 +157,7 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  ## Dashboards
  
  Create/update: `dtctl apply -f dashboard.yaml`. Export for reference: `dtctl get dashboard <id> -o yaml --plain`. Full schema + visualizationSettings: [references/resources/dashboards.md](references/resources/dashboards.md).
-@@ -151,8 +194,10 @@
+@@ -151,8 +212,10 @@
  ## Permissions & safety
  
  - Verify before mutating: `dtctl auth can-i <verb> <resource>`. Scopes: [TOKEN_SCOPES.md](https://github.com/dynatrace-oss/dtctl/blob/main/docs/TOKEN_SCOPES.md).
@@ -151,9 +169,9 @@ diff -ruN upstream/dtctl/SKILL.md patched/dtctl/SKILL.md
  ## More
  
 diff -ruN upstream/dtctl/references/DQL-reference.md patched/dtctl/references/DQL-reference.md
---- upstream/dtctl/references/DQL-reference.md	2026-08-07 09:48:29
-+++ patched/dtctl/references/DQL-reference.md	2026-08-07 09:48:48
-@@ -99,6 +99,8 @@
+--- upstream/dtctl/references/DQL-reference.md	2026-08-17 09:43:22
++++ patched/dtctl/references/DQL-reference.md	2026-08-17 09:43:28
+@@ -107,6 +107,8 @@
  timeseries avg(dt.host.cpu.usage), by:{dt.entity.host}, from:now()-6h, interval:5m
  ```
  
@@ -162,7 +180,7 @@ diff -ruN upstream/dtctl/references/DQL-reference.md patched/dtctl/references/DQ
  ### Log time-series (makeTimeseries, NOT summarize)
  ```dql
  fetch logs, from:now()-4h
-@@ -192,6 +194,10 @@
+@@ -200,6 +202,10 @@
  | fields content, dt.smartscape.host
  | limit 100
  ```
@@ -174,8 +192,8 @@ diff -ruN upstream/dtctl/references/DQL-reference.md patched/dtctl/references/DQ
  ## Key Functions
  
 diff -ruN upstream/dtctl/references/config-management.md patched/dtctl/references/config-management.md
---- upstream/dtctl/references/config-management.md	2026-08-07 09:48:29
-+++ patched/dtctl/references/config-management.md	2026-08-07 09:48:48
+--- upstream/dtctl/references/config-management.md	2026-08-17 09:43:23
++++ patched/dtctl/references/config-management.md	2026-08-17 09:43:28
 @@ -47,3 +47,39 @@
  | `dangerously-unrestricted` | Emergency admin |
  
@@ -217,9 +235,9 @@ diff -ruN upstream/dtctl/references/config-management.md patched/dtctl/reference
 +
 +Only `commands`/`commands howto` and `help` are always available regardless of profile — everything else, including `config`/`ctx`, is subject to the allowlist. Profiles are a convenience, not a security boundary (client-side, like safety levels); a determined caller can unset `DTCTL_PROFILE`. For real restriction, scope the API token itself. Profiles and safety levels are orthogonal — set both on a context to express "this agent only sees `query` and can never mutate."
 diff -ruN upstream/dtctl/references/resources/extensions.md patched/dtctl/references/resources/extensions.md
---- upstream/dtctl/references/resources/extensions.md	2026-08-07 09:48:30
-+++ patched/dtctl/references/resources/extensions.md	2026-08-07 09:48:48
-@@ -16,7 +16,24 @@
+--- upstream/dtctl/references/resources/extensions.md	2026-08-17 09:43:25
++++ patched/dtctl/references/resources/extensions.md	2026-08-17 09:43:28
+@@ -16,6 +16,31 @@
  dtctl describe extension com.dynatrace.extension.host-monitoring         # Show detailed info (active version by default)
  dtctl describe extension com.dynatrace.extension.host-monitoring 1.2.3   # Show details for a specific version
  dtctl describe extension com.dynatrace.extension.host-monitoring -o json # Output as JSON
@@ -230,7 +248,7 @@ diff -ruN upstream/dtctl/references/resources/extensions.md patched/dtctl/refere
 +# Inspect bundled assets (alert templates, Smartscape config) without downloading the zip yourself
 +dtctl describe extension com.dynatrace.extension.postgres --version 3.0.12 --assets=alert_templates
 +dtctl describe extension com.dynatrace.extension.postgres --version 3.0.12 --assets=alert_templates,smartscape --full  # full file content
- ```
++```
 +
 +> **Breaking change:** the default JSON/YAML shape of `featureSets` on `describe extension` is a plain array (`["name"]`), not a map (`{"name": []}`) — regardless of whether `--feature-set-metrics` is passed. dtctl is pre-1.0, so this shipped without a compatibility shim. If anything parses `describe extension` output for `featureSets`, check which shape it expects.
 +
@@ -241,13 +259,31 @@ diff -ruN upstream/dtctl/references/resources/extensions.md patched/dtctl/refere
 +dtctl download extension com.dynatrace.extension.postgres --version 2.9.3 > postgres.zip
 +```
 +Writes binary data to stdout — always redirect. Incompatible with agent mode (`-A`): raw binary can't be wrapped in a JSON envelope.
++
++## Upload / Create Extension
++
++`create extension` uploads a custom extension ZIP to the environment. Fixed in v0.38.0 — prior releases always failed with HTTP 415 due to a wrong `Content-Type` (`multipart/form-data` instead of `application/octet-stream`).
++
++```bash
++dtctl create extension --file my-extension.zip          # Upload a custom extension ZIP
+ ```
  
  ## Get Monitoring Configurations
- ```bash
 diff -ruN upstream/dtctl/references/troubleshooting.md patched/dtctl/references/troubleshooting.md
---- upstream/dtctl/references/troubleshooting.md	2026-08-07 09:48:29
-+++ patched/dtctl/references/troubleshooting.md	2026-08-07 09:48:48
-@@ -73,12 +73,25 @@
+--- upstream/dtctl/references/troubleshooting.md	2026-08-17 09:43:28
++++ patched/dtctl/references/troubleshooting.md	2026-08-17 09:43:28
+@@ -66,9 +66,7 @@
+ 
+ Quote-free everywhere: put the DQL in a file and run `dtctl query -f query.dql`.
+ 
+-If a Windows user reports empty results, have them re-run with `-vv` and compare
+-the `BODY:` query against what they typed — missing quotes confirm the shell,
+-not the query, is at fault.
++If a Windows user reports empty results, have them re-run with `-vv` and compare the `BODY:` query against what they typed — missing quotes confirm the shell, not the query, is at fault.
+ 
+ ### 401/403 Authentication Errors
+ ```bash
+@@ -80,12 +78,25 @@
  
  # Check permissions
  dtctl auth can-i <verb> <resource>

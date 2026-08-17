@@ -44,7 +44,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 31 Dynatrace domain skills
+├── .agents/skills/               # 34 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -60,7 +60,7 @@ dynatrace-ai-dtctl-workspace/
 | [VS Code](https://code.visualstudio.com/) | Editor with Copilot/Claude Chat |
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.37.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.38.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` with permission to create a **Platform Token** |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -140,7 +140,7 @@ The token is stored in a `.gitignore`'d generated config file inside this worksp
 
 ### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.37.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.38.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
 
 After setup verifies the binary, authenticate dtctl independently:
 
@@ -222,6 +222,8 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-obs-aws` | EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization |
 | `dt-obs-azure` | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization |
 | `dt-obs-gcp` | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management |
+| `dt-obs-network-devices` | SNMP-monitored network devices (switches, routers, firewalls, load balancers) — topology, device/interface metrics, SNMP trap and syslog analysis |
+| `dt-obs-network-flows` | Network flow analysis across OneAgent flows, NetFlow/IPFIX/sFlow, and cloud VPC flow logs — top talkers, communication dependencies, connection health |
 | `dt-obs-logs` | Log queries, filtering, pattern analysis, error classification |
 | `dt-obs-problems` | Davis Problems, root cause analysis, impact assessment |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning |
@@ -238,15 +240,16 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-sec-semantic-mapping` | Suggest and validate semantic dictionary mappings for new security integrations |
 | `dt-sec-contextualization` | Resolve security signals/IoC matches to runtime entities across topology levels |
 | `dt-sec-ioc-hunting` | Hunt threat-intel indicators of compromise across logs and spans with a threat-exposure score |
+| `dt-obs-compliance-assistant` | EU DORA compliance posture — compliance score, CIF health, incident lifecycle, and ICT risk inputs |
 
 ### Mobile Instrumentation
 
 | Skill | What It Covers |
 |---|---|
-| `dt-obs-android` | Instrument Android projects with the Dynatrace Mobile Agent |
-| `dt-obs-flutter` | Integrate the Dynatrace Flutter Plugin |
-| `dt-obs-ios` | Set up the Dynatrace iOS SDK via Swift Package Manager |
-| `dt-obs-react-native` | Integrate the Dynatrace React Native Plugin (bare RN and Expo) |
+| `dt-setup-android` | Instrument Android projects with the Dynatrace Mobile Agent |
+| `dt-setup-flutter` | Integrate the Dynatrace Flutter Plugin |
+| `dt-setup-ios` | Set up the Dynatrace iOS SDK via Swift Package Manager |
+| `dt-setup-react-native` | Integrate the Dynatrace React Native Plugin (bare RN and Expo) |
 
 ### Platform
 

@@ -1,5 +1,34 @@
 # Changelog
 
+## [7.0.0] - 2026-08-17
+
+### Changed
+- Synced `.agents/skills/` to `dynatrace-for-ai` v7.0.0 (commit `3287f9d`). Skill count is now 34 (33 `dynatrace-for-ai` skills + `dtctl`). Eleven existing skills received content refreshes: `dt-alerting`, `dt-migration`, `dt-obs-kubernetes`, `dt-obs-problems` (migrated off deprecated `smartscape.affected_entity.*` fields); `dt-platform-costs` (billing/cost-attribution substantially expanded); `dt-sec-insights` (expanded vulnerability and detections reference); `dt-sec-ioc-hunting` (new security-events hunting reference); `dt-dql-essentials` (new string-matching reference); `dt-obs-genai`, `dt-obs-aws`, `dt-obs-ext-monitors` (reference refinements).
+- Updated skill references in `CLAUDE.md`, `.github/copilot-instructions.md`, `README.md`, `ARCHITECTURE.md`, and `docs/CHEATSHEET.md` to reflect the new and renamed skills and the updated total count.
+
+### Added
+- `dt-obs-network-devices` — SNMP-monitored network device monitoring: Smartscape topology, device/interface metrics (CPU, memory, uptime, throughput, errors), and SNMP trap/syslog analysis.
+- `dt-obs-network-flows` — Network flow analysis across OneAgent flows, NetFlow/IPFIX/sFlow, and cloud VPC flow logs: top talkers, communication dependencies, connection health (resets, RTT, timeouts), peer entity mapping.
+- `dt-obs-compliance-assistant` — EU DORA compliance posture: compliance score, Critical/Important Function (CIF) health, incident lifecycle, and ICT risk inputs.
+
+### Renamed
+- `dt-obs-android` → `dt-setup-android`
+- `dt-obs-flutter` → `dt-setup-flutter`
+- `dt-obs-ios` → `dt-setup-ios`
+- `dt-obs-react-native` → `dt-setup-react-native`
+
+## [6.0.3] - 2026-08-17
+
+### Changed
+- Aligned the dtctl skill with dtctl v0.38.0. Extended the registered patch overlay to document: API spec discovery and governed HTTP passthrough (`dtctl get apis [--uncovered] [--ops-count]`, `dtctl describe api <name> [--operation 'METHOD /path'] [--raw]`, `dtctl exec api <path>` — safety verdict derived from the API's own specification, not just the HTTP method; surface is unadvertised and granted by no command profile); `apply --write-id` fix (was a silent no-op before v0.38.0 — now actually rewrites the source file); `apply` stderr hint on create-without-`--write-id`; safety-level gating now applied to all `exec` subcommands including `exec function` (previously `readonly` did not block it); `create extension` HTTP 415 upload fix (now works correctly). Also incorporated the corrected Windows PowerShell DQL quoting guidance from the v0.38.0 upstream (single-quoted argument form strips inner double quotes in PowerShell 5.1; correct form is the piped here-string: `@'...'@ | dtctl query`).
+- Raised the minimum required dtctl version from v0.37.0 to v0.38.0 in `setup.sh`, `CLAUDE.md`, `README.md`, `ARCHITECTURE.md`, `docs/ELI5.md`, `docs/CHEATSHEET.md`, `.github/copilot-instructions.md`, and `CONTRIBUTING.md`.
+
+### Added
+- `upstream-patches/dtctl-v0.38.0.patch` — updated registered patch overlay for the v0.38.0 upstream commit (`b10e188`).
+
+### Removed
+- Retired the v0.37.0 overlay patch (`upstream-patches/dtctl-v0.37.0.patch`) after replacing it with `upstream-patches/dtctl-v0.38.0.patch`.
+
 ## [6.0.2] - 2026-08-07
 
 ### Changed

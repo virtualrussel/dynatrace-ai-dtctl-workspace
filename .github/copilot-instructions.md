@@ -68,6 +68,8 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-obs-aws`                  | EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization — **full feature parity with Azure/GCP** |
 | `dt-obs-azure`                | Azure VMs, AKS, SQL, storage, networking, serverless, cost optimization              |
 | `dt-obs-gcp`                  | Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, IAM, resource management               |
+| `dt-obs-network-devices`      | SNMP-monitored network devices (switches, routers, firewalls, load balancers) — Smartscape topology, device/interface metrics, SNMP trap and syslog analysis |
+| `dt-obs-network-flows`        | Network flow analysis across OneAgent flows, NetFlow/IPFIX/sFlow, and cloud VPC flow logs — top talkers, communication dependencies, connection health |
 | `dt-obs-frontends`            | RUM, Web Vitals, user sessions, mobile crashes                                       |
 | `dt-obs-predictive-analytics` | Forecasting, trend detection, anomaly identification, capacity planning              |
 | `dt-obs-genai`                | LLM/GenAI observability — golden signals, token/cost analytics, agent signals, conversation analytics, guardrails, evaluations |
@@ -76,10 +78,11 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-sec-semantic-mapping`     | Suggest and validate semantic dictionary mappings for new security integrations      |
 | `dt-sec-contextualization`    | Resolve security signals/IoC matches to runtime entities across topology levels     |
 | `dt-sec-ioc-hunting`          | Hunt threat-intel indicators of compromise across logs and spans with a threat-exposure score |
-| `dt-obs-android`              | Instrument Android projects with the Dynatrace Mobile Agent                          |
-| `dt-obs-flutter`              | Integrate the Dynatrace Flutter Plugin                                               |
-| `dt-obs-ios`                  | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
-| `dt-obs-react-native`         | Integrate the Dynatrace React Native Plugin (bare RN and Expo)                       |
+| `dt-obs-compliance-assistant` | EU DORA compliance posture — compliance score, CIF health, incident lifecycle, and ICT risk inputs (vulnerabilities, misconfigurations) |
+| `dt-setup-android`            | Instrument Android projects with the Dynatrace Mobile Agent                          |
+| `dt-setup-flutter`            | Integrate the Dynatrace Flutter Plugin                                               |
+| `dt-setup-ios`                | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
+| `dt-setup-react-native`       | Integrate the Dynatrace React Native Plugin (bare RN and Expo)                       |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                             |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                                            |
 | `dt-obs-analytics`            | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
@@ -88,4 +91,4 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
 | `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.37.0+ required)                   |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.38.0+ required)                   |

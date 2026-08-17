@@ -35,6 +35,14 @@ dtctl download extension com.dynatrace.extension.postgres --version 2.9.3 > post
 ```
 Writes binary data to stdout — always redirect. Incompatible with agent mode (`-A`): raw binary can't be wrapped in a JSON envelope.
 
+## Upload / Create Extension
+
+`create extension` uploads a custom extension ZIP to the environment. Fixed in v0.38.0 — prior releases always failed with HTTP 415 due to a wrong `Content-Type` (`multipart/form-data` instead of `application/octet-stream`).
+
+```bash
+dtctl create extension --file my-extension.zip          # Upload a custom extension ZIP
+```
+
 ## Get Monitoring Configurations
 ```bash
 dtctl get extension-configs com.dynatrace.extension.host-monitoring                          # List monitoring configurations for an extension

@@ -57,7 +57,10 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Mapping new security vendor data to the Dynatrace semantic dictionary | `dt-sec-semantic-mapping` |
 | Mapping security findings/IoCs to runtime entities across topology levels | `dt-sec-contextualization` |
 | Hunting threat-intel IoCs across logs/spans with a threat-exposure score | `dt-sec-ioc-hunting` |
-| Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-obs-android` / `dt-obs-ios` / `dt-obs-flutter` / `dt-obs-react-native` |
+| EU DORA compliance posture, CIF health, ICT risk | `dt-obs-compliance-assistant` |
+| Network device monitoring (SNMP switches, routers, firewalls, load balancers) | `dt-obs-network-devices` |
+| Network flow analysis (top talkers, connection health, VPC flows, NetFlow) | `dt-obs-network-flows` |
+| Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-setup-android` / `dt-setup-ios` / `dt-setup-flutter` / `dt-setup-react-native` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
 | Analyzing a dashboard/notebook with Davis (anomalies, novelty, correlation) | `dt-obs-analytics` |
@@ -117,6 +120,8 @@ Use **Full read-only MCP** by default. Choose **Core incident analysis** only wh
 - Config trust: per-project `.dtctl.yaml` is treated as untrusted by default; aliases and pre/post-apply hooks are ignored unless using global config, `--config`, or the `DTCTL_CONFIG` (v0.34.0+) environment variable. Agents should rely on explicit contexts or flags unless `DTCTL_CONFIG` points at a workspace you control.
 
 - Command catalog: `dtctl commands` defaults to a compact TOON overview (v0.34.0+, previously JSON) — cheaper on agent context. Use `--brief` for scopes/flag types or `--full` for the exhaustive catalog.
+
+- API discovery and passthrough (v0.38.0+): `dtctl get apis [--uncovered]` shows what the environment publishes vs what dtctl wraps natively; `dtctl describe api <name> [--operation 'METHOD /path']` projects the spec down to an operation index or a single ready-to-run invocation; `dtctl exec api <path>` is a governed HTTP passthrough whose safety verdict comes from the spec, not just the HTTP method. Only visible in `dtctl commands --full` — not granted by any command profile.
 
 - Restricting the exposed surface: a command profile (`--profile query|investigate` on a context, or `DTCTL_PROFILE=...`, v0.34.0+) trims which commands `dtctl commands`/`--help` advertise and hard-blocks the rest — useful for a narrowly-scoped agent, but client-side only (not a security boundary).
 
@@ -189,4 +194,4 @@ To rotate your Platform Token or change tenants, re-run `bash setup.sh` — it w
 
 ---
 
-**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** August 7, 2026
+**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** August 17, 2026

@@ -4,7 +4,7 @@
     {
       "id": "dynatrace-for-ai-skills",
       "repository": "https://github.com/Dynatrace/dynatrace-for-ai.git",
-      "commit": "29ad20b2673e207101a1d71aa4ea5464de03b343",
+      "commit": "3287f9d8971aeb9e18964b03a676551a54b5d4b4",
       "source": "skills",
       "destination": ".agents/skills",
       "policy": "patched",
@@ -12,7 +12,7 @@
         "dtctl"
       ],
       "patch": "upstream-patches/dt-obs-frontends-csp-link-fix.patch",
-      "aggregateSha256": "e439264abdfd55cb30c038f052e2d385c14e50734d7814f826b8c4d1a8815119",
+      "aggregateSha256": "bb40b9855c79208437c6200abb90167d30959fcc4080199bac2b541e2344a6b5",
       "inventory": [
         "dt-alerting",
         "dt-app-dashboards",
@@ -21,35 +21,38 @@
         "dt-js-runtime",
         "dt-migration",
         "dt-obs-analytics",
-        "dt-obs-android",
         "dt-obs-aws",
         "dt-obs-azure",
+        "dt-obs-compliance-assistant",
         "dt-obs-ext-monitors",
-        "dt-obs-flutter",
         "dt-obs-frontends",
         "dt-obs-gcp",
         "dt-obs-genai",
         "dt-obs-hosts",
-        "dt-obs-ios",
         "dt-obs-kubernetes",
         "dt-obs-log-semantic-mapping",
         "dt-obs-logs",
+        "dt-obs-network-devices",
+        "dt-obs-network-flows",
         "dt-obs-predictive-analytics",
         "dt-obs-problems",
-        "dt-obs-react-native",
         "dt-obs-services",
         "dt-obs-tracing",
         "dt-platform-costs",
         "dt-sec-contextualization",
         "dt-sec-insights",
         "dt-sec-ioc-hunting",
-        "dt-sec-semantic-mapping"
+        "dt-sec-semantic-mapping",
+        "dt-setup-android",
+        "dt-setup-flutter",
+        "dt-setup-ios",
+        "dt-setup-react-native"
       ]
     },
     {
       "id": "dynatrace-for-ai-prompts",
       "repository": "https://github.com/Dynatrace/dynatrace-for-ai.git",
-      "commit": "29ad20b2673e207101a1d71aa4ea5464de03b343",
+      "commit": "3287f9d8971aeb9e18964b03a676551a54b5d4b4",
       "source": "prompts",
       "destination": ".github/prompts",
       "policy": "exact-mapped",
@@ -84,12 +87,12 @@
     {
       "id": "dtctl-skill",
       "repository": "https://github.com/dynatrace-oss/dtctl.git",
-      "commit": "ad5e36df1ae2c4d3ca27f993d7a49d8367ce8271",
+      "commit": "b10e18817ecac16bfdc8cd9a54d34ed4df47b471",
       "source": "skills/dtctl",
       "destination": ".agents/skills/dtctl",
       "policy": "patched",
-      "patch": "upstream-patches/dtctl-v0.37.0.patch",
-      "aggregateSha256": "d165c429fa157b338c25c0cd0aca56bb4aaccb725120e5519cf2a878f8b0dfc1"
+      "patch": "upstream-patches/dtctl-v0.38.0.patch",
+      "aggregateSha256": "2ee58ad103ebe70e69e961c56753b448c4643ec1267c95d99e0cf570605834c8"
     }
   ],
   "compatibilityLinks": {

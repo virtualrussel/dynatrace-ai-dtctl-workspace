@@ -7,7 +7,7 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
-This skill targets dtctl v0.37.0 or newer. Confirm with `dtctl version`.
+This skill targets dtctl v0.38.0 or newer. Confirm with `dtctl version`.
 
 ## Initialization
 
@@ -47,7 +47,7 @@ dtctl not installed/working? See [references/troubleshooting.md](references/trou
 
 ## Resources & verbs
 
-Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, app, aws/azure/gcp connection & monitoring, breakpoint, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, hub-extension, intent, lookup, notebook, notification, segment, settings, settings-schema, slo, slo-template, trash, workflow, workflow-execution, and workflow task result. **Use IDs, not names** — names may be ambiguous and fail.
+Resources and aliases are discoverable via `dtctl commands` (run at init). They include: analyzer, anomaly-detector, api, app, aws/azure/gcp connection & monitoring, breakpoint, bucket, copilot-skill, dashboard, document, edgeconnect, extension, extension-config, function, hub-extension, intent, lookup, notebook, notification, segment, settings, settings-schema, slo, slo-template, trash, workflow, workflow-execution, and workflow task result. **Use IDs, not names** — names may be ambiguous and fail.
 
 | Verb | Example |
 |------|---------|
@@ -55,7 +55,7 @@ Resources and aliases are discoverable via `dtctl commands` (run at init). They 
 | create / update | `dtctl create breakpoint path/File.java:42` · `dtctl update breakpoint <id> --enabled=false` |
 | apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod --write-id` · `dtctl delete workflow <id>` |
 | enable / disable | `dtctl enable aws monitoring --name prod` · `dtctl disable azure monitoring --name prod` |
-| exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` · `dtctl exec preview-processor --config-id <id>` (also workflow, copilot) |
+| exec | `dtctl exec function <id> --payload '{...}'` · `dtctl exec analyzer <id> --input '{...}'` · `dtctl exec preview-processor --config-id <id>` · `dtctl exec api /path [-X METHOD] [-d BODY\|@file\|@-] [--dry-run]` (also workflow, copilot) |
 | query / wait | `dtctl query "fetch logs \| limit 10"` · `dtctl wait query ... --for=any` |
 | inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
 | logs / history / restore | `dtctl logs workflow-execution <id>` · `dtctl restore dashboard <id> --version 3` |
@@ -66,6 +66,8 @@ Resources and aliases are discoverable via `dtctl commands` (run at init). They 
 
 Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its required/optional inputs and result schema (add `--doc` for full docs, `-o json` for the raw schemas); `dtctl verify analyzer <id> -f in.json` validates an input without executing (exit 0 valid / 1 invalid).
 
+All `exec` subcommands (including `exec function`) gate on the active safety level from v0.38.0 — a `readonly` context blocks them.
+
 Anomaly detectors are round-trippable between environments: `dtctl get anomaly-detector <id> -o yaml --plain > detector.yaml` then `dtctl apply -f detector.yaml --context <target-context> --plain`.
 
 Migrating a Classic pipeline to OpenPipeline: `dtctl translate classic-pipelines <scope>` (e.g. `logs`, `bizevents`) calls the translation endpoint and prints a ready-to-review translated config — a starting point, not an apply-in-place operation. Requires `settings:objects:read` scope. If a scope has no Classic pipeline configured, dtctl reports that on stderr (and emits `null` in structured output) rather than erroring.
@@ -75,6 +77,22 @@ Settings mutations support a dry run: `dtctl create settings -f settings.yaml --
 Cloud monitoring configs (aws/azure/gcp) support `disable`/`enable` (toggles the config and its credentials off/on in one step, config and connection preserved) and `edit` in addition to `create`/`update`/`delete`: `dtctl disable azure monitoring --name "my-azure-monitoring"`.
 
 Other top-level utilities: `dtctl ctx` quickly lists or switches contexts; `dtctl alias set|list|delete|export|import` manages reusable commands; `dtctl doctor` checks local health; `dtctl commands howto` emits a Markdown guide; `dtctl inventory` discovers environment data; and `dtctl plugin list` shows kubectl-style `dtctl-*` exec plugins found on `PATH`. Built-ins always win over plugins, and dtctl passes context metadata to plugins but strips its documented token variables.
+
+## API Discovery & Passthrough
+
+dtctl wraps ~20 platform APIs natively; reach any other via API discovery and the governed HTTP passthrough. This surface is intentionally low-profile — visible only in `dtctl commands --full` and granted by no command profile:
+
+```bash
+dtctl get apis                              # all APIs the environment publishes; DTCTL column shows native coverage
+dtctl get apis --uncovered                  # only APIs with no native dtctl command (contribution backlog)
+dtctl get apis --ops-count                  # include operation count per API
+dtctl describe api <name>                   # operation index: METHOD /path, summary, declared scopes
+dtctl describe api <name> --operation 'GET /path'  # full drill-in: params, body schema, responses, ready-to-run invocation
+dtctl describe api <name> --raw             # raw spec dump
+dtctl exec api /path [-X METHOD] [-d BODY|@file|@-] [-H 'Name: value'] [--dry-run]
+```
+
+The safety verdict for `exec api` is derived from the API's own specification — not just the HTTP method. A POST that declares only a read scope (e.g., a search endpoint) is treated as read-safe; the verdict takes the stricter of method and spec floors. An unresolvable request defaults to **delete** safety, and there is no flag to override. A `readonly` context blocks any operation that doesn't resolve as safe.
 
 ## Output for agents
 
@@ -141,7 +159,7 @@ For free-text log triage, don't dump raw `content` — extract the taxonomy serv
 
 ## Apply & templates
 
-`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file; use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
+`dtctl apply` creates when no ID is known and updates when the file contains an `id`. On the first apply, use `--write-id` to stamp the generated ID into the source file (v0.38.0: this now actually rewrites the file — it was a silent no-op before); use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. When creating without `--write-id`, dtctl prints a stderr hint suggesting how to make future runs update instead of create. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
 
 For custom document types, prefer `dtctl update document -f <file> [--type <type>] [--id <id>]` over `apply` when updating an existing document — it fails instead of silently creating when the target ID is missing, so a typo in the ID never spawns a stray document. Use `--label key=value` (repeatable) on `create document` or via `apply` to set document labels; the SDK applies them in a follow-up update since the create API can't set them directly.
 
