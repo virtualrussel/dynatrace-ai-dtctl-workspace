@@ -83,6 +83,7 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-setup-flutter`            | Integrate the Dynatrace Flutter Plugin                                               |
 | `dt-setup-ios`                | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
 | `dt-setup-react-native`       | Integrate the Dynatrace React Native Plugin (bare RN and Expo)                       |
+| `dt-setup-oneagent`           | Reference knowledge for installing/uninstalling OneAgent across VM, Kubernetes, AWS Lambda, Windows, EC2-over-SSH, and Azure |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                             |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                                            |
 | `dt-obs-analytics`            | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
@@ -91,4 +92,4 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
 | `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.38.0+ required)                   |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.39.0+ required)                   |

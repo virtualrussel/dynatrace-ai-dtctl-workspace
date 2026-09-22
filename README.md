@@ -44,7 +44,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 34 Dynatrace domain skills
+├── .agents/skills/               # 35 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -60,7 +60,7 @@ dynatrace-ai-dtctl-workspace/
 | [VS Code](https://code.visualstudio.com/) | Editor with Copilot/Claude Chat |
 | [GitHub Copilot](https://github.com/features/copilot) | AI assistant (option 1) |
 | [Claude Code](https://claude.ai/code) | AI assistant (option 2) |
-| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.38.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
+| [dtctl](https://github.com/dynatrace-oss/dtctl) v0.39.0+ | Dynatrace open-source CLI for agents & humans to manage observability resources |
 | A Dynatrace environment | `https://YOUR_TENANT_ID.apps.dynatrace.com` with permission to create a **Platform Token** |
 
 You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
@@ -140,7 +140,7 @@ The token is stored in a `.gitignore`'d generated config file inside this worksp
 
 ### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.38.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.39.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
 
 After setup verifies the binary, authenticate dtctl independently:
 
@@ -250,6 +250,12 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-setup-flutter` | Integrate the Dynatrace Flutter Plugin |
 | `dt-setup-ios` | Set up the Dynatrace iOS SDK via Swift Package Manager |
 | `dt-setup-react-native` | Integrate the Dynatrace React Native Plugin (bare RN and Expo) |
+
+### Agent Deployment
+
+| Skill | What It Covers |
+|---|---|
+| `dt-setup-oneagent` | Reference knowledge for installing/uninstalling OneAgent across VM/server, Kubernetes, AWS Lambda, Windows, remote Linux/EC2 over SSH, and Azure |
 
 ### Platform
 

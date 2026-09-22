@@ -31,7 +31,7 @@ This workspace requires specific minimum versions of core components. Older vers
 
 | Component | Minimum Version | Why |
 | --- | --- | --- |
-| **dtctl** | 0.38.0 | CLI for managing Dynatrace platform resources, environment inventory, and agent-safe query execution |
+| **dtctl** | 0.39.0 | CLI for managing Dynatrace platform resources, environment inventory, and agent-safe query execution |
 | **jq** | any | Needed for template regeneration if you hand-edit `.vscode/mcp.json.template` |
 
 ---
@@ -122,6 +122,7 @@ This means all skills can be installed without performance penalty — the AI as
 | `dt-setup-flutter`            | Integrate the Dynatrace Flutter Plugin                                  |
 | `dt-setup-ios`                | Set up the Dynatrace iOS SDK via Swift Package Manager                 |
 | `dt-setup-react-native`       | Integrate the Dynatrace React Native Plugin (bare RN and Expo)         |
+| `dt-setup-oneagent`           | Reference knowledge for installing/uninstalling OneAgent across VM, Kubernetes, AWS Lambda, Windows, EC2-over-SSH, and Azure |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                               |
 | `dt-obs-analytics`            | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
@@ -203,7 +204,7 @@ Each file contains:
 - Default MCP server
 - Global rule: incidents start from problems; all log/span searches require entity and timeframe scope
 - Prompt directory with all 6 upstream slash commands and when to use them
-- The 34 skills are installed and load automatically
+- The 35 skills are installed and load automatically
 
 Both files use `/command-name` for prompt invocation. They are kept separate because each tool reads from a different path:
 
@@ -212,7 +213,7 @@ Both files use `/command-name` for prompt invocation. They are kept separate bec
 
 ### 5. dtctl CLI
 
-**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.38.0 (see [Version Requirements](#version-requirements) above)
+**Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.39.0 (see [Version Requirements](#version-requirements) above)
 
 `dtctl` is a kubectl-style command-line tool for Dynatrace. It complements MCP analysis with direct resource lifecycle operations. The current MCP server does not create notebooks, dashboards, workflows, or settings; dtctl owns those operations while domain skills define the correct structure and intent.
 

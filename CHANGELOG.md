@@ -1,5 +1,23 @@
 # Changelog
 
+## [8.0.0] - 2026-09-22
+
+### Changed
+- Synced `.agents/skills/` to `dynatrace-for-ai` v8.0.0 (commit `ca3a63e`). Skill count is now 35 (34 `dynatrace-for-ai` skills + `dtctl`). Several existing skills received content refreshes, most notably `dt-app-dashboards`, `dt-app-notebooks`, `dt-dql-essentials` (new discovery reference), `dt-obs-hosts`, `dt-obs-kubernetes`, and `dt-obs-frontends` (new frontend-backend-linking reference).
+- Aligned the dtctl skill with dtctl v0.39.0. Regenerated the registered patch overlay against the new upstream base (the v0.38.0 overlay no longer applied cleanly — upstream's own "Resources & verbs" table changed on the same lines) and merged in the still-needed local corrections: version-pin bump, `dtctl doctor` on init, DQL string-quoting fix, and the full resources/verbs table (now including `api`, `breakpoint`, `hub-extension`, `scheduling-rule`, `translate`, and `enable`/`disable`). Also incorporated verified v0.39.0 changes from the upstream release notes that the patch's existing prose had gotten stale on: the breaking `-A -o toon` envelope change and `--jq` null-handling change (`jq_shape_mismatch` instead of a silent `null`), the `apply --dry-run` create-vs-update resolution fix, `update document --create-snapshot`, `update extension <id> --version` for Extensions 2.0 activation, clearer 403 detail on `lookup`/connections/anomaly-detector, and — most importantly — corrected the "Config Trust Model" reference doc, which previously claimed local `.dtctl.yaml` tokens "still work normally"; v0.39.0's credential sealing (local configs can no longer expand `${VAR}`, carry an inline token, or reach a stored OAuth token) made that claim false.
+- Raised the minimum required dtctl version from v0.38.0 to v0.39.0 in `setup.sh`, `CLAUDE.md`, `README.md`, `ARCHITECTURE.md`, `docs/ELI5.md`, `docs/CHEATSHEET.md`, `.github/copilot-instructions.md`, and `CONTRIBUTING.md`.
+- Updated skill references in `CLAUDE.md`, `.github/copilot-instructions.md`, `README.md`, `ARCHITECTURE.md`, and `docs/CHEATSHEET.md` to reflect the new skill and the updated total count.
+
+### Added
+- `dt-setup-oneagent` — reference-only knowledge for installing/uninstalling Dynatrace OneAgent across VM/server, Kubernetes (Operator + DynaKube), AWS Lambda, Windows hosts, remote Linux/EC2 over SSH, and Azure VMs/VMSS. Returns copy-paste-ready commands rather than executing them.
+- `upstream-patches/dtctl-v0.39.0.patch` — regenerated registered patch overlay for the v0.39.0 upstream commit (`65ff0de`).
+
+### Removed
+- Retired the v0.38.0 overlay patch (`upstream-patches/dtctl-v0.38.0.patch`) after replacing it with `upstream-patches/dtctl-v0.39.0.patch`.
+
+### Known gaps (not yet documented)
+- dtctl v0.39.0 shipped several substantial features not yet reflected in the skill, pending hands-on verification against a live binary before writing agent-facing guidance: command stability tiers (`--min-stability`, `--stability-exception`, `stability_blocked`/`deprecated_surface` envelope errors), `dtctl inventory arrivals` (real-time per-signal arrival state), per-context query limits (`query-limits` config block), and non-interactive OAuth login via client credentials (`DTCTL_CLIENT_ID`/`DTCTL_CLIENT_SECRET`).
+
 ## [7.0.0] - 2026-08-17
 
 ### Changed

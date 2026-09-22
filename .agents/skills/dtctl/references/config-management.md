@@ -50,7 +50,7 @@ Actual permissions depend on API token scopes, not just safety level.
 
 ## Config Trust Model
 
-An auto-discovered local `.dtctl.yaml` (found by walking up from the current directory) is treated as **untrusted** — the same threat model as a checked-out repo or an unpacked tarball. dtctl therefore ignores **command aliases** and **pre-/post-apply hooks** defined in it, printing a warning to stderr when it does. Contexts, tokens, and other preferences in a local config still work normally. Aliases and hooks are honored only from:
+An auto-discovered local `.dtctl.yaml` (found by walking up from the current directory) is treated as **untrusted** — the same threat model as a checked-out repo or an unpacked tarball. dtctl therefore ignores **command aliases** and **pre-/post-apply hooks** defined in it, printing a warning to stderr when it does. Contexts and other preferences in a local config still work normally, but as of v0.39.0 the credential path is sealed too: an auto-discovered local config can no longer expand `${VAR}` references, carry an inline token, or name a non-Dynatrace host, and it can no longer reach credentials from a stored OAuth token — closing a path where a rogue config in a working directory could redirect them. Aliases, hooks, and the full credential surface are honored only from:
 
 - The global config (`$XDG_CONFIG_HOME/dtctl/config`), or
 - A config named explicitly with `--config <path>` or the `DTCTL_CONFIG` environment variable
@@ -61,7 +61,7 @@ An auto-discovered local `.dtctl.yaml` (found by walking up from the current dir
 export DTCTL_CONFIG="$PWD/.dtctl.yaml"
 ```
 
-Setting `DTCTL_CONFIG` skips auto-discovery entirely and honors that file's aliases and hooks without changing any invocation (an agent keeps running `dtctl apply` unchanged). An alias can never shadow a built-in command (`get`, `apply`, `version`, etc.) regardless of where it's defined. Agents relying on an untouched local `.dtctl.yaml` should use explicit contexts/flags instead of assuming aliases or hooks will fire.
+Setting `DTCTL_CONFIG` skips auto-discovery entirely and honors that file's aliases, hooks, and credentials (inline tokens, `${VAR}` expansion) without changing any invocation (an agent keeps running `dtctl apply` unchanged). An alias can never shadow a built-in command (`get`, `apply`, `version`, etc.) regardless of where it's defined. Agents relying on an untouched local `.dtctl.yaml` should use explicit contexts/flags instead of assuming aliases, hooks, or inline credentials will fire.
 
 ## Command Profiles
 

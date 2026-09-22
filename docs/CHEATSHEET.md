@@ -61,6 +61,7 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Network device monitoring (SNMP switches, routers, firewalls, load balancers) | `dt-obs-network-devices` |
 | Network flow analysis (top talkers, connection health, VPC flows, NetFlow) | `dt-obs-network-flows` |
 | Instrumenting a mobile app (Android / iOS / Flutter / React Native) | `dt-setup-android` / `dt-setup-ios` / `dt-setup-flutter` / `dt-setup-react-native` |
+| Installing or uninstalling OneAgent (VM, Kubernetes, Lambda, Windows, EC2-over-SSH, Azure) | `dt-setup-oneagent` |
 | Dashboards — create or modify | `dt-app-dashboards` |
 | Notebooks — create or modify | `dt-app-notebooks` |
 | Analyzing a dashboard/notebook with Davis (anomalies, novelty, correlation) | `dt-obs-analytics` |

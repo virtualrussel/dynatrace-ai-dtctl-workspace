@@ -35,6 +35,34 @@ dtctl auth status --plain
 
 **Note:** Always use `--token "$TOKEN"` directly. Stdin piping does not work reliably and stores corrupted values in the keychain.
 
+## Teardown
+
+To remove a context and the credential it created, in one step:
+
+```bash
+dtctl config delete-context "<name>" --delete-credentials
+```
+
+Separately, when the credential is shared between contexts or the context is
+already gone:
+
+```bash
+dtctl config delete-credentials "<token-ref>"
+```
+
+To confirm the credential is gone, use `dtctl auth status` — it reports whether
+a token is present without printing it:
+
+```bash
+dtctl auth status --plain --context "<name>"   # errors once the context is deleted
+```
+
+Never verify a deletion by reading secrets back: the OS keychain read verbs
+print token material into the transcript, which is the opposite of what a
+cleanup step is for. `dtctl auth status` and the delete command's own success
+output are the only confirmation needed — do not go to the credential store
+directly.
+
 ## Common Issues
 
 ### PARSE_ERROR_SINGLE_QUOTES / query filter returns nothing
@@ -90,6 +118,8 @@ dtctl commands "<verb> <resource>" --required-scopes
 > token or read-scoped platform token returns a spurious 403 here even though read
 > access works. Confirm connectivity with a real `dtctl get`/`dtctl query`.
 
+As of v0.39.0, a 403 on `lookup`, connections, or anomaly detectors names the actual reason instead of a bare 403 — distinguishing "the OAuth scope was not granted" from "the scope is granted but no IAM policy allows it on this object" (different problems, different fixes).
+
 ### 400 Errors Include Details
 When the API rejects a request with 400, dtctl appends `error.details` (field paths and constraint violations) after the generic top-level message:
 ```
@@ -110,11 +140,23 @@ Safety levels are client-side protections: `readonly`, `readwrite-mine`, `readwr
 ### dtctl Not Found
 Ensure binary is on PATH. Check `~/bin/dtctl` or `/usr/local/bin/dtctl`.
 
-### Corrupted Keychain Entry (macOS)
+### Corrupted Credential Entry
+Re-store the credential; `set-credentials` overwrites the existing entry and
+clears any cached OAuth tokens derived from it.
+
 ```bash
-security delete-generic-password -s "dtctl" -a "<token-ref>"
 dtctl config set-credentials "<token-ref>" --token "$TOKEN"
 ```
+
+If it still fails, remove the credential outright and store it again:
+
+```bash
+dtctl config delete-credentials "<token-ref>"
+dtctl config set-credentials "<token-ref>" --token "$TOKEN"
+```
+
+Repair the entry with dtctl, never with OS keychain tooling — see
+[Teardown](#teardown) above for why.
 
 ## Debugging
 
