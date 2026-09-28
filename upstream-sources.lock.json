@@ -58,7 +58,7 @@
       "destination": ".github/prompts",
       "policy": "exact-mapped",
       "patch": "upstream-patches/prompts-claude-agent-aliases.patch",
-      "aggregateSha256": "6288fb22d486c14baa424429d52eccbdbee47ca6b824f19ca01178cec55398dc",
+      "aggregateSha256": "9792a44044fa8bb35e48c9f4b57d79c535082ae641d755e7a8a25b0d84467eda",
       "files": [
         {
           "source": "dt-daily-standup.prompt.md",
