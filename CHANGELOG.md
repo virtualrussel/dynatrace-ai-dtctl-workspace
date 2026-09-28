@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.1.0] - 2026-09-28
+
+### Changed
+- Aligned the dtctl skill with dtctl v0.40.0. Updated the registered patch overlay (`upstream-patches/dtctl-v0.40.0.patch`) against the new upstream commit (`efd558d`). Key additions to agent-facing guidance: v0.40.0 agent-mode defaults (token-optimal by default — `-o auto` encoding, `--metadata=minimal`, `--series=summary --precision 4`, `--compact`, `--max-field-chars 500`), with a breaking-changes block documenting that `result.records` may now be a CSV/YAML string under `-o auto` and `result.constant` holds columns removed by `--compact`; `get` list 50-item default with `context.has_more`; updated exit codes (auth_required=3, not_found=4, permission_denied=5); `--dry-run` opt-in per command (`delete`/`restore` implement it, `exec` does not except `exec api`); DQL scope precheck returning `insufficient_scope` before executing; DQL parse errors now exposing `error.position`, `error.snippet`, and `error.suggestions`; `context.empty_reason` for empty-result diagnosis; inline result bounds (`--max-output-bytes`, `--max-output-tokens`, `context.truncated`, `context.next`); new `--series=summary|full|downsample:N` and `--compact` flags; `share --no-notify` to suppress email to recipients; `get --limit` and `get --fields` on all list verbs.
+- Raised the minimum required dtctl version from v0.39.0 to v0.40.0 in `CLAUDE.md`, `README.md`, and `docs/ELI5.md`.
+
+### Added
+- `upstream-patches/dtctl-v0.40.0.patch` — regenerated registered patch overlay for the v0.40.0 upstream commit (`efd558d`).
+
+### Removed
+- Retired the v0.39.0 overlay patch (`upstream-patches/dtctl-v0.39.0.patch`) after replacing it with `upstream-patches/dtctl-v0.40.0.patch`.
+
 ## [8.0.0] - 2026-09-22
 
 ### Changed

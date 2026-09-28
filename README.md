@@ -140,7 +140,7 @@ The token is stored in a `.gitignore`'d generated config file inside this worksp
 
 ### 4. Authenticate dtctl
 
-`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.39.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
+`dtctl` is a hard requirement for this workspace — it provides terminal-level access to Dynatrace resources and is used for verification steps across multiple workflows. Before collecting tenant or token information, `setup.sh` verifies v0.40.0+ or offers to install it. Declining installation, an installer failure, an unavailable binary, or an unsupported version stops setup.
 
 After setup verifies the binary, authenticate dtctl independently:
 

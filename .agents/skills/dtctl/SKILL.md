@@ -7,7 +7,7 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
-This skill targets dtctl v0.39.0 or newer. Confirm with `dtctl version`.
+This skill targets dtctl v0.40.0 or newer. Confirm with `dtctl version`.
 
 ## Initialization
 
@@ -43,6 +43,8 @@ dtctl query "timeseries avg(dt.host.cpu.usage)" -o chart --plain
 
 Billable `fetch` (logs, events, bizevents, spans) bills by bytes scanned and dashboard tiles re-bill on every refresh — read "Scan Cost" in `references/DQL-reference.md` before emitting DQL, and treat a PARTIAL or sampled result as incomplete.
 
+`query` preflights a DQL statement's storage scopes before sending — if the token lacks access it returns `insufficient_scope` naming the missing scopes and what the token *can* read, so agents don't fan out into repeated `NOT_AUTHORIZED_FOR_TABLE` errors. DQL parse errors now include `error.position`, a caret-marked `error.snippet`, and `error.suggestions` with a corrected query for common traps.
+
 Long-running queries show a live progress bar on stderr; add `--no-progress` to suppress it (e.g. when piping stderr somewhere unexpected).
 
 dtctl not installed/working? See [references/troubleshooting.md](references/troubleshooting.md).
@@ -53,7 +55,7 @@ Resources and aliases are discoverable via `dtctl commands` (run at init). They 
 
 | Verb | Example |
 |------|---------|
-| get / describe | `dtctl get workflows --mine` · `dtctl describe workflow <id>` |
+| get / describe | `dtctl get workflows --mine` · `dtctl describe workflow <id>` · `--limit` and `--fields col1,col2` work on all list verbs; defaults to 50 items (`context.has_more` tells if more exist; `--limit 0` for all) |
 | create / update | `dtctl create breakpoint path/File.java:42` · `dtctl update breakpoint <id> --enabled=false` · `dtctl update extension <id> --version <v>` (activates that version as the environment-wide active one) |
 | apply / edit / delete | `dtctl apply -f wf.yaml --set env=prod --write-id` · `dtctl delete workflow <id>` |
 | enable / disable | `dtctl enable aws monitoring --name prod` · `dtctl disable azure monitoring --name prod` |
@@ -61,7 +63,7 @@ Resources and aliases are discoverable via `dtctl commands` (run at init). They 
 | query / wait | `dtctl query "fetch logs \| limit 10"` · `dtctl wait query ... --for=any` |
 | inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
 | logs / history / restore | `dtctl logs workflow-execution <id>` · `dtctl history dashboard <id>` · `dtctl restore dashboard <id> 3` (version is positional; snapshots exist only if the update passed `--create-snapshot`) |
-| share / unshare | `dtctl share dashboard <id> --user a@example.com` |
+| share / unshare | `dtctl share dashboard <id> --user a@example.com` · `--no-notify` suppresses email to all recipients (including group members) |
 | find / open | `dtctl find intents --data trace.id=abc` · `dtctl open intent <app/intent> --data k=v` |
 | diff / verify | `dtctl diff -f wf.yaml` · `dtctl verify query 'fetch logs' --fail-on-warn` · `dtctl verify analyzer <id> -f in.json` · `dtctl verify openpipeline-matcher '<dql>'` · `dtctl verify openpipeline-dql-processor '<script>'` |
 | translate | `dtctl translate lql-to-dql 'log.source="x"'` · `dtctl translate classic-pipelines logs` |
@@ -70,7 +72,7 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 
 ## Output for agents
 
-`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). Explicit `-o json` preserves auto-detected agent mode; explicit non-JSON output opts out. Agent mode wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message}}`, where `context` carries `total`, `has_more`, `suggestions`). Query cost/performance metadata such as scanned bytes and query ID is emitted under the envelope's top-level `metadata` key.
+`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). Explicit `-o json` preserves auto-detected agent mode; explicit non-JSON output opts out. Agent mode wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message,status_code}}`, where `context` carries `total`, `has_more`, `suggestions`). Exit codes: 0 ok, 1 logic error, 2 usage error, 3 `auth_required`, 4 `not_found`, 5 `permission_denied`. Query cost/performance metadata such as scanned bytes and query ID is emitted under the envelope's top-level `metadata` key.
 
 ```bash
 -o toon          # token-efficient structured output — prefer for agents
@@ -80,14 +82,21 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 -o table|wide    # human-readable (table is the default)
 --jq '.[].id'    # filter structured output (json|yaml|toon; other formats auto-promote to json)
 --typed          # cast scalar columns to native types: long/duration→number, boolean→real bool; safe for jq arithmetic; opt-in
---include-types  # add DQL declared type block for all columns (including nulls) to json/yaml output; implied by --typed
+--include-types  # add DQL declared type block for all columns (including nulls); in agent mode comes back as result.types; implied by --typed
+--series=summary # (agent default) min/max/avg/last + sparkline; --series=full for raw arrays; --series=downsample:N for up to N extreme-preserving points
+--compact        # (agent default) drop nulls; move all-constant columns → result.constant; --compact=false to opt out
+--max-field-chars 500   # (agent default) clip strings; 0 for full values
+--max-output-bytes SIZE # bound the whole inline result (keeps leading rows that fit)
+--max-output-tokens N   # same bound in tokens
 ```
 
 **Breaking in v0.39.0:** `-A -o toon` now keeps the full agent envelope at every result size — rows sit inside it as a TOON string under `result.records` (`encoding: "toon"`), instead of a bare TOON document once the result was small enough to skip spilling. Read `result.records`, don't parse stdout as TOON. Also, a `--jq` filter that resolves to `null` (a jq-valid but shape-mismatched filter) now exits 1 with `jq_shape_mismatch` instead of silently returning `null` with exit 0 — a filter that legitimately matches nothing still returns `[]`. If you treated a `null` result as "no data", check for `[]` instead.
 
+**Breaking in v0.40.0 (agent mode only):** Agent-mode defaults changed. The sharpest edge: under `-o auto` (now the default), `result.records` may be a CSV or YAML **string** instead of an array — check `context.format` (`"csv"` / `"yaml"` / `"json"`) before parsing. Rows also lose constant columns and nulls by default (`--compact`); merge `result.constant` back to reconstruct full rows. Numbers are rounded (`--precision 4`) and timeseries summarised (`--series=summary`). `get` lists cap at 50 by default — check `context.has_more`, or pass `--limit 0`. To restore all previous agent output exactly: `-o json -M=all --series=full --precision 0 --compact=false --max-field-chars 0` for `query`, `--limit 0` for `get`. Also, `--dry-run` is now opt-in per command — commands that don't implement it reject the flag (exit 2); `delete` and `restore` now implement it properly, `exec` does not (except `exec api`). API failures now return exit 3 (`auth_required`), 4 (`not_found`), or 5 (`permission_denied`) instead of generic exit 1.
+
 Parquet output is self-describing: the full DQL type block (including null-only columns Grail omits) is written into the file footer under `dtctl.dql.types`. Readable via DuckDB's `parquet_kv_metadata()` for full schema recovery without re-querying.
 
-Prefer `--agent` plus `-o toon` and `--jq` to cut tokens.
+Agent mode now defaults to `-o auto` encoding (flat uniform rows → CSV, nested documents → YAML; `context.format` names the choice). Pin `-o json` for structural parsing or to keep `result.records` as an array. Combine `--jq` to cut tokens further.
 
 ### Query results: branch on `result.kind`
 
@@ -95,7 +104,7 @@ In agent mode `dtctl query` defaults to `--spill=auto`: large results spill to a
 
 | `result.kind` | Meaning → action |
 |---|---|
-| `records` | rows inline under `result.records` → use directly |
+| `records` | rows inline under `result.records`; under `-o auto` this may be a CSV or YAML **string** — check `context.format` (`"csv"` / `"yaml"` / `"json"`) before parsing. `result.constant` holds all-constant columns removed by `--compact`; merge it back to reconstruct full rows. |
 | `result-file` | spilled: manifest with `path`, `format`, `rows`, `bytes`, column stats, `sample_rows` → interrogate the file with `dtctl inspect <path>` (below), **don't re-query** |
 | `summary-only` | rows couldn't be written — manifest minus `path` → use stats/sample, or follow the cause-aware `context.suggestions` (`--spill=never` + a bound, or `--spill-to <path>`) |
 
@@ -107,6 +116,8 @@ dtctl query "fetch logs" --spill=never               # force every row inline
 dtctl query "fetch logs" --spill-to ./out.jsonl      # explicit path: jsonl|json|csv|parquet
 dtctl query "fetch logs" --spill=auto --spill-threshold 100KB
 ```
+
+Inline results are bounded by default too: strings are clipped to 500 chars (end in `…(+N chars)`; `--max-field-chars 0` for full values). `--max-output-tokens N` / `--max-output-bytes SIZE` returns only the rows that fit. When `context.truncated` is true the result is incomplete: `truncated_fields` lists clipped fields, and `returned` < `total` means rows were dropped — run `context.next` (a `dtctl inspect` command) to continue without re-querying. An empty result reports a diagnosis in `context.empty_reason`: `field_not_in_sample` (a filtered or grouped field doesn't occur in the data) or `metric_not_in_window` (the metric key has no data in the window).
 
 ### Inspect a spilled file (no Grail re-query)
 
@@ -135,7 +146,7 @@ For free-text log triage, don't dump raw `content` — extract the taxonomy serv
 
 ## Apply & templates
 
-`dtctl apply` creates when no ID is known and updates when the file contains an `id`; as of v0.39.0, `--dry-run` resolves create-vs-update through the same lookup as a real apply (previously it could disagree — a 404 on lookup is the only thing that means create). On the first apply, use `--write-id` to stamp the generated ID into the source file (v0.38.0: this now actually rewrites the file — it was a silent no-op before); use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. When creating without `--write-id`, dtctl prints a stderr hint suggesting how to make future runs update instead of create. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
+`dtctl apply` creates when no ID is known and updates when the file contains an `id`; as of v0.39.0, `--dry-run` resolves create-vs-update through the same lookup as a real apply (previously it could disagree — a 404 on lookup is the only thing that means create). As of v0.40.0, `--dry-run` is opt-in per command: `delete` and `restore` implement it (resolve target, print what they would do, no mutating request); `apply` does not implement dry-run itself — use `dtctl diff -f <file>` to preview; `exec` has no dry-run except `exec api`. Passing `--dry-run` to a command that doesn't support it is now a usage error (exit 2) rather than silently running for real. On the first apply, use `--write-id` to stamp the generated ID into the source file (v0.38.0: this now actually rewrites the file — it was a silent no-op before); use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. When creating without `--write-id`, dtctl prints a stderr hint suggesting how to make future runs update instead of create. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
 
 For custom document types, prefer `dtctl update document -f <file> [--type <type>] [--id <id>] [--create-snapshot]` over `apply` when updating an existing document — it fails instead of silently creating when the target ID is missing, so a typo in the ID never spawns a stray document. `--create-snapshot` is opt-in (a plain update still overwrites content in place). Use `--label key=value` (repeatable) on `create document` or via `apply` to set document labels; the SDK applies them in a follow-up update since the create API can't set them directly.
 
