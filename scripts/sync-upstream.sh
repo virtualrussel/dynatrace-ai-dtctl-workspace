@@ -155,6 +155,12 @@ sync_locked() {
       "$candidate/.github/prompts/$prompt_destination"
   done < <(jq -r '.imports[] | select(.id == "dynatrace-for-ai-prompts") | .files[] | [.source, .destination] | @tsv' "$LOCK_FILE")
 
+  prompts_patch=$(jq -r '.imports[] | select(.id == "dynatrace-for-ai-prompts") | .patch // empty' "$LOCK_FILE")
+  if [[ -n "$prompts_patch" ]]; then
+    patch -d "$candidate/.github/prompts" -p1 --forward --batch \
+      < "$ROOT_DIR/$prompts_patch" >/dev/null
+  fi
+
   cp -R "$dtctl_checkout/$(import_value "dtctl-skill" source)" "$candidate/.agents/skills/dtctl"
   patch -d "$candidate/.agents/skills" -p1 --forward --batch \
     < "$ROOT_DIR/$(import_value "dtctl-skill" patch)" >/dev/null
@@ -266,6 +272,9 @@ verify() {
     || fail "dynatrace-for-ai-skills patch declared by the lock file is missing"
   assert_prompt_inventory "$prompts_destination"
   assert_hash "dynatrace-for-ai-prompts" "$prompts_destination"
+  prompts_patch=$(jq -r '.imports[] | select(.id == "dynatrace-for-ai-prompts") | .patch // empty' "$LOCK_FILE")
+  [[ -z "$prompts_patch" || -f "$ROOT_DIR/$prompts_patch" ]] \
+    || fail "dynatrace-for-ai-prompts patch declared by the lock file is missing"
   [[ -f "$ROOT_DIR/$(jq -r '.imports[] | select(.id == "dtctl-skill") | .patch' "$LOCK_FILE")" ]] \
     || fail "dtctl-skill patch declared by the lock file is missing"
   assert_hash "dtctl-skill" "$ROOT_DIR/.agents/skills/dtctl"

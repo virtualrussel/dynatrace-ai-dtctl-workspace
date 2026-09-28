@@ -1,0 +1,105 @@
+--- a/investigate-error.prompt.md	2026-09-28 00:00:00
++++ b/investigate-error.prompt.md	2026-09-28 00:00:00
+@@ -7,7 +7,7 @@
+ Investigate recent errors in my service using Dynatrace Davis Problems as the entry point.
+ Infer service-name from the current workspace. Ask user to confirm, or provide a specific timeframe/entity scope if unsure.
+ 
+-1. Use root_cause_agent to identify relevant Davis Problems for the service and obtain their timeframe and affected entities.
++1. Use the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) to identify relevant Davis Problems for the service and obtain their timeframe and affected entities.
+ 2. For each selected problem, use the problem's timeframe and entities to:
+    - Search for ERROR level logs scoped to that context
+    - Group results by error message/type
+diff -ruN a/performance-regression.prompt.md b/performance-regression.prompt.md
+--- a/performance-regression.prompt.md	2026-09-28 00:00:00
++++ b/performance-regression.prompt.md	2026-09-28 00:00:00
+@@ -16,7 +16,7 @@
+ Ask the user: "When did the suspected regression start? (e.g. 'about 2 hours ago', 'today at 14:30', or a date range)"
+ Default to the **last 24 hours** if the user has no specific time in mind.
+ 
+-Then use the **Data Analysis Agent** to find the latest deployment event for the service within the investigation window, filtered to the confirmed service entity.
++Then use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to find the latest deployment event for the service within the investigation window, filtered to the confirmed service entity.
+ 
+ **If a deployment event is found:**
+ Use the deployment timestamp as the regression boundary. Split the window into:
+@@ -32,7 +32,7 @@
+ 
+ ## Step 2 — Compare metrics before and after
+ 
+-Use the **Data Analysis Agent** to query P95 response time, error rate, and throughput for each window, scoped to the confirmed service entity.
++Use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to query P95 response time, error rate, and throughput for each window, scoped to the confirmed service entity.
+ 
+ **A regression is confirmed when any threshold is exceeded:**
+ 
+@@ -65,13 +65,13 @@
+ 
+ ## Step 3 — Identify regressed endpoints
+ 
+-Use the **Data Analysis Agent** to query span P95 durations grouped by endpoint for the after window, scoped to the confirmed service entity.
++Use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to query span P95 durations grouped by endpoint for the after window, scoped to the confirmed service entity.
+ 
+ Flag endpoints exceeding the P95 response time threshold or a >20% increase vs. the before window. List the top 5 sorted by absolute P95 delta (worst first).
+ 
+ ## Step 4 — Fetch distributed traces for slow requests
+ 
+-For the top 1–3 regressed endpoints, use the **Data Analysis Agent** to fetch slow spans within the after window, scoped to the confirmed service entity and endpoint.
++For the top 1–3 regressed endpoints, use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to fetch slow spans within the after window, scoped to the confirmed service entity and endpoint.
+ 
+ Pick the trace with the highest duration. Build a timeline sorted by start time. Identify the **first span** whose duration is the dominant contributor — this is the bottleneck span. Record its operation name, service, duration, and any error attributes.
+ 
+@@ -85,7 +85,7 @@
+ 
+ ## Step 6 — Check for an active Davis Problem
+ 
+-Use the **Root Cause Agent** to check for any active or recently closed Davis Problem affecting this service.
++Use the **problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code)** to check for any active or recently closed Davis Problem affecting this service.
+ If found, include: problem ID, title, root cause summary, and affected entities.
+ 
+ ## Step 7 — Recommend: rollback or hotfix
+diff -ruN a/troubleshoot-problem.prompt.md b/troubleshoot-problem.prompt.md
+--- a/troubleshoot-problem.prompt.md	2026-09-28 00:00:00
++++ b/troubleshoot-problem.prompt.md	2026-09-28 00:00:00
+@@ -1,13 +1,13 @@
+ ---
+ agent: agent
+-description: Troubleshoot an existing Dynatrace problem. Starts with the Root Cause Agent to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
++description: Troubleshoot an existing Dynatrace problem. Starts with the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
+ ---
+ 
+ # Troubleshoot a Dynatrace Problem
+ 
+ ## Rules
+ 
+-- **ALWAYS start with problems.** Never do broad log searches. Use root_cause_agent first, then scope all queries to problem context.
++- **ALWAYS start with problems.** Never do broad log searches. Use the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) first, then scope all queries to problem context.
+ - **NEVER query logs without a problem context.** Broad log searches hit the 500GB scan limit and return 0 results.
+ - **NEVER suggest checking other environments.** This prompt is for production troubleshooting only. Only mention dev/staging if the user explicitly asks.
+ 
+@@ -18,16 +18,16 @@
+ **Format A — Pre-filled structured input:**
+ > "At [timestamp], service [service-name] has the following problem: [problem message]. Explain the error and suggest how to fix it."
+ 
+-If this format is detected, extract `timestamp`, `service-name`, and `problem message` directly. Use the **Root Cause Agent** to find and confirm the matching problem (do not present the full list to the user). Extract `problemId`, affected entity IDs, and the exact timeframe from the problem metadata, then proceed to step 3.
++If this format is detected, extract `timestamp`, `service-name`, and `problem message` directly. Use the **problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code)** to find and confirm the matching problem (do not present the full list to the user). Extract `problemId`, affected entity IDs, and the exact timeframe from the problem metadata, then proceed to step 3.
+ 
+ **Format B — Manual:**
+ If no structured input is provided, proceed from step 1.
+ 
+ ## Steps
+ 
+-### 1. List active problems *(skip if pre-filled input was provided — use root_cause_agent silently to confirm problem context)*
++### 1. List active problems *(skip if pre-filled input was provided — use the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) silently to confirm problem context)*
+ 
+-Use the **Root Cause Agent** to retrieve all currently active problems on the tenant.
++Use the **problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code)** to retrieve all currently active problems on the tenant.
+ 
+ Present results as a table:
+ 
+@@ -61,7 +61,7 @@
+ 
+ ### 4. Query logs for the problem
+ 
+-Use the **Data Analysis Agent** to run a **problem-scoped** log query for the affected entities and computed timeframe.
++Use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to run a **problem-scoped** log query for the affected entities and computed timeframe.
+ 
+ Do not hardcode DQL in this prompt. Build and validate query details using the platform's agent guardrails and observability best practices.
+ 

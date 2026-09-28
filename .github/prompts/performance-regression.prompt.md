@@ -16,7 +16,7 @@ description: Analyze whether a recent deployment caused a performance regression
 Ask the user: "When did the suspected regression start? (e.g. 'about 2 hours ago', 'today at 14:30', or a date range)"
 Default to the **last 24 hours** if the user has no specific time in mind.
 
-Then use the **Data Analysis Agent** to find the latest deployment event for the service within the investigation window, filtered to the confirmed service entity.
+Then use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to find the latest deployment event for the service within the investigation window, filtered to the confirmed service entity.
 
 **If a deployment event is found:**
 Use the deployment timestamp as the regression boundary. Split the window into:
@@ -32,7 +32,7 @@ State clearly which boundary was used and why.
 
 ## Step 2 — Compare metrics before and after
 
-Use the **Data Analysis Agent** to query P95 response time, error rate, and throughput for each window, scoped to the confirmed service entity.
+Use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to query P95 response time, error rate, and throughput for each window, scoped to the confirmed service entity.
 
 **A regression is confirmed when any threshold is exceeded:**
 
@@ -65,13 +65,13 @@ No action required. If you suspect a regression in a different time window, re-r
 
 ## Step 3 — Identify regressed endpoints
 
-Use the **Data Analysis Agent** to query span P95 durations grouped by endpoint for the after window, scoped to the confirmed service entity.
+Use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to query span P95 durations grouped by endpoint for the after window, scoped to the confirmed service entity.
 
 Flag endpoints exceeding the P95 response time threshold or a >20% increase vs. the before window. List the top 5 sorted by absolute P95 delta (worst first).
 
 ## Step 4 — Fetch distributed traces for slow requests
 
-For the top 1–3 regressed endpoints, use the **Data Analysis Agent** to fetch slow spans within the after window, scoped to the confirmed service entity and endpoint.
+For the top 1–3 regressed endpoints, use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to fetch slow spans within the after window, scoped to the confirmed service entity and endpoint.
 
 Pick the trace with the highest duration. Build a timeline sorted by start time. Identify the **first span** whose duration is the dominant contributor — this is the bottleneck span. Record its operation name, service, duration, and any error attributes.
 
@@ -85,7 +85,7 @@ Using the bottleneck span's operation name and service, search the workspace:
 
 ## Step 6 — Check for an active Davis Problem
 
-Use the **Root Cause Agent** to check for any active or recently closed Davis Problem affecting this service.
+Use the **problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code)** to check for any active or recently closed Davis Problem affecting this service.
 If found, include: problem ID, title, root cause summary, and affected entities.
 
 ## Step 7 — Recommend: rollback or hotfix

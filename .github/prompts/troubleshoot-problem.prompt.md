@@ -1,13 +1,13 @@
 ---
 agent: agent
-description: Troubleshoot an existing Dynatrace problem. Starts with the Root Cause Agent to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
+description: Troubleshoot an existing Dynatrace problem. Starts with the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
 ---
 
 # Troubleshoot a Dynatrace Problem
 
 ## Rules
 
-- **ALWAYS start with problems.** Never do broad log searches. Use root_cause_agent first, then scope all queries to problem context.
+- **ALWAYS start with problems.** Never do broad log searches. Use the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) first, then scope all queries to problem context.
 - **NEVER query logs without a problem context.** Broad log searches hit the 500GB scan limit and return 0 results.
 - **NEVER suggest checking other environments.** This prompt is for production troubleshooting only. Only mention dev/staging if the user explicitly asks.
 
@@ -18,16 +18,16 @@ This prompt accepts two input formats:
 **Format A — Pre-filled structured input:**
 > "At [timestamp], service [service-name] has the following problem: [problem message]. Explain the error and suggest how to fix it."
 
-If this format is detected, extract `timestamp`, `service-name`, and `problem message` directly. Use the **Root Cause Agent** to find and confirm the matching problem (do not present the full list to the user). Extract `problemId`, affected entity IDs, and the exact timeframe from the problem metadata, then proceed to step 3.
+If this format is detected, extract `timestamp`, `service-name`, and `problem message` directly. Use the **problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code)** to find and confirm the matching problem (do not present the full list to the user). Extract `problemId`, affected entity IDs, and the exact timeframe from the problem metadata, then proceed to step 3.
 
 **Format B — Manual:**
 If no structured input is provided, proceed from step 1.
 
 ## Steps
 
-### 1. List active problems *(skip if pre-filled input was provided — use root_cause_agent silently to confirm problem context)*
+### 1. List active problems *(skip if pre-filled input was provided — use the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) silently to confirm problem context)*
 
-Use the **Root Cause Agent** to retrieve all currently active problems on the tenant.
+Use the **problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code)** to retrieve all currently active problems on the tenant.
 
 Present results as a table:
 
@@ -61,7 +61,7 @@ queryTo = endTime + 5 min  (or now + 5 min if still active)
 
 ### 4. Query logs for the problem
 
-Use the **Data Analysis Agent** to run a **problem-scoped** log query for the affected entities and computed timeframe.
+Use the **data analysis capability (Data Analysis Agent in Copilot; use the MCP query tools in Claude Code)** to run a **problem-scoped** log query for the affected entities and computed timeframe.
 
 Do not hardcode DQL in this prompt. Build and validate query details using the platform's agent guardrails and observability best practices.
 

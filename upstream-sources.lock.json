@@ -57,7 +57,8 @@
       "source": "prompts",
       "destination": ".github/prompts",
       "policy": "exact-mapped",
-      "aggregateSha256": "a5a2cf7f9c3fda635979faf62804a782acc1fcdc6f048237ad7a5dd814aa3346",
+      "patch": "upstream-patches/prompts-claude-agent-aliases.patch",
+      "aggregateSha256": "6288fb22d486c14baa424429d52eccbdbee47ca6b824f19ca01178cec55398dc",
       "files": [
         {
           "source": "dt-daily-standup.prompt.md",
@@ -93,7 +94,7 @@
       "destination": ".agents/skills/dtctl",
       "policy": "patched",
       "patch": "upstream-patches/dtctl-v0.40.0.patch",
-      "aggregateSha256": ""
+      "aggregateSha256": "1639fc87b8c67924f40ee57d9ee3c4d5000f1441e285180c34dbfb4b84533f53"
     }
   ],
   "compatibilityLinks": {
