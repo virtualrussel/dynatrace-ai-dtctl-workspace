@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.1.1] - 2026-09-28
+
+### Changed
+- Extended `scripts/sync-upstream.sh` to support an optional `patch` field on the `dynatrace-for-ai-prompts` import. `sync_locked()` now applies the patch after copying prompt files; `verify()` now checks that the declared patch file exists. Mirrors the existing skill patch mechanism.
+- Replaced Copilot-specific agent aliases (`root_cause_agent`, `Root Cause Agent`, `Data Analysis Agent`) across three upstream prompt files (`investigate-error`, `performance-regression`, `troubleshoot-problem`) with client-neutral equivalents via the new registered patch `upstream-patches/prompts-claude-agent-aliases.patch`. The aliases are preserved in parenthetical disambiguation context; bare alias usage is eliminated.
+- Inlined prompt runtime constraints directly into the prompts tables in `CLAUDE.md` and `.github/copilot-instructions.md`. Each of the six slash commands now carries required skills, scope rule, and stop condition inline, replacing the deferred instruction to read `docs/PROMPT_CONTRACTS.md` before executing a prompt.
+- Corrected the opening paragraph of `docs/PROMPT_CONTRACTS.md` to accurately describe it as a sync-script validation artifact and contributor reference; removed the inaccurate claim that it provides portable runtime requirements to AI clients at runtime.
+- Bumped dtctl minimum version from v0.39.0 to v0.40.0 in `ARCHITECTURE.md` and `.github/copilot-instructions.md`, correcting two references missed in the v8.1.0 release.
+- Fixed the pre-existing empty `aggregateSha256` for `dtctl-skill` in `upstream-sources.lock.json` so that `scripts/sync-upstream.sh verify` passes cleanly.
+- Added `llms.txt` to the workspace maintenance documentation: `ARCHITECTURE.md` now includes a "Supporting Artifact: llms.txt" paragraph in the Session Briefing Files section, and `CONTRIBUTING.md`'s "Files to Update Together" table now includes `llms.txt` with its update trigger.
+
+### Added
+- `upstream-patches/prompts-claude-agent-aliases.patch` — registered patch replacing Copilot-specific agent aliases in the three affected upstream prompt files.
+
 ## [8.1.0] - 2026-09-28
 
 ### Changed
