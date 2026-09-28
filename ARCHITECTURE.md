@@ -211,6 +211,10 @@ Both files use `/command-name` for prompt invocation. They are kept separate bec
 - GitHub Copilot reads only `.github/copilot-instructions.md`
 - Claude Code (VS Code plugin and CLI) reads only `CLAUDE.md` at the repo root
 
+#### Supporting Artifact: llms.txt
+
+`llms.txt` at the repo root follows the emerging [llms.txt convention](https://llmstxt.org) — a machine-readable plain-text summary designed for AI indexers and discovery tools that need a concise, structured overview of a project without parsing full documentation. It describes the workspace purpose, core components, operational rules, and available skills and prompts in a compact form. Unlike the session briefing files above, it is not loaded at runtime by any AI client; it targets external discovery rather than in-session routing. Update it whenever the component count, an operational rule, or the core workspace description changes materially — the same threshold that would warrant a version bump.
+
 ### 5. dtctl CLI
 
 **Source:** [github.com/dynatrace-oss/dtctl](https://github.com/dynatrace-oss/dtctl) **Installation:** see [README §4](https://github.com/virtualrussel/dynatrace-ai-dtctl-workspace/blob/main/README.md#4-authenticate-dtctl) **Minimum Version:** v0.40.0 (see [Version Requirements](#version-requirements) above)

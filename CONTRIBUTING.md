@@ -156,6 +156,7 @@ When making changes that affect multiple docs:
 | `README.md` | Setup flow, new users | Prerequisites, installation, quick start |
 | `docs/ELI5.md` | Newcomers | High-level "explain like I'm 5" intro |
 | `docs/CHEATSHEET.md` | Active users | Workflow reference, command quick lookup |
+| `llms.txt` | AI indexers and discovery tools | Skill or prompt count changes, operational rule updates, or core workspace description changes |
 
 Example: If you add a new prompt, update:
 1. The prompt file in `.github/prompts/`
