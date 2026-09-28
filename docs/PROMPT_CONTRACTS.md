@@ -1,6 +1,8 @@
 # Prompt Contracts
 
-This registry defines how the six bundled upstream prompts use workspace skills and Dynatrace capabilities. The prompt files remain byte-for-byte upstream; these contracts provide the portable runtime requirements shared by GitHub Copilot and Claude Code.
+This file serves two purposes. First, it is a validation artifact: `scripts/sync-upstream.sh verify` calls `assert_prompt_contracts()`, which checks that this file contains exactly one section per prompt, each with the required fields (Input, Start, Skills, Capabilities, Scope, Stop, Output), and that it contains no client-specific agent aliases. Second, it is a contributor reference: anyone adding or updating a prompt should use these contracts to understand the expected structure and constraints.
+
+This file is not read by GitHub Copilot or Claude Code at runtime. The runtime constraints that were previously sourced from here are now inlined directly into the session briefings (CLAUDE.md and .github/copilot-instructions.md).
 
 ## Shared Contract
 
