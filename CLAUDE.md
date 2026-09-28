@@ -41,16 +41,14 @@ When both paths can satisfy a request, prefer MCP.
 
 Type `/` to run these slash commands:
 
-Before executing a bundled prompt, apply its portable runtime contract from [docs/PROMPT_CONTRACTS.md](./docs/PROMPT_CONTRACTS.md). The contract defines required skills, capability classes, scope, stopping conditions, and authorization-failure behavior without relying on client-specific tool names.
-
-| Prompt                    | When to use                                                               |
-| ------------------------- | ------------------------------------------------------------------------- |
-| `/health-check`           | Routine service health — metrics, problems, deployments, vulnerabilities  |
-| `/daily-standup`          | Morning report across services — today vs yesterday comparison            |
-| `/investigate-error`      | Error-focused investigation from a service name                           |
-| `/troubleshoot-problem`   | Deep 7-step investigation into a specific Dynatrace problem               |
-| `/incident-response`      | Full triage of all active problems during a live incident                 |
-| `/performance-regression` | Before vs after deployment comparison with rollback/hotfix recommendation |
+| Prompt | When to use | Required skills | Scope rule | Stop when |
+| --- | --- | --- | --- | --- |
+| `/health-check` | Routine service health — metrics, problems, deployments, vulnerabilities | `dt-obs-services`, `dt-obs-problems`, `dt-obs-tracing`, `dt-sec-insights`, `dt-dql-essentials` | Span queries scoped to confirmed service and health window; no broad log search | Metrics and problems show no actionable signal — return summary without escalating to trace analysis |
+| `/daily-standup` | Morning report across services — today vs yesterday comparison | `dt-obs-services`, `dt-obs-problems`, `dt-dql-essentials` | Queries limited to confirmed services and comparison windows; no logs or spans unless an issue supplies entity and incident window | Metric changed — report comparison and recommend an investigation prompt; do not drill into traces or logs |
+| `/investigate-error` | Error-focused investigation from a service name | `dt-obs-problems`, `dt-obs-logs`, `dt-obs-tracing`, `dt-dql-essentials` | Every log and span query must use the selected problem's entities and timeframe; narrow on scan-limit signals | No relevant problem establishes safe scope — ask for entity and bounded timeframe rather than broad error search |
+| `/troubleshoot-problem` | Deep 7-step investigation into a specific Dynatrace problem | `dt-obs-problems`, `dt-obs-logs`, `dt-obs-tracing`, `dt-dql-essentials` | Logs and traces scoped to affected entities from 5 min before problem start through 5 min after end; narrow on scan-limit signals | No problem can be confirmed — stop without broad log queries and request a tighter scope |
+| `/incident-response` | Full triage of all active problems during a live incident | `dt-obs-problems`, `dt-obs-logs`, `dt-obs-tracing`, `dt-obs-frontends`, `dt-dql-essentials` | Derive entity IDs and time windows from each selected problem; add only a small correlation buffer before querying logs or spans | Evidence channel is unauthorized or cannot be scoped — skip it; do not lower incident severity on auth failure |
+| `/performance-regression` | Before vs after deployment comparison with rollback/hotfix recommendation | `dt-obs-services`, `dt-obs-tracing`, `dt-obs-problems`, `dt-dql-essentials` | All metrics and spans scoped to confirmed service and comparison windows; endpoint analysis only after a documented regression threshold is exceeded | No regression threshold exceeded — return the metric comparison without fetching traces |
 
 ## Skills
 
