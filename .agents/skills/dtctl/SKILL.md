@@ -7,7 +7,7 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
-This skill targets dtctl v0.40.0 or newer. Confirm with `dtctl version`.
+This skill targets dtctl v0.41.0 or newer. Confirm with `dtctl version`.
 
 ## Initialization
 
@@ -64,6 +64,7 @@ Resources and aliases are discoverable via `dtctl commands` (run at init). They 
 | inspect | `dtctl inspect <file> --head 20` · `--jq 'select(.status == 500)'`, `--tail`, `--page --offset N --limit M`, `--fields a,b`, `--schema`, `--stats`, `--sample N`, `--list` (local spilled-file access — no Grail re-query) |
 | logs / history / restore | `dtctl logs workflow-execution <id>` · `dtctl history dashboard <id>` · `dtctl restore dashboard <id> 3` (version is positional; snapshots exist only if the update passed `--create-snapshot`) |
 | share / unshare | `dtctl share dashboard <id> --user a@example.com` · `--no-notify` suppresses email to all recipients (including group members) |
+| claim | `dtctl claim environment-share <share-id \| share-url>` — claims a shared document from a `#share=` link; prints document ID and type; requires `document:environment-shares:claim` scope (`readwrite-mine`+); `--dry-run` supported; fails with an error if the share URL belongs to a different environment; `[Experimental]` |
 | find / open | `dtctl find intents --data trace.id=abc` · `dtctl open intent <app/intent> --data k=v` |
 | diff / verify | `dtctl diff -f wf.yaml` · `dtctl verify query 'fetch logs' --fail-on-warn` · `dtctl verify analyzer <id> -f in.json` · `dtctl verify openpipeline-matcher '<dql>'` · `dtctl verify openpipeline-dql-processor '<script>'` |
 | translate | `dtctl translate lql-to-dql 'log.source="x"'` · `dtctl translate classic-pipelines logs` |
@@ -72,7 +73,7 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 
 ## Output for agents
 
-`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). Explicit `-o json` preserves auto-detected agent mode; explicit non-JSON output opts out. Agent mode wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message,status_code}}`, where `context` carries `total`, `has_more`, `suggestions`). Exit codes: 0 ok, 1 logic error, 2 usage error, 3 `auth_required`, 4 `not_found`, 5 `permission_denied`. Query cost/performance metadata such as scanned bytes and query ID is emitted under the envelope's top-level `metadata` key.
+`--agent`/`-A` is auto-detected in AI environments (implies `--plain`; opt out with `--no-agent`). Explicit `-o json` preserves auto-detected agent mode; explicit non-JSON output opts out. Agent mode wraps output in `{ok, result, context}` (errors: `{ok:false, error:{code,message,status_code}}`, where `context` carries `total`, `has_more`, `suggestions`, and `warnings` — an array of advisory strings such as approximate-result notices). Exit codes: 0 ok, 1 logic error, 2 usage error, 3 `auth_required`, 4 `not_found`, 5 `permission_denied`. Query cost/performance metadata such as scanned bytes and query ID is emitted under the envelope's top-level `metadata` key; `metadata.approximations` lists any result approximations (also emitted as `Warning: …` on stderr). When a large result streams row-by-row to disk, `context.streamed: true` is set and `context.measured_bytes` is absent (bytes are unknown until the stream completes).
 
 ```bash
 -o toon          # token-efficient structured output — prefer for agents
@@ -82,7 +83,7 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 -o table|wide    # human-readable (table is the default)
 --jq '.[].id'    # filter structured output (json|yaml|toon; other formats auto-promote to json)
 --typed          # cast scalar columns to native types: long/duration→number, boolean→real bool; safe for jq arithmetic; opt-in
---include-types  # add DQL declared type block for all columns (including nulls); in agent mode comes back as result.types; implied by --typed
+--include-types  # add DQL declared type block for all columns (including nulls); in agent mode comes back as result.types; implied by --typed; warns when the output format can't carry type metadata (e.g. -o csv)
 --series=summary # (agent default) min/max/avg/last + sparkline; --series=full for raw arrays; --series=downsample:N for up to N extreme-preserving points
 --compact        # (agent default) drop nulls; move all-constant columns → result.constant; --compact=false to opt out
 --max-field-chars 500   # (agent default) clip strings; 0 for full values
@@ -93,6 +94,8 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 **Breaking in v0.39.0:** `-A -o toon` now keeps the full agent envelope at every result size — rows sit inside it as a TOON string under `result.records` (`encoding: "toon"`), instead of a bare TOON document once the result was small enough to skip spilling. Read `result.records`, don't parse stdout as TOON. Also, a `--jq` filter that resolves to `null` (a jq-valid but shape-mismatched filter) now exits 1 with `jq_shape_mismatch` instead of silently returning `null` with exit 0 — a filter that legitimately matches nothing still returns `[]`. If you treated a `null` result as "no data", check for `[]` instead.
 
 **Breaking in v0.40.0 (agent mode only):** Agent-mode defaults changed. The sharpest edge: under `-o auto` (now the default), `result.records` may be a CSV or YAML **string** instead of an array — check `context.format` (`"csv"` / `"yaml"` / `"json"`) before parsing. Rows also lose constant columns and nulls by default (`--compact`); merge `result.constant` back to reconstruct full rows. Numbers are rounded (`--precision 4`) and timeseries summarised (`--series=summary`). `get` lists cap at 50 by default — check `context.has_more`, or pass `--limit 0`. To restore all previous agent output exactly: `-o json -M=all --series=full --precision 0 --compact=false --max-field-chars 0` for `query`, `--limit 0` for `get`. Also, `--dry-run` is now opt-in per command — commands that don't implement it reject the flag (exit 2); `delete` and `restore` now implement it properly, `exec` does not (except `exec api`). API failures now return exit 3 (`auth_required`), 4 (`not_found`), or 5 (`permission_denied`) instead of generic exit 1.
+
+**v0.41.0 notes (no breaking changes):** Approximate results now surface warnings in `context.warnings` and as `Warning: Result is approximate: …` on stderr; `metadata.approximations` carries the structured list. `enable`/`disable`/`update`/`edit`/`apply` on AWS, Azure, and GCP monitoring configs now round-trip every unmodelled field — previously `logsConfiguration` and other unknown fields were silently dropped on every write, disabling GCP log ingestion without error. `--admin-access` now works correctly with OAuth login. `delete|describe|edit|history|restore document <slug-id>` resolve a non-UUID as a document ID first (previously only slug lookup was attempted). Agent detection is deterministic when multiple trigger environment variables are set.
 
 Parquet output is self-describing: the full DQL type block (including null-only columns Grail omits) is written into the file footer under `dtctl.dql.types`. Readable via DuckDB's `parquet_kv_metadata()` for full schema recovery without re-querying.
 
@@ -116,6 +119,8 @@ dtctl query "fetch logs" --spill=never               # force every row inline
 dtctl query "fetch logs" --spill-to ./out.jsonl      # explicit path: jsonl|json|csv|parquet
 dtctl query "fetch logs" --spill=auto --spill-threshold 100KB
 ```
+
+Spilled results stream row-by-row to disk (peak RSS ~41 MB regardless of result size, down from ~1.8 GB in v0.40.0). Formats that still buffer the full result: `table`, `csv`, `parquet`, `yaml`, `toon`, `--jq`, `--typed`, and live-watch mode. `context.streamed: true` signals the streaming path; `context.measured_bytes` is absent when streaming.
 
 Inline results are bounded by default too: strings are clipped to 500 chars (end in `…(+N chars)`; `--max-field-chars 0` for full values). `--max-output-tokens N` / `--max-output-bytes SIZE` returns only the rows that fit. When `context.truncated` is true the result is incomplete: `truncated_fields` lists clipped fields, and `returned` < `total` means rows were dropped — run `context.next` (a `dtctl inspect` command) to continue without re-querying. An empty result reports a diagnosis in `context.empty_reason`: `field_not_in_sample` (a filtered or grouped field doesn't occur in the data) or `metric_not_in_window` (the metric key has no data in the window).
 
@@ -146,7 +151,7 @@ For free-text log triage, don't dump raw `content` — extract the taxonomy serv
 
 ## Apply & templates
 
-`dtctl apply` creates when no ID is known and updates when the file contains an `id`; as of v0.39.0, `--dry-run` resolves create-vs-update through the same lookup as a real apply (previously it could disagree — a 404 on lookup is the only thing that means create). As of v0.40.0, `--dry-run` is opt-in per command: `delete` and `restore` implement it (resolve target, print what they would do, no mutating request); `apply` does not implement dry-run itself — use `dtctl diff -f <file>` to preview; `exec` has no dry-run except `exec api`. Passing `--dry-run` to a command that doesn't support it is now a usage error (exit 2) rather than silently running for real. On the first apply, use `--write-id` to stamp the generated ID into the source file (v0.38.0: this now actually rewrites the file — it was a silent no-op before); use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. When creating without `--write-id`, dtctl prints a stderr hint suggesting how to make future runs update instead of create. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
+`dtctl apply` creates when no ID is known and updates when the file contains an `id`; as of v0.39.0, `--dry-run` resolves create-vs-update through the same lookup as a real apply (previously it could disagree — a 404 on lookup is the only thing that means create). As of v0.40.0, `--dry-run` is opt-in per command: `delete` and `restore` implement it (resolve target, print what they would do, no mutating request); `apply` does not implement dry-run itself — use `dtctl diff -f <file>` to preview; `exec` has no dry-run except `exec api`. Passing `--dry-run` to a command that doesn't support it is now a usage error (exit 2) rather than silently running for real. Exception: `apply` for the `settings` resource type does implement `--dry-run`; as of v0.41.0 it correctly reports `created` when the settings object does not yet exist (previously it returned an error). On the first apply, use `--write-id` to stamp the generated ID into the source file (v0.38.0: this now actually rewrites the file — it was a silent no-op before); use `--id <existing-id>` to target a known resource or recover a first apply that omitted `--write-id`. When creating without `--write-id`, dtctl prints a stderr hint suggesting how to make future runs update instead of create. Use `--type <type>` to force a file to be applied as a specific custom document type, bypassing content detection. YAML/DQL files support Go templates filled via `--set`:
 
 For custom document types, prefer `dtctl update document -f <file> [--type <type>] [--id <id>] [--create-snapshot]` over `apply` when updating an existing document — it fails instead of silently creating when the target ID is missing, so a typo in the ID never spawns a stray document. `--create-snapshot` is opt-in (a plain update still overwrites content in place). Use `--label key=value` (repeatable) on `create document` or via `apply` to set document labels; the SDK applies them in a follow-up update since the create API can't set them directly.
 
@@ -199,7 +204,7 @@ Gotchas: set `davis.enabled: false` on data tiles; `makeTimeseries` for log/span
 ## Permissions & safety
 
 - Verify before mutating: `dtctl auth can-i <verb> <resource>`. Scopes: [TOKEN_SCOPES.md](https://github.com/dynatrace-oss/dtctl/blob/main/docs/TOKEN_SCOPES.md).
-- Preflight scopes before a mutating command instead of discovering a gap via a mid-task 403: `dtctl <verb> <resource> --check-scopes` (preflights the active token, doesn't execute) and `dtctl commands "<verb> <resource>" --required-scopes` (least-privilege scope union for a command). In agent mode, mutating commands auto-preflight and return a structured `insufficient_scope` envelope instead of a raw 403.
+- Preflight scopes before a mutating command instead of discovering a gap via a mid-task 403: `dtctl <verb> <resource> --check-scopes` (preflights the active token, doesn't execute) and `dtctl commands "<verb> <resource>" --required-scopes` (least-privilege scope union for a command). In agent mode, mutating commands auto-preflight and return a structured `insufficient_scope` envelope instead of a raw 403. As of v0.41.0, `--check-scopes` correctly handles any-of scope sets — a token holding only one valid scope from an OR-group passes rather than exiting 5.
 - Destructive ops may be blocked by safety level — switch with `dtctl config use-context <name>`, or raise the level when creating the context.
 - Prefer `get`/`describe` first; `--mine` scopes to resources you own; `--plain` for all machine consumption.
 - Restrict the exposed command surface itself with a command profile (`--profile query` on a context, or `DTCTL_PROFILE=query`) — useful when embedding dtctl for a narrowly-scoped agent. See [references/config-management.md](references/config-management.md).

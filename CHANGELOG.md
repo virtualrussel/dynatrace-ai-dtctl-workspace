@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.1.2] - 2026-10-02
+
+### Changed
+- Aligned the dtctl skill with dtctl v0.41.0. Updated the registered patch overlay (`upstream-patches/dtctl-v0.41.0.patch`) against the new upstream commit (`3e845a5`). Key additions to agent-facing guidance: memory-efficient large query streaming (row-by-row decode, peak RSS ~41 MB vs ~1.8 GB in v0.40.0; `context.streamed: true`, `context.measured_bytes` absent for streamed results; buffered formats listed explicitly); new `claim environment-share` command (experimental, requires `document:environment-shares:claim` scope, cross-environment failure documented); approximate result warnings now surfaced in `context.warnings` and `metadata.approximations` on stderr; AWS/Azure/GCP monitoring `enable`/`disable`/`update`/`edit`/`apply` now round-trip all unmodelled fields, fixing the silent GCP `logsConfiguration` reset; `--admin-access` works with OAuth login; `--check-scopes` correctly handles any-of scope sets (token with one valid scope from an OR-group no longer exits 5); `apply --dry-run` on settings resources correctly reports `created` for new objects; `delete|describe|edit|history|restore document <slug-id>` resolves non-UUID as document ID first; `--include-types` warns when output format can't carry type metadata; agent detection deterministic with multiple trigger env vars set.
+- Raised minimum required dtctl version from v0.40.0 to v0.41.0 in `setup.sh`, `CLAUDE.md`, `README.md`, `ARCHITECTURE.md`, `docs/ELI5.md`, and `.github/copilot-instructions.md`.
+- Updated `upstream-sources.lock.json` to pin dtctl-skill to commit `3e845a5` with the new patch and recomputed `aggregateSha256`.
+
+### Added
+- `upstream-patches/dtctl-v0.41.0.patch` — registered patch overlay for the v0.41.0 upstream commit (`3e845a5`), covering SKILL.md and four reference files.
+
 ## [8.1.1] - 2026-09-28
 
 ### Changed
