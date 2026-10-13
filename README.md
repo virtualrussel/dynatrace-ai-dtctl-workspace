@@ -22,7 +22,7 @@ dynatrace-ai-dtctl-workspace/
 ├── docs/
 │   ├── ELI5.md                   # Beginner-friendly 15-minute install guide
 │   ├── PERMISSIONS.md            # MCP permission profiles and authorization troubleshooting
-│   ├── PROMPT_CONTRACTS.md       # Portable runtime contracts for bundled prompts
+│   ├── PROMPT_CONTRACTS.md       # Per-prompt contracts validated by sync-upstream.sh
 │   ├── OVERVIEW.md               # Newcomer guide: purpose, value, and operating model
 │   └── CHEATSHEET.md             # Quick reference — workflows, outputs, dtctl, and key rules
 ├── ARCHITECTURE.md               # How the workspace is built and how components connect

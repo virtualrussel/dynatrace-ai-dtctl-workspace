@@ -116,7 +116,7 @@ Use **Full read-only MCP** by default. Choose **Core incident analysis** only wh
 
 - Large exports (v0.31.0+): `dtctl query ... -o jsonl` or `-o parquet` for results headed to external analytics tooling (DuckDB/pandas), not for agent consumption.
 
-- Workflow listing: use `--filter`, `--started-since`/`--started-until`, and `--limit` (v0.29.0+) so agents request scoped lists and avoid large payloads.
+- Workflow execution listing (`get workflow-executions`): use `--filter`, `--started-since`/`--started-until`, and `--limit` (v0.29.0+) so agents request scoped lists and avoid large payloads.
 
 - Config trust: per-project `.dtctl.yaml` is treated as untrusted by default; aliases and pre/post-apply hooks are ignored unless using global config, `--config`, or the `DTCTL_CONFIG` (v0.34.0+) environment variable. Agents should rely on explicit contexts or flags unless `DTCTL_CONFIG` points at a workspace you control.
 
@@ -195,4 +195,4 @@ To rotate your Platform Token or change tenants, re-run `bash setup.sh` — it w
 
 ---
 
-**MCP server:** dynatrace-mcp (remote HTTP) | **Last Updated:** August 17, 2026
+**MCP server:** dynatrace-mcp (remote HTTP)

@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.1.5] - 2026-10-13
+
+### Changed
+- Corrected documentation found wrong in a repository audit. `dtctl exec workflow --params` is deprecated and no longer carries workflow input at dtctl v0.43.0; `CLAUDE.md`, `.github/copilot-instructions.md`, `ARCHITECTURE.md` (broken example removed) and `CONTRIBUTING.md` now say to use `--input`. `docs/PERMISSIONS.md` no longer lists the nonexistent `dtctl auth can-i` and now uses `dtctl commands <resource> --required-scopes`. `ARCHITECTURE.md` no longer claims jq is needed for config generation. Removed the invalid "VS Code v0.47.0+" wording from `README.md` and `docs/ELI5.md` and the unsupported Claude Code web/desktop claim from `README.md`.
+- Fixed stale references: `llms.txt` skill count (35, adds OneAgent), `CONTRIBUTING.md` upstream commit (`ca3a63e`) and patch example (`dtctl-v0.43.0.patch`), the `README.md` description of `docs/PROMPT_CONTRACTS.md`, and `docs/CHEATSHEET.md` (workflow execution listing flags, removed hard-coded date).
+
 ## [8.1.4] - 2026-10-13
 
 ### Removed
