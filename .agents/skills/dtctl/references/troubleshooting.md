@@ -35,6 +35,8 @@ dtctl auth status --plain
 
 **Note:** Always use `--token "$TOKEN"` directly. Stdin piping does not work reliably and stores corrupted values in the keychain.
 
+**Headless Linux (v0.42.0+):** with no Secret Service available, dtctl asks once whether to store tokens in a file (mode 0600) and remembers the answer. It never prompts in CI, non-TTY runs, `--agent` mode, or when `DTCTL_TOKEN_STORAGE` is set. `dtctl auth status` and `dtctl doctor` report the store actually in use.
+
 ## Teardown
 
 To remove a context and the credential it created, in one step:

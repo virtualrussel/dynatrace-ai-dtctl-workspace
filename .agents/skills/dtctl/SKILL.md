@@ -7,7 +7,7 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
-This skill targets dtctl v0.41.0 or newer. Confirm with `dtctl version`.
+This skill targets dtctl v0.43.0 or newer. Confirm with `dtctl version`.
 
 ## Initialization
 
@@ -48,6 +48,10 @@ Billable `fetch` (logs, events, bizevents, spans) bills by bytes scanned and das
 Long-running queries show a live progress bar on stderr; add `--no-progress` to suppress it (e.g. when piping stderr somewhere unexpected).
 
 dtctl not installed/working? See [references/troubleshooting.md](references/troubleshooting.md).
+
+## Companion skills (Dynatrace for AI)
+
+This skill covers operating dtctl. The [Dynatrace for AI](https://github.com/Dynatrace/dynatrace-for-ai) skill pack adds the domain knowledge: `dt-dql-essentials` (DQL syntax, pitfalls, query optimization), `dt-obs-*` (logs, problems, services, tracing, hosts, kubernetes, frontends, aws/azure/gcp), and `dt-app-dashboards` / `dt-app-notebooks`. When they are loaded, use them for what to query and dtctl to run it. In this workspace they ship in `.agents/skills/`, so they are normally already loaded; if one is missing, tell the user rather than installing it unasked.
 
 ## Resources & verbs
 
@@ -96,6 +100,10 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 **Breaking in v0.40.0 (agent mode only):** Agent-mode defaults changed. The sharpest edge: under `-o auto` (now the default), `result.records` may be a CSV or YAML **string** instead of an array — check `context.format` (`"csv"` / `"yaml"` / `"json"`) before parsing. Rows also lose constant columns and nulls by default (`--compact`); merge `result.constant` back to reconstruct full rows. Numbers are rounded (`--precision 4`) and timeseries summarised (`--series=summary`). `get` lists cap at 50 by default — check `context.has_more`, or pass `--limit 0`. To restore all previous agent output exactly: `-o json -M=all --series=full --precision 0 --compact=false --max-field-chars 0` for `query`, `--limit 0` for `get`. Also, `--dry-run` is now opt-in per command — commands that don't implement it reject the flag (exit 2); `delete` and `restore` now implement it properly, `exec` does not (except `exec api`). API failures now return exit 3 (`auth_required`), 4 (`not_found`), or 5 (`permission_denied`) instead of generic exit 1.
 
 **v0.41.0 notes (no breaking changes):** Approximate results now surface warnings in `context.warnings` and as `Warning: Result is approximate: …` on stderr; `metadata.approximations` carries the structured list. `enable`/`disable`/`update`/`edit`/`apply` on AWS, Azure, and GCP monitoring configs now round-trip every unmodelled field — previously `logsConfiguration` and other unknown fields were silently dropped on every write, disabling GCP log ingestion without error. `--admin-access` now works correctly with OAuth login. `delete|describe|edit|history|restore document <slug-id>` resolve a non-UUID as a document ID first (previously only slug lookup was attempted). Agent detection is deterministic when multiple trigger environment variables are set.
+
+**v0.42.0 notes (no breaking changes):** In agent mode a failed DQL query returns a rewritten version that runs, empty results carry `context.empty_reason` (e.g. `value_not_found`) and `context.window`, and duration columns are labelled as nanoseconds. `--jq` without `-o` now returns JSON instead of an auto-chosen CSV/YAML. `exec analyzer` output drops echoed input and nulls and summarizes series by default; tune with `--series` and `--precision` (default 4 digits). POST requests are no longer retried on 502/504/dropped connections.
+
+**Breaking in v0.43.0 (`-o toon` only):** TOON array headers no longer carry the `[#N]` length marker. Do not parse the row count from the header; count rows or read `context.total`. New `dtctl usage` prints a local tally of DQL bytes scanned (today, 7d, 30d; `--all-contexts`; `usage reset`). It is off by default and enabled per context with `dtctl config set-context <name> --usage-tracking` (`--global` applies it to all contexts). Query text and credentials are never stored. Enabling it is the user's decision, not the agent's.
 
 Parquet output is self-describing: the full DQL type block (including null-only columns Grail omits) is written into the file footer under `dtctl.dql.types`. Readable via DuckDB's `parquet_kv_metadata()` for full schema recovery without re-querying.
 

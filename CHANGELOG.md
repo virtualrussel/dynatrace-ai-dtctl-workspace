@@ -1,5 +1,16 @@
 # Changelog
 
+## [8.1.3] - 2026-10-13
+
+### Changed
+- Aligned the dtctl skill with dtctl v0.43.0 (covers the missed v0.42.0). Pinned to upstream commit `0694800` with a regenerated patch overlay (`upstream-patches/dtctl-v0.43.0.patch`). Key additions to agent-facing guidance: v0.42.0 agent-mode query auto-correction, `context.empty_reason`/`context.window`, `--jq` without `-o` returning JSON, trimmed `exec analyzer` output (`--series`, `--precision`), no POST retries on 5xx, and the headless-Linux file token store prompt (`DTCTL_TOKEN_STORAGE`); v0.43.0 breaking removal of the `[#N]` array length marker from `-o toon`, and the opt-in `dtctl usage` scan tally (`config set-context --usage-tracking`). Upstream DQL reference now steers text filters away from `lower()` toward `contains(..., caseSensitive:false)`, `matchesValue`, and `matchesPhrase`. The upstream "Companion skills" section is kept, with the `npx skills add` hint replaced by a note that the skills ship in `.agents/skills/`.
+- Raised minimum required dtctl version from v0.41.0 to v0.43.0 in `setup.sh`, `CLAUDE.md`, `ARCHITECTURE.md`, `docs/ELI5.md`, and `.github/copilot-instructions.md`; corrected the stale v0.39.0+ prerequisite in `README.md`.
+- Updated `upstream-sources.lock.json` to pin dtctl-skill to commit `0694800` with the new patch and recomputed `aggregateSha256` via `scripts/sync-upstream.sh sync --refresh-lock`.
+- The new patch uses `a/dtctl/...` paths (as `dtctl-v0.40.0.patch` did) because `sync-upstream.sh` applies it with `-p1` from `.agents/skills`; the v0.41.0 patch used `skills/dtctl/...` paths and does not apply under the script.
+
+### Added
+- `upstream-patches/dtctl-v0.43.0.patch` — registered patch overlay for the v0.43.0 upstream commit (`0694800`), covering SKILL.md, DQL-reference, config-management, troubleshooting, and extensions references.
+
 ## [8.1.2] - 2026-10-02
 
 ### Changed

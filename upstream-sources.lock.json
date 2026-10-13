@@ -89,12 +89,12 @@
     {
       "id": "dtctl-skill",
       "repository": "https://github.com/dynatrace-oss/dtctl.git",
-      "commit": "3e845a543a94bcb07450bb92cd0a071a90febdba",
+      "commit": "06948003fd74550a3a8f4648c3fc4fda567241c7",
       "source": "skills/dtctl",
       "destination": ".agents/skills/dtctl",
       "policy": "patched",
-      "patch": "upstream-patches/dtctl-v0.41.0.patch",
-      "aggregateSha256": "d9b1f43715caffcd68ce58fadfcbc94767b48867bb078691f49a9796651aaf43"
+      "patch": "upstream-patches/dtctl-v0.43.0.patch",
+      "aggregateSha256": "407c6640385c69027eae86db0a5003e83366ebc8ecfed1f3142b836ace54949f"
     }
   ],
   "compatibilityLinks": {
