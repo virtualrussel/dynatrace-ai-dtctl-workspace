@@ -27,7 +27,7 @@ code --install-extension github.copilot \
   --install-extension anthropic.claude-code
 ```
 
-> `github.copilot-chat` is bundled with VS Code (v0.47.0+) and does not need to be installed separately.
+> `github.copilot-chat` is bundled with VS Code and does not need to be installed separately.
 
 If `code` is not found, run **Shell Command: Install 'code' command in PATH** from the VS Code Command Palette, then retry.
 

@@ -24,8 +24,8 @@ Use the `dtctl` skill for:
 - Resource lifecycle: `apply`, `delete`, `share`, `unshare`, `history`, `restore`
 - Notebook and dashboard creation or updates; load `dt-app-notebooks` or `dt-app-dashboards` for structure, then deploy with `dtctl apply`
 - Workflow execution (`dtctl exec workflow`)
-  - Prefer structured input with `--input '{"key":"value"}'` (v0.30.0+)
-  - Legacy `--params key=value` still supported but deprecated
+  - Use structured input with `--input '{"key":"value"}'`
+  - `--params key=value` is deprecated and no longer carries workflow input
 - Settings discovery and validated mutation (`--validate-only` before create/edit/delete)
 - Bulk or scripted operations and CI/CD-style automation
 - Validating DQL syntax before execution (`dtctl verify query`)

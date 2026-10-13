@@ -69,7 +69,7 @@ If the version differs from the locked dtctl source, update the `dtctl-skill` co
 
 The skill covers all current dtctl capabilities including:
 
-- **Structured workflow input:** `--input` flag with JSON payloads (preferred over `--params`)
+- **Structured workflow input:** `--input` flag with JSON payloads (`--params` is deprecated and no longer carries workflow input)
 - **AWS provider support:** Feature parity with Azure/GCP for cloud integrations
 - **Auth status check:** `dtctl auth status` works for all token types (replaces `auth whoami` which fails with non-OAuth tokens)
 - **DQL Smartscape:** `smartscapeNodes` patterns for entity queries

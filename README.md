@@ -73,7 +73,7 @@ You must use one AI assistant path: **GitHub Copilot** or **Claude Code**.
 
 This workspace works with:
 - **GitHub Copilot** via VS Code plugin (subscription required)
-- **Claude Code** via VS Code plugin or web/desktop (Claude Pro or Team required)
+- **Claude Code** via VS Code plugin (Claude Pro or Team required)
 - **Claude Code CLI** via the `claude` terminal command — no VS Code required
 
 All three receive the same skills, prompts, and MCP server access. `.github/copilot-instructions.md` is auto-loaded at the start of each Copilot session; `CLAUDE.md` is auto-loaded at the start of each Claude Code session (CLI or plugin).
@@ -89,7 +89,7 @@ code --install-extension github.copilot \
   --install-extension anthropic.claude-code
 ```
 
-> `github.copilot-chat` is bundled with VS Code (v0.47.0+) and does not need to be installed separately.
+> `github.copilot-chat` is bundled with VS Code and does not need to be installed separately.
 
 If `code` is not found, run **Shell Command: Install 'code' command in PATH** from the VS Code Command Palette, then retry.
 

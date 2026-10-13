@@ -32,7 +32,7 @@ This workspace requires specific minimum versions of core components. Older vers
 | Component | Minimum Version | Why |
 | --- | --- | --- |
 | **dtctl** | 0.43.0 | CLI for managing Dynatrace platform resources, environment inventory, and agent-safe query execution |
-| **jq** | any | Needed for template regeneration if you hand-edit `.vscode/mcp.json.template` |
+| **jq** | any | Required by `scripts/sync-upstream.sh` and for regenerating `.mcp.json.template` from `.vscode/mcp.json.template` |
 
 ---
 
@@ -236,12 +236,11 @@ dtctl doctor                           # Verify authentication and connectivity
 Structured workflow input via the `--input` flag is the preferred form when executing workflows via dtctl in prompts or CI:
 
 ```bash
-# Structured JSON input (preferred, v0.30.0+)
+# Structured JSON input
 dtctl exec workflow my-workflow --input '{"severity":"high","ttl":3,"tags":["prod"]}'
-
-# Legacy (still supported) — string-keyed parameters
-dtctl exec workflow my-workflow --params severity=high ttl=3
 ```
+
+`--params` is deprecated and no longer carries workflow input; always use `--input`.
 
 ---
 

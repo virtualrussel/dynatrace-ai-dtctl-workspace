@@ -116,9 +116,8 @@ The MCP profiles enable MCP analysis and lookup tools. They do not grant noteboo
 For a dtctl operation, discover and preflight its command-specific requirements:
 
 ```bash
-dtctl commands "<verb> <resource>" --required-scopes
+dtctl commands <resource> --required-scopes
 dtctl <verb> <resource> --check-scopes
-dtctl auth can-i <verb> <resource>
 ```
 
 Authenticate dtctl independently with OAuth or a token-backed context. Use `--validate-only` where supported and obtain approval before mutations.
