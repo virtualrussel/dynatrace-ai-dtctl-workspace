@@ -1,5 +1,10 @@
 # Changelog
 
+## [8.1.7] - 2026-10-28
+
+### Removed
+- `upstream-patches/dtctl-v0.43.0.patch` — superseded by `dtctl-v0.45.0.patch` and no longer referenced by `upstream-sources.lock.json` or `scripts/sync-upstream.sh`.
+
 ## [8.1.6] - 2026-10-28
 
 ### Changed
