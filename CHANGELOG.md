@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.1.8] - 2026-10-28
+
+### Added
+- Project permission allowlist in `.claude/settings.json`, derived from recent session usage, to cut routine prompts. Read-only Dynatrace MCP tools (`execute-dql`, `query-problems`, `get-problem-by-id`, `create-dql`, `get-entity-id`, `get-dynatrace-vulnerabilities`, `ask-dynatrace-docs`, `find-documents`) and the exact commands `dtctl verify query *`, `dtctl get *`, `dtctl version`, and `bash scripts/sync-upstream.sh verify`. This also keeps the new prompt DQL guardrail (`dtctl verify query`) from prompting on every run.
+
+### Notes
+- `execute-dql` is allowlisted, so the 500GB scan-limit guardrail relies on the scoping rules in `CLAUDE.md` rather than a permission prompt. Direct `dtctl query` calls are deliberately not allowlisted and still prompt.
+
 ## [8.1.7] - 2026-10-28
 
 ### Removed

@@ -1,5 +1,18 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "mcp__dynatrace-mcp__execute-dql",
+      "mcp__dynatrace-mcp__query-problems",
+      "mcp__dynatrace-mcp__get-problem-by-id",
+      "mcp__dynatrace-mcp__create-dql",
+      "mcp__dynatrace-mcp__get-entity-id",
+      "mcp__dynatrace-mcp__get-dynatrace-vulnerabilities",
+      "mcp__dynatrace-mcp__ask-dynatrace-docs",
+      "mcp__dynatrace-mcp__find-documents",
+      "Bash(dtctl verify query *)",
+      "Bash(dtctl get *)",
+      "Bash(dtctl version)",
+      "Bash(bash scripts/sync-upstream.sh verify)"
+    ]
   }
 }
