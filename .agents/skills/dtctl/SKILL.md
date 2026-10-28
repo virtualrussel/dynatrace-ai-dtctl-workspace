@@ -7,7 +7,7 @@ description: Investigate incidents, debug performance issues, analyze logs, and 
 
 Operate `dtctl`, the kubectl-style CLI for Dynatrace. Pattern: `dtctl <verb> <resource> [flags]`.
 
-This skill targets dtctl v0.43.0 or newer. Confirm with `dtctl version`.
+This skill targets dtctl v0.45.0 or newer. Confirm with `dtctl version`.
 
 ## Initialization
 
@@ -104,6 +104,10 @@ Davis analyzers: before running one, `dtctl describe analyzer <id>` shows its re
 **v0.42.0 notes (no breaking changes):** In agent mode a failed DQL query returns a rewritten version that runs, empty results carry `context.empty_reason` (e.g. `value_not_found`) and `context.window`, and duration columns are labelled as nanoseconds. `--jq` without `-o` now returns JSON instead of an auto-chosen CSV/YAML. `exec analyzer` output drops echoed input and nulls and summarizes series by default; tune with `--series` and `--precision` (default 4 digits). POST requests are no longer retried on 502/504/dropped connections.
 
 **Breaking in v0.43.0 (`-o toon` only):** TOON array headers no longer carry the `[#N]` length marker. Do not parse the row count from the header; count rows or read `context.total`. New `dtctl usage` prints a local tally of DQL bytes scanned (today, 7d, 30d; `--all-contexts`; `usage reset`). It is off by default and enabled per context with `dtctl config set-context <name> --usage-tracking` (`--global` applies it to all contexts). Query text and credentials are never stored. Enabling it is the user's decision, not the agent's.
+
+**v0.44.0 notes (no breaking changes):** `dtctl auth login` now requests `storage:profiles:read` (code-level profiling data; `readonly`, `readwrite-all`, `dangerously-unrestricted`) and `environment-api:dashboard-3rdgen-migration:execute` (classic-to-3rd-gen dashboard conversion; every safety level). Existing OAuth sessions need a fresh `dtctl auth login` to pick them up; platform tokens are unaffected. The migration endpoint only returns the converted dashboard, so storing it still needs document write scopes. The `* gcp *` preview commands now run the root pre-run checks, so `--dry-run` is rejected (exit 2) and `--jq` is normalised like the AWS commands.
+
+**v0.45.0 notes (no breaking changes):** New `dtctl get actions [--name <text>] [--app <app-id>] [--filter '<filter>']` and `dtctl describe action <app-id>:<action-name>` list and inspect actions declared by installed apps (App Registry `/actions` API, early adopter). Both are development-tier and registered only when `DTCTL_DEVELOPMENT=actions` is set or `dtctl config set development.actions on` has been run; do not enable it unprompted. v0.44.1 and v0.45.0 are Go toolchain and dependency updates only.
 
 Parquet output is self-describing: the full DQL type block (including null-only columns Grail omits) is written into the file footer under `dtctl.dql.types`. Readable via DuckDB's `parquet_kv_metadata()` for full schema recovery without re-querying.
 

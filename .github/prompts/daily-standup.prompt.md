@@ -3,6 +3,9 @@ agent: agent
 description: Generate a daily standup report for one or more services.
 argument-hint: Optional list of services to include in the report
 ---
+
+> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
+
 Generate a daily standup report for my services.
 If no specific services are provided, infer from current workspace and ask user to confirm.
 

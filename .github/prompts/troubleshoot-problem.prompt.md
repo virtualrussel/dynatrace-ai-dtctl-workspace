@@ -3,6 +3,8 @@ agent: agent
 description: Troubleshoot an existing Dynatrace problem. Starts with the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
 ---
 
+> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
+
 # Troubleshoot a Dynatrace Problem
 
 ## Rules

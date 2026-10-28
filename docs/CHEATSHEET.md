@@ -136,6 +136,14 @@ Use **Full read-only MCP** by default. Choose **Core incident analysis** only wh
 
 - Repeatable apply: use `dtctl apply -f resource.yaml --write-id` on first creation so subsequent applies update the same resource; use `--id <existing-id>` when recovering an unstamped file.
 
+- Agent-mode output (v0.39.0-v0.40.0, breaking for parsers): `-A -o toon` keeps the full envelope, so read `result.records` instead of parsing stdout. Under the default `-o auto`, `result.records` can be a CSV or YAML string; check `context.format` first. Rows drop nulls and constant columns (merge `result.constant` back), numbers are rounded, timeseries are summarised, and `get` lists cap at 50 (check `context.has_more` or pass `--limit 0`). A `--jq` filter that resolves to `null` now exits 1 with `jq_shape_mismatch`. `--dry-run` is rejected (exit 2) by commands that do not implement it, and API failures exit 3 (auth required), 4 (not found), or 5 (permission denied). Pin `-o json` when structural parsing matters.
+
+- Query behaviour (v0.41.0-v0.43.0): very large results stream with a low memory footprint (`context.streamed`), approximate results carry `context.warnings` and `metadata.approximations`, a failed agent-mode query returns a corrected rewrite, empty results carry `context.empty_reason` and `context.window`, and `-o toon` no longer prints a `[#N]` row count (count rows or read `context.total`). `dtctl usage` is an opt-in local tally of bytes scanned (`dtctl config set-context <name> --usage-tracking`) and is the user's decision to enable.
+
+- OAuth scopes (v0.44.0): `dtctl auth login` now requests `storage:profiles:read` and `environment-api:dashboard-3rdgen-migration:execute`. Existing OAuth sessions must run `dtctl auth login` again to pick them up; platform tokens are unaffected.
+
+- App actions (v0.45.0, development tier): `dtctl get actions` and `dtctl describe action <app-id>:<action-name>` list the actions installed apps declare. They are off by default; enable with `DTCTL_DEVELOPMENT=actions` or `dtctl config set development.actions on`, and only when the user asks.
+
 The AI workflows and dtctl point at the same environment — use MCP for supported investigation and dtctl for resource lifecycle operations and verification.
 
 ---

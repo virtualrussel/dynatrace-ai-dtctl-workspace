@@ -1,6 +1,45 @@
---- a/investigate-error.prompt.md	2026-09-28 00:00:00
-+++ b/investigate-error.prompt.md	2026-09-28 00:00:00
-@@ -7,7 +7,7 @@
+--- a/daily-standup.prompt.md
++++ b/daily-standup.prompt.md
+@@ -3,6 +3,9 @@
+ description: Generate a daily standup report for one or more services.
+ argument-hint: Optional list of services to include in the report
+ ---
++
++> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
++
+ Generate a daily standup report for my services.
+ If no specific services are provided, infer from current workspace and ask user to confirm.
+ 
+--- a/health-check.prompt.md
++++ b/health-check.prompt.md
+@@ -3,6 +3,8 @@
+ description: Check the health of a service in production.
+ ---
+ 
++> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
++
+ Check the health of my service in production.
+ Infer service-name from current workspace if not provided. Ask user to confirm if not sure.
+ 
+--- a/incident-response.prompt.md
++++ b/incident-response.prompt.md
+@@ -3,6 +3,8 @@
+ description: Respond to an active production incident. Retrieves all active Davis Problems, explains root cause in plain English, surfaces user impact and affected traces, prioritizes by business severity, and generates a shareable incident report.
+ ---
+ 
++> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
++
+ We have a production incident. Help me investigate:
+ 1. Check all active Davis Problems in Dynatrace
+ 2. For each critical problem:
+--- a/investigate-error.prompt.md
++++ b/investigate-error.prompt.md
+@@ -4,10 +4,12 @@
+ argument-hint: Optional specific service or timeframe for the investigation
+ ---
+ 
++> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
++
  Investigate recent errors in my service using Dynatrace Davis Problems as the entry point.
  Infer service-name from the current workspace. Ask user to confirm, or provide a specific timeframe/entity scope if unsure.
  
@@ -9,10 +48,18 @@
  2. For each selected problem, use the problem's timeframe and entities to:
     - Search for ERROR level logs scoped to that context
     - Group results by error message/type
-diff -ruN a/performance-regression.prompt.md b/performance-regression.prompt.md
---- a/performance-regression.prompt.md	2026-09-28 00:00:00
-+++ b/performance-regression.prompt.md	2026-09-28 00:00:00
-@@ -16,7 +16,7 @@
+--- a/performance-regression.prompt.md
++++ b/performance-regression.prompt.md
+@@ -3,6 +3,8 @@
+ description: Analyze whether a recent deployment caused a performance regression and recommend rollback or hotfix.
+ ---
+ 
++> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
++
+ # Performance Regression Analysis
+ 
+ ## Rules
+@@ -16,7 +18,7 @@
  Ask the user: "When did the suspected regression start? (e.g. 'about 2 hours ago', 'today at 14:30', or a date range)"
  Default to the **last 24 hours** if the user has no specific time in mind.
  
@@ -21,7 +68,7 @@ diff -ruN a/performance-regression.prompt.md b/performance-regression.prompt.md
  
  **If a deployment event is found:**
  Use the deployment timestamp as the regression boundary. Split the window into:
-@@ -32,7 +32,7 @@
+@@ -32,7 +34,7 @@
  
  ## Step 2 — Compare metrics before and after
  
@@ -30,7 +77,7 @@ diff -ruN a/performance-regression.prompt.md b/performance-regression.prompt.md
  
  **A regression is confirmed when any threshold is exceeded:**
  
-@@ -65,13 +65,13 @@
+@@ -65,13 +67,13 @@
  
  ## Step 3 — Identify regressed endpoints
  
@@ -46,7 +93,7 @@ diff -ruN a/performance-regression.prompt.md b/performance-regression.prompt.md
  
  Pick the trace with the highest duration. Build a timeline sorted by start time. Identify the **first span** whose duration is the dominant contributor — this is the bottleneck span. Record its operation name, service, duration, and any error attributes.
  
-@@ -85,7 +85,7 @@
+@@ -85,7 +87,7 @@
  
  ## Step 6 — Check for an active Davis Problem
  
@@ -55,16 +102,17 @@ diff -ruN a/performance-regression.prompt.md b/performance-regression.prompt.md
  If found, include: problem ID, title, root cause summary, and affected entities.
  
  ## Step 7 — Recommend: rollback or hotfix
-diff -ruN a/troubleshoot-problem.prompt.md b/troubleshoot-problem.prompt.md
---- a/troubleshoot-problem.prompt.md	2026-09-28 00:00:00
-+++ b/troubleshoot-problem.prompt.md	2026-09-28 00:00:00
-@@ -1,13 +1,13 @@
+--- a/troubleshoot-problem.prompt.md
++++ b/troubleshoot-problem.prompt.md
+@@ -1,13 +1,15 @@
  ---
  agent: agent
 -description: Troubleshoot an existing Dynatrace problem. Starts with the Root Cause Agent to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
 +description: Troubleshoot an existing Dynatrace problem. Starts with the problem analysis capability (Root Cause Agent in Copilot; use the MCP dynatrace_get_davis_problems tool in Claude Code) to list problems, scopes log queries to the problem timeframe, classifies actionable errors, and hands off to trace investigation.
  ---
  
++> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
++
  # Troubleshoot a Dynatrace Problem
  
  ## Rules
@@ -74,7 +122,7 @@ diff -ruN a/troubleshoot-problem.prompt.md b/troubleshoot-problem.prompt.md
  - **NEVER query logs without a problem context.** Broad log searches hit the 500GB scan limit and return 0 results.
  - **NEVER suggest checking other environments.** This prompt is for production troubleshooting only. Only mention dev/staging if the user explicitly asks.
  
-@@ -18,16 +18,16 @@
+@@ -18,16 +20,16 @@
  **Format A — Pre-filled structured input:**
  > "At [timestamp], service [service-name] has the following problem: [problem message]. Explain the error and suggest how to fix it."
  
@@ -94,7 +142,7 @@ diff -ruN a/troubleshoot-problem.prompt.md b/troubleshoot-problem.prompt.md
  
  Present results as a table:
  
-@@ -61,7 +61,7 @@
+@@ -61,7 +63,7 @@
  
  ### 4. Query logs for the problem
  

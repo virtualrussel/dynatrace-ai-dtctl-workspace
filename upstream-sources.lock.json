@@ -58,7 +58,7 @@
       "destination": ".github/prompts",
       "policy": "exact-mapped",
       "patch": "upstream-patches/prompts-claude-agent-aliases.patch",
-      "aggregateSha256": "9792a44044fa8bb35e48c9f4b57d79c535082ae641d755e7a8a25b0d84467eda",
+      "aggregateSha256": "5c2094d4a0064f3236c97fa90d9a290fc3a1d4af7f0ecfe77d6fc8406185ee19",
       "files": [
         {
           "source": "dt-daily-standup.prompt.md",
@@ -89,12 +89,12 @@
     {
       "id": "dtctl-skill",
       "repository": "https://github.com/dynatrace-oss/dtctl.git",
-      "commit": "06948003fd74550a3a8f4648c3fc4fda567241c7",
+      "commit": "97f26e0bd02f5e7b7b3418ae760195ee488a6a74",
       "source": "skills/dtctl",
       "destination": ".agents/skills/dtctl",
       "policy": "patched",
-      "patch": "upstream-patches/dtctl-v0.43.0.patch",
-      "aggregateSha256": "407c6640385c69027eae86db0a5003e83366ebc8ecfed1f3142b836ace54949f"
+      "patch": "upstream-patches/dtctl-v0.45.0.patch",
+      "aggregateSha256": "a49623ad9cff05a49253a1e6b2ee9053632799a8e1f1f4cf961df93840687b0d"
     }
   ],
   "compatibilityLinks": {

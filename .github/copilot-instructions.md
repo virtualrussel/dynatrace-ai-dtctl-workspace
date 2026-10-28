@@ -29,6 +29,8 @@ Use the `dtctl` skill for:
 - Settings discovery and validated mutation (`--validate-only` before create/edit/delete)
 - Bulk or scripted operations and CI/CD-style automation
 - Validating DQL syntax before execution (`dtctl verify query`)
+- Resources and operations MCP does not expose: SLO definitions and evaluation (`get slos`, `exec slo`), anomaly detectors, lookup tables, segments, EdgeConnect, extensions and Hub extensions, Davis analyzers (`exec analyzer`, `verify analyzer`), Live Debugger breakpoints, and the governed API passthrough (`get apis`, `describe api`, `exec api`)
+- Previewing local file changes before apply (`dtctl diff -f <file>`)
 - Tasks not exposed via MCP, or when the user explicitly asks for the CLI
 
 When both paths can satisfy a request, prefer MCP.
@@ -90,4 +92,4 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
 | `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
-| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.43.0+ required)                   |
+| `dtctl`                       | CLI commands for managing Dynatrace resources (v0.45.0+ required)                   |

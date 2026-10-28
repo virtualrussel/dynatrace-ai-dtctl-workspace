@@ -3,6 +3,8 @@ agent: agent
 description: Analyze whether a recent deployment caused a performance regression and recommend rollback or hotfix.
 ---
 
+> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
+
 # Performance Regression Analysis
 
 ## Rules

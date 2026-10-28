@@ -4,6 +4,8 @@ description: Investigate recent errors in a service using Davis Problems as the 
 argument-hint: Optional specific service or timeframe for the investigation
 ---
 
+> **DQL guardrail:** Before running any DQL, check it with `dtctl verify query '<dql>'` in the terminal (no scan cost), then run it through the Dynatrace MCP tools. If dtctl is unavailable or unauthenticated, say so and continue.
+
 Investigate recent errors in my service using Dynatrace Davis Problems as the entry point.
 Infer service-name from the current workspace. Ask user to confirm, or provide a specific timeframe/entity scope if unsure.
 

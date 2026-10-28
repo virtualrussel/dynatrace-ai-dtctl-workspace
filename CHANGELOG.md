@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.1.6] - 2026-10-28
+
+### Changed
+- Aligned the dtctl skill with dtctl v0.45.0 (covers the missed v0.44.0 and v0.44.1). Pinned to upstream commit `97f26e0` with a regenerated patch overlay (`upstream-patches/dtctl-v0.45.0.patch`). The upstream skill changed only in `references/troubleshooting.md` (`-vv` now redacts auth headers); the overlay adds agent-facing notes for v0.44.0 (new `storage:profiles:read` and `environment-api:dashboard-3rdgen-migration:execute` OAuth scopes requiring a fresh `dtctl auth login`; GCP preview commands now reject `--dry-run`) and v0.45.0 (development-tier `get actions` / `describe action`, gated behind `DTCTL_DEVELOPMENT=actions`).
+- Raised minimum required dtctl version from v0.43.0 to v0.45.0 in `setup.sh`, `CLAUDE.md`, `README.md`, `ARCHITECTURE.md`, `docs/ELI5.md`, `CONTRIBUTING.md`, and `.github/copilot-instructions.md`.
+- Updated `upstream-sources.lock.json` to pin dtctl-skill to commit `97f26e0` with the new patch and recomputed `aggregateSha256` via `scripts/sync-upstream.sh sync --refresh-lock`.
+
+- Widened the dtctl routing list in `CLAUDE.md` and `.github/copilot-instructions.md` to cover SLO definitions and evaluation, anomaly detectors, lookups, segments, EdgeConnect, extensions, Davis analyzers, Live Debugger breakpoints, API passthrough, and `dtctl diff`.
+- Added v0.39.0 to v0.45.0 agent-mode, query, OAuth-scope, and app-action notes to `docs/CHEATSHEET.md`.
+- Regenerated `upstream-patches/prompts-claude-agent-aliases.patch` to insert a DQL guardrail at the top of all six prompts: verify with `dtctl verify query` before running DQL through MCP. Refreshed the prompts `aggregateSha256` in `upstream-sources.lock.json`.
+
+### Added
+- `upstream-patches/dtctl-v0.45.0.patch` — registered patch overlay for the v0.45.0 upstream commit (`97f26e0`).
+
 ## [8.1.5] - 2026-10-13
 
 ### Changed
