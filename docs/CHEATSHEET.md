@@ -67,6 +67,9 @@ Skills are loaded automatically when relevant. You can also ask for one directly
 | Analyzing a dashboard/notebook with Davis (anomalies, novelty, correlation) | `dt-obs-analytics` |
 | Ingesting 3rd-party test/monitor results into Grail | `dt-obs-ext-monitors` |
 | Migrating classic entity DQL to Smartscape | `dt-migration` |
+| Upgrading a tenant from classic/2nd-gen to 3rd-gen (readiness, migration, cloud integrations) | `dt-upgrade` |
+| Extension monitoring status and error troubleshooting | `dt-obs-extensions` |
+| Instrumenting a GenAI/LLM app, or migrating Traceloop to OpenInference | `dt-setup-genai` / `dt-setup-openinference-migration` |
 | Alerting, anomaly detectors, problem notifications | `dt-alerting` |
 | Dynatrace JS runtime functions and SDKs | `dt-js-runtime` |
 | DPS billing, cost breakdown, chargeback | `dt-platform-costs` |

@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.0.0] - 2026-11-02
+
+### Changed
+- Updated the `dynatrace-for-ai` skills and prompts imports from v8.0.0 (`ca3a63e`) to upstream commit `306fb94` (v10.0.0, untagged), covering the intermediate v8.0.1 and v9.0.0 releases. 4 skills added (`dt-obs-extensions`, `dt-setup-genai`, `dt-setup-openinference-migration`, `dt-upgrade`), taking the total from 35 to 39 including `dtctl`. Existing skills updated across alerting, hosts, Kubernetes, Azure, problems, tracing, costs, security, and the Flutter and React Native setup skills. Upstream prompts are unchanged.
+- Re-registered `dynatrace-for-ai-skills` as `"policy": "exact"` and refreshed the inventory and `aggregateSha256` values in `upstream-sources.lock.json`.
+- Updated skill counts and skill tables in `CLAUDE.md`, `.github/copilot-instructions.md`, `README.md`, `ARCHITECTURE.md`, `llms.txt`, and `docs/CHEATSHEET.md`.
+
+### Added
+- `dt-upgrade` is included in full, with its Python and TypeScript migrators and scanners (about 9 MB). The workspace is intended to make changes back to the connected tenant, so write-capable skills are in scope.
+
+### Removed
+- `upstream-patches/dt-obs-frontends-csp-link-fix.patch`. Upstream fixed the broken `csp-violations.md` link, so the patch now reverse-applies. `CONTRIBUTING.md` no longer lists it as registered.
+
 ## [8.1.8] - 2026-10-28
 
 ### Added

@@ -44,7 +44,7 @@ dynatrace-ai-dtctl-workspace/
 │       ├── troubleshoot-problem.prompt.md
 │       ├── incident-response.prompt.md
 │       └── performance-regression.prompt.md
-├── .agents/skills/               # 35 Dynatrace domain skills
+├── .agents/skills/               # 39 Dynatrace domain skills
 ├── .claude/
 │   ├── commands/                 # Slash command symlinks for Claude Code (CLI and plugin)
 │   └── skills/                   # Skill symlinks for Claude Code compatibility
@@ -231,6 +231,7 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-obs-genai` | LLM/GenAI observability — golden signals, token/cost analytics, agent signals, conversation analytics, guardrails, evaluations |
 | `dt-obs-log-semantic-mapping` | Suggest and validate semantic dictionary mappings for audit log integrations |
 | `dt-obs-ext-monitors` | Ingest 3rd-party test/monitor results into Grail via the platform events ingest API |
+| `dt-obs-extensions` | Extension monitoring configuration status, error codes, and troubleshooting |
 
 ### Security
 
@@ -250,6 +251,8 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | `dt-setup-flutter` | Integrate the Dynatrace Flutter Plugin |
 | `dt-setup-ios` | Set up the Dynatrace iOS SDK via Swift Package Manager |
 | `dt-setup-react-native` | Integrate the Dynatrace React Native Plugin (bare RN and Expo) |
+| `dt-setup-openinference-migration` | Migrate from Traceloop/OpenLLMetry to OpenInference with OTel GenAI semconv enabled |
+| `dt-setup-genai` | Instrument Python/TypeScript GenAI apps to emit OTel gen_ai.* spans (detect, instrument, enrich, validate) |
 
 ### Agent Deployment
 
@@ -272,6 +275,7 @@ Skills follow the [Agent Skills specification](https://agentskills.io/specificat
 | Skill | What It Covers |
 |---|---|
 | `dt-migration` | Classic entity DQL → Smartscape migration |
+| `dt-upgrade` | Classic/2nd-gen to 3rd-gen upgrade: readiness, migration actions, cloud integration cutover |
 
 ### CLI
 

@@ -37,7 +37,7 @@ Files under `.agents/skills/` are synchronized as complete imported roots. The `
 
 `dynatrace-for-ai-skills` defaults to `"policy": "exact"` with no patch. When a local fix is needed on top of a pinned upstream commit, switch it to `"policy": "patched"` and add a `"patch"` field pointing at a file under `upstream-patches/`; the sync script applies it to the fetched tree (via `patch -p1 --forward`) before the aggregate hash is computed, exactly like the `dtctl-skill` overlay. This is the only sanctioned way to carry a local fix on top of upstream content — hand-editing a file under `.agents/skills/` without a registered patch will fail `sync-upstream.sh verify` and be silently overwritten (and `sync` with no `--refresh-lock` will fail its integrity check) on the next sync.
 
-Currently registered: `upstream-patches/dt-obs-frontends-csp-link-fix.patch` fixes a broken relative link in `dt-obs-frontends/references/error-tracking.md` (upstream links to `references/csp-violations.md` from inside `references/`, which resolves to a nonexistent nested path — confirmed present as of upstream commit `ca3a63e`, filed as a low-severity doc bug). Remove this patch and drop the `patch` field once the fix lands upstream, then re-run `sync-upstream.sh sync --refresh-lock`.
+No skills patch is currently registered. The former `dt-obs-frontends-csp-link-fix.patch` was removed after the broken `csp-violations.md` link was fixed upstream (present in v10.0.0, `306fb94`); the `dynatrace-for-ai-skills` import is back to `"policy": "exact"`.
 
 To register a new patch:
 

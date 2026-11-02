@@ -4,15 +4,14 @@
     {
       "id": "dynatrace-for-ai-skills",
       "repository": "https://github.com/Dynatrace/dynatrace-for-ai.git",
-      "commit": "ca3a63e9b6e659d187b8e4ae05afd48011adfc86",
+      "commit": "306fb94e36a53de026cb05a58b5b440fe6d7f000",
       "source": "skills",
       "destination": ".agents/skills",
-      "policy": "patched",
+      "policy": "exact",
       "exclude": [
         "dtctl"
       ],
-      "patch": "upstream-patches/dt-obs-frontends-csp-link-fix.patch",
-      "aggregateSha256": "705ba071045e222c5f4979d6e2d50b901c58578c1f21dbb8ef6b6f4ad4de7734",
+      "aggregateSha256": "b1726c82114e122620246e78596cdb828679ea06a37e4eff41bb98824b738aba",
       "inventory": [
         "dt-alerting",
         "dt-app-dashboards",
@@ -25,6 +24,7 @@
         "dt-obs-azure",
         "dt-obs-compliance-assistant",
         "dt-obs-ext-monitors",
+        "dt-obs-extensions",
         "dt-obs-frontends",
         "dt-obs-gcp",
         "dt-obs-genai",
@@ -45,15 +45,18 @@
         "dt-sec-semantic-mapping",
         "dt-setup-android",
         "dt-setup-flutter",
+        "dt-setup-genai",
         "dt-setup-ios",
         "dt-setup-oneagent",
-        "dt-setup-react-native"
+        "dt-setup-openinference-migration",
+        "dt-setup-react-native",
+        "dt-upgrade"
       ]
     },
     {
       "id": "dynatrace-for-ai-prompts",
       "repository": "https://github.com/Dynatrace/dynatrace-for-ai.git",
-      "commit": "ca3a63e9b6e659d187b8e4ae05afd48011adfc86",
+      "commit": "306fb94e36a53de026cb05a58b5b440fe6d7f000",
       "source": "prompts",
       "destination": ".github/prompts",
       "policy": "exact-mapped",

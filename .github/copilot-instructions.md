@@ -83,12 +83,16 @@ Domain knowledge skills are installed in `.agents/skills/`. They load automatica
 | `dt-setup-flutter`            | Integrate the Dynatrace Flutter Plugin                                               |
 | `dt-setup-ios`                | Set up the Dynatrace iOS SDK via Swift Package Manager                              |
 | `dt-setup-react-native`       | Integrate the Dynatrace React Native Plugin (bare RN and Expo)                       |
+| `dt-setup-openinference-migration` | Migrate from Traceloop/OpenLLMetry to OpenInference with OTel GenAI semconv enabled |
+| `dt-setup-genai`              | Instrument Python/TypeScript GenAI apps to emit OTel gen_ai.* spans (detect, instrument, enrich, validate) |
 | `dt-setup-oneagent`           | Reference knowledge for installing/uninstalling OneAgent across VM, Kubernetes, AWS Lambda, Windows, EC2-over-SSH, and Azure |
 | `dt-app-dashboards`           | Dashboard JSON creation and modification                                             |
 | `dt-app-notebooks`            | Notebook creation and analytics workflows                                            |
 | `dt-obs-analytics`            | Analyze dashboards/notebooks with Davis analyzers (anomaly detection, novelty, correlation) |
 | `dt-obs-ext-monitors`         | Ingest 3rd-party test/monitor results into Grail via the platform events ingest API  |
+| `dt-obs-extensions`           | Extension monitoring configuration status, error codes, and troubleshooting |
 | `dt-migration`                | Classic entity DQL → Smartscape migration                                            |
+| `dt-upgrade`                  | Classic/2nd-gen to 3rd-gen upgrade: readiness, migration actions, cloud integration cutover |
 | `dt-alerting`                 | Anomaly detector setup, alert event history, problem denoising, workflow notifications |
 | `dt-js-runtime`               | Dynatrace server-side JS runtime — function contract, SDK catalog, fetch, limits     |
 | `dt-platform-costs`           | DPS billing/usage analysis — cost breakdown, spend ranking, chargeback, drill-down    |
